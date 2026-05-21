@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Valoración de Proyectos — FinSuite Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
+    <script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","recharts":"https://esm.sh/recharts@2.12.0?deps=react@18.2.0","lucide-react":"https://esm.sh/lucide-react@0.292.0"}}</script>
+    <style>
+        body{font-family:'DM Sans',sans-serif;background:#f8fafc;margin:0;}
+        .font-sora{font-family:'Sora',sans-serif;}
+        ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+        .suite-bar{background:#0f172a;height:44px;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:50;}
+        .suite-bar a{color:#94a3b8;text-decoration:none;font-size:.8rem;font-weight:600;padding:.3rem .65rem;border-radius:8px;display:flex;align-items:center;gap:.45rem;transition:all .2s;}
+        .suite-bar a:hover{background:rgba(255,255,255,.07);color:#f1f5f9;}
+        .suite-bar .sep{color:rgba(255,255,255,.2);}
+        .suite-bar .cur{color:#67e8f9;font-size:.8rem;font-weight:700;}
+        .card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:1.4rem;}
+        .stitle{font-family:'Sora',sans-serif;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;}
+        .ni{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:.65rem .85rem;font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;}
+        .ni:focus{border-color:#0891b2;box-shadow:0 0 0 3px rgba(8,145,178,.1);}
+        .year-row{display:grid;grid-template-columns:80px 1fr 1fr;gap:.6rem;align-items:center;margin-bottom:.5rem;}
+    </style>
+</head>
+<body>
+<div class="suite-bar">
+    <a href="../../index.html">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Inicio
+    </a>
+    <span class="sep">›</span>
+    <span class="cur">Valoración de Proyectos</span>
+    <div style="margin-left:auto;background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.28rem .65rem;border-radius:7px;">
+        <span style="color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.05em;">FinSuite Pro</span>
+    </div>
+</div>
+<div id="root"></div>
+<script type="text/babel" data-type="module">
+import React, { useState, useMemo } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell, LineChart, Line, ReferenceLine } from 'recharts';
+
+const fmt  = v => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);
+const fmtN = (v,d=2) => new Intl.NumberFormat('es-CO',{minimumFractionDigits:0,maximumFractionDigits:d}).format(v||0);
+const fmtM = v => v>=1e9?`${fmtN(v/1e9,2)}B`:v>=1e6?`${fmtN(v/1e6,2)}M`:v>=1e3?`${fmtN(v/1e3,1)}K`:fmt(v);
+
+function calcNPV(r, inv, flows){
+    return -inv + flows.reduce((acc,cf,i)=>acc+cf/Math.pow(1+r,i+1),0);
+}
+function calcIRR(inv, flows){
+    // Bisection
+    let lo=-0.99, hi=10;
+    for(let i=0;i<200;i++){
+        const mid=(lo+hi)/2;
+        const v=calcNPV(mid,inv,flows);
+        if(Math.abs(v)<1) return mid*100;
+        if(v>0) lo=mid; else hi=mid;
+    }
+    return null;
+}
+
+function NumInput({label, value, onChange, note}){
+    const display = value===0?'': new Intl.NumberFormat('es-CO').format(value);
+    return (
+        <div>
+            {label && <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151',display:'block',marginBottom:'.3rem'}}>{label}</label>}
+            <input className="ni" value={display} onChange={e=>{const s=e.target.value.replace(/[^\d]/g,'');onChange(s===''?0:parseInt(s,10));}} placeholder="0"/>
+            {note && <p style={{fontSize:'.72rem',color:'#9ca3af',marginTop:'.2rem'}}>{note}</p>}
+        </div>
+    );
+}
+
+const N_YEARS = 10;
+
+function App(){
+    const [inversion, setInversion] = useState(100000000);
+    const [tasa, setTasa]           = useState(12);
+    const [nYears, setNYears]       = useState(5);
+    const [flujos, setFlujos]       = useState([
+        30000000, 45000000, 50000000, 55000000, 60000000,
+        0, 0, 0, 0, 0
+    ]);
+
+    const setFlujo = (i, val) => setFlujos(f => f.map((v,j)=>j===i?val:v));
+    const flowsUsed = flujos.slice(0, nYears);
+    const r = tasa / 100;
+
+    const npv = useMemo(()=>calcNPV(r, inversion, flowsUsed), [r, inversion, flowsUsed]);
+    const irr = useMemo(()=>calcIRR(inversion, flowsUsed), [inversion, flowsUsed]);
+
+    const breakdown = useMemo(()=>{
+        let cumul = -inversion;
+        return flowsUsed.map((cf,i)=>{
+            const factor = 1/Math.pow(1+r,i+1);
+            const vp = cf * factor;
+            cumul += cf;
+            return {año:i+1, flujo:cf, factor, vp:Math.round(vp), cumulativo:Math.round(cumul)};
+        });
+    },[flowsUsed, r, inversion]);
+
+    const payback = breakdown.find(b=>b.cumulativo>=0)?.año || null;
+    const totalVP  = breakdown.reduce((a,b)=>a+b.vp,0);
+    const totalFlujos = flowsUsed.reduce((a,b)=>a+b,0);
+    const viable = npv > 0;
+
+    const barData = [{name:'Inversión', nominal:-inversion, vp:-inversion, fill:'#ef4444'}, ...breakdown.map(b=>({name:`Año ${b.año}`, nominal:b.flujo, vp:b.vp, fill:b.flujo>=0?'#06b6d4':'#ef4444'}))];
+
+    // IRR sensitivity
+    const sensData = useMemo(()=>{
+        const pts = [];
+        for(let rt=0; rt<=0.5; rt+=0.025){
+            pts.push({tasa:Math.round(rt*100), npv: Math.round(calcNPV(rt, inversion, flowsUsed))});
+        }
+        return pts;
+    },[inversion, flowsUsed]);
+
+    return (
+        <div style={{maxWidth:1200,margin:'0 auto',padding:'1.5rem'}}>
+            <div style={{marginBottom:'1.5rem',display:'flex',alignItems:'center',gap:'.75rem'}}>
+                <div style={{background:'#ecfeff',padding:'.6rem',borderRadius:12}}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                </div>
+                <div>
+                    <h1 className="font-sora" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0}}>Valoración de Proyectos e Inversiones</h1>
+                    <p style={{color:'#64748b',fontSize:'.82rem',margin:0}}>Calcula VPN, TIR y período de recuperación para evaluar la viabilidad económica de tu proyecto.</p>
+                </div>
+            </div>
+
+            <div style={{display:'grid',gridTemplateColumns:'360px 1fr',gap:'1.5rem'}}>
+                {/* INPUTS */}
+                <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+                    <div className="card">
+                        <div className="stitle" style={{color:'#0891b2'}}>🏗️ Datos del Proyecto</div>
+                        <div style={{display:'flex',flexDirection:'column',gap:'.9rem'}}>
+                            <NumInput label="Inversión inicial" value={inversion} onChange={setInversion} note="Capital requerido al inicio del proyecto"/>
+                            <div>
+                                <div style={{display:'flex',justifyContent:'space-between',marginBottom:'.3rem'}}>
+                                    <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151'}}>Tasa de descuento (WACC / COK)</label>
+                                    <span className="font-sora" style={{fontSize:'.9rem',fontWeight:700,color:'#0891b2'}}>{tasa}% EA</span>
+                                </div>
+                                <input type="range" style={{width:'100%',height:6,borderRadius:3,background:'#e2e8f0',WebkitAppearance:'none',outline:'none',cursor:'pointer'}} min="1" max="50" step="0.5" value={tasa} onChange={e=>setTasa(parseFloat(e.target.value))}/>
+                                <div style={{display:'flex',justifyContent:'space-between',marginTop:'.2rem'}}>
+                                    <span style={{fontSize:'.7rem',color:'#94a3b8'}}>Bajo riesgo</span>
+                                    <span style={{fontSize:'.7rem',color:'#94a3b8'}}>Alto riesgo</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div style={{display:'flex',justifyContent:'space-between',marginBottom:'.3rem'}}>
+                                    <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151'}}>Horizonte de análisis</label>
+                                    <span className="font-sora" style={{fontSize:'.9rem',fontWeight:700,color:'#0891b2'}}>{nYears} años</span>
+                                </div>
+                                <input type="range" style={{width:'100%',height:6,borderRadius:3,background:'#e2e8f0',WebkitAppearance:'none',outline:'none',cursor:'pointer'}} min="1" max="10" value={nYears} onChange={e=>setNYears(parseInt(e.target.value))}/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="card">
+                        <div className="stitle" style={{color:'#0891b2'}}>📅 Flujos de Caja Proyectados</div>
+                        <div style={{display:'grid',gridTemplateColumns:'60px 1fr',gap:'.5rem',marginBottom:'.5rem'}}>
+                            <span style={{fontSize:'.7rem',fontWeight:700,color:'#9ca3af',textTransform:'uppercase'}}>Año</span>
+                            <span style={{fontSize:'.7rem',fontWeight:700,color:'#9ca3af',textTransform:'uppercase',textAlign:'right',paddingRight:'.85rem'}}>Flujo neto esperado</span>
+                        </div>
+                        {Array.from({length:nYears},(_, i)=>(
+                            <div key={i} style={{display:'grid',gridTemplateColumns:'60px 1fr',gap:'.5rem',alignItems:'center',marginBottom:'.4rem'}}>
+                                <span className="font-sora" style={{fontSize:'.82rem',fontWeight:700,color:'#374151',textAlign:'center',background:'#f1f5f9',borderRadius:8,padding:'.35rem'}}>{i+1}</span>
+                                <NumInput value={flujos[i]} onChange={v=>setFlujo(i,v)}/>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* RESULTADOS */}
+                <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+                    {/* Veredicto */}
+                    <div style={{background:viable?'linear-gradient(135deg,#064e3b,#065f46)':'linear-gradient(135deg,#7f1d1d,#991b1b)',borderRadius:18,padding:'1.5rem',color:'#fff',display:'flex',alignItems:'center',gap:'1.25rem'}}>
+                        <div style={{fontSize:'3rem',lineHeight:1}}>{viable?'✅':'❌'}</div>
+                        <div>
+                            <div className="font-sora" style={{fontSize:'1.2rem',fontWeight:800,marginBottom:'.25rem'}}>
+                                Proyecto {viable?'VIABLE':'NO VIABLE'}
+                            </div>
+                            <div style={{fontSize:'.88rem',color:'rgba(255,255,255,.75)',lineHeight:1.5}}>
+                                {viable
+                                    ? `El VPN positivo de ${fmt(npv)} indica que el proyecto genera valor por encima de la tasa de descuento del ${tasa}%.`
+                                    : `El VPN negativo de ${fmt(npv)} indica que el proyecto no cubre el costo de oportunidad del ${tasa}%.`}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* KPIs */}
+                    <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'.85rem'}}>
+                        {[
+                            {label:'VPN',val:fmt(npv),color:npv>=0?'#059669':'#dc2626',bg:npv>=0?'#f0fdf4':'#fff1f2',note:'Valor Presente Neto'},
+                            {label:'TIR',val:irr!==null?`${fmtN(irr,2)}%`:'No calc.',color:'#0891b2',bg:'#ecfeff',note:'Tasa Interna Retorno'},
+                            {label:'Payback',val:payback?`${payback} año${payback>1?'s':''}`:'No recupera',color:'#7c3aed',bg:'#f5f3ff',note:'Período recuperación'},
+                            {label:'Suma Flujos',val:fmtM(totalFlujos),color:'#374151',bg:'#f8fafc',note:'Sin descontar'},
+                        ].map(k=>(
+                            <div key={k.label} className="card" style={{padding:'1rem',background:k.bg}}>
+                                <div style={{fontSize:'.7rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>{k.label}</div>
+                                <div className="font-sora" style={{fontSize:'1.15rem',fontWeight:800,color:k.color,lineHeight:1.2}}>{k.val}</div>
+                                <div style={{fontSize:'.7rem',color:'#9ca3af',marginTop:'.2rem'}}>{k.note}</div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Gráfico barras */}
+                    <div className="card">
+                        <div className="stitle" style={{color:'#374151'}}>📊 Flujos Nominales vs. Valor Presente</div>
+                        <ResponsiveContainer width="100%" height={200}>
+                            <BarChart data={barData.slice(1)} margin={{top:5,right:10,left:0,bottom:5}}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
+                                <XAxis dataKey="name" tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false}/>
+                                <YAxis tickFormatter={v=>fmtM(Math.abs(v))} tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false} width={55}/>
+                                <Tooltip formatter={v=>fmt(v)}/>
+                                <Legend formatter={v=><span style={{fontSize:'.75rem',color:'#374151'}}>{v}</span>}/>
+                                <Bar dataKey="nominal" name="Flujo Nominal" fill="#06b6d4" radius={[4,4,0,0]}/>
+                                <Bar dataKey="vp"      name="Valor Presente" fill="#7c3aed" radius={[4,4,0,0]} opacity={0.75}/>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    {/* Curva TIR/Sensibilidad */}
+                    <div className="card">
+                        <div className="stitle" style={{color:'#374151'}}>📉 Sensibilidad del VPN por Tasa</div>
+                        <ResponsiveContainer width="100%" height={160}>
+                            <LineChart data={sensData} margin={{top:5,right:10,left:0,bottom:5}}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
+                                <XAxis dataKey="tasa" tickFormatter={v=>`${v}%`} tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false}/>
+                                <YAxis tickFormatter={v=>fmtM(v)} tick={{fontSize:9,fill:'#94a3b8'}} axisLine={false} tickLine={false} width={55}/>
+                                <Tooltip formatter={v=>fmt(v)} labelFormatter={v=>`Tasa: ${v}%`}/>
+                                <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="4 2"/>
+                                <Line type="monotone" dataKey="npv" name="VPN" stroke="#0891b2" strokeWidth={2} dot={false}/>
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    {/* Tabla desglose */}
+                    <div className="card" style={{overflowX:'auto'}}>
+                        <div className="stitle" style={{color:'#374151'}}>📋 Desglose por Año</div>
+                        <table style={{width:'100%',fontSize:'.84rem',borderCollapse:'collapse'}}>
+                            <thead>
+                                <tr style={{borderBottom:'2px solid #f1f5f9'}}>
+                                    {['Año','Flujo Nominal','Factor VP','Valor Presente','Flujo Acum.'].map(h=>(
+                                        <th key={h} style={{padding:'.6rem .75rem',textAlign:h==='Año'?'left':'right',fontSize:'.72rem',fontWeight:700,color:'#9ca3af',textTransform:'uppercase',letterSpacing:'.06em'}}>{h}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {breakdown.map((b,i)=>(
+                                    <tr key={i} style={{borderBottom:'1px solid #f8fafc'}}>
+                                        <td style={{padding:'.6rem .75rem',fontWeight:700,color:'#374151'}}>Año {b.año}</td>
+                                        <td style={{padding:'.6rem .75rem',textAlign:'right',color:'#1e293b'}}>{fmt(b.flujo)}</td>
+                                        <td style={{padding:'.6rem .75rem',textAlign:'right',color:'#94a3b8',fontFamily:'monospace',fontSize:'.8rem'}}>{b.factor.toFixed(4)}</td>
+                                        <td style={{padding:'.6rem .75rem',textAlign:'right',fontWeight:700,color:'#7c3aed'}}>{fmt(b.vp)}</td>
+                                        <td style={{padding:'.6rem .75rem',textAlign:'right',fontWeight:700,color:b.cumulativo>=0?'#059669':'#dc2626'}}>{fmt(b.cumulativo)}</td>
+                                    </tr>
+                                ))}
+                                <tr style={{background:'#f8fafc',borderTop:'2px solid #e2e8f0',fontWeight:800}}>
+                                    <td style={{padding:'.7rem .75rem',color:'#374151'}}>TOTALES</td>
+                                    <td style={{padding:'.7rem .75rem',textAlign:'right',color:'#1e293b'}}>{fmt(totalFlujos)}</td>
+                                    <td></td>
+                                    <td style={{padding:'.7rem .75rem',textAlign:'right',color:'#7c3aed'}}>{fmt(totalVP)}</td>
+                                    <td style={{padding:'.7rem .75rem',textAlign:'right',color:npv>=0?'#059669':'#dc2626'}}>{fmt(npv)} <span style={{fontSize:'.7rem',fontWeight:600}}>(VPN)</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App/>);
+</script>
+<script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';</script>
+</body>
+</html>
