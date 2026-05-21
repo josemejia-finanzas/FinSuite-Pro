@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gestión de Deudas — FinSuite Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
+    <script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","recharts":"https://esm.sh/recharts@2.12.0?deps=react@18.2.0","lucide-react":"https://esm.sh/lucide-react@0.292.0"}}</script>
+    <style>
+        body{font-family:'DM Sans',sans-serif;background:#f8fafc;margin:0;}
+        .font-sora{font-family:'Sora',sans-serif;}
+        ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+        .suite-bar{background:#0f172a;height:44px;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:50;}
+        .suite-bar a{color:#94a3b8;text-decoration:none;font-size:.8rem;font-weight:600;padding:.3rem .65rem;border-radius:8px;display:flex;align-items:center;gap:.45rem;transition:all .2s;}
+        .suite-bar a:hover{background:rgba(255,255,255,.07);color:#f1f5f9;}
+        .suite-bar .sep{color:rgba(255,255,255,.2);}
+        .suite-bar .cur{color:#fbbf24;font-size:.8rem;font-weight:700;}
+        .card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:1.4rem;}
+        .stitle{font-family:'Sora',sans-serif;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;}
+        .ni{width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:.55rem .75rem;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none;}
+        .ni:focus{border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.1);}
+        .add-btn{display:flex;align-items:center;gap:.4rem;padding:.5rem;border-radius:8px;border:1.5px dashed #d1d5db;background:#f9fafb;color:#6b7280;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;justify-content:center;transition:all .2s;}
+        .add-btn:hover{border-color:#d97706;color:#d97706;background:#fffbeb;}
+        .del-btn{background:#fee2e2;border:none;border-radius:6px;padding:.3rem .45rem;cursor:pointer;color:#dc2626;flex-shrink:0;}
+        .del-btn:hover{background:#fca5a5;}
+        .tab{padding:.55rem 1.1rem;border-radius:8px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+        .tab.active{background:#d97706;color:#fff;}
+        .tab:not(.active){background:#f1f5f9;color:#6b7280;}
+        .tab:not(.active):hover{background:#fef9c3;color:#92400e;}
+        .order-badge{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:#fff;flex-shrink:0;}
+    </style>
+</head>
+<body>
+<div class="suite-bar">
+    <a href="../../index.html">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Inicio
+    </a>
+    <span class="sep">›</span>
+    <span class="cur">Estrategia Gestión de Deudas</span>
+    <div style="margin-left:auto;background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.28rem .65rem;border-radius:7px;">
+        <span style="color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.05em;">FinSuite Pro</span>
+    </div>
+</div>
+<div id="root"></div>
+<script type="text/babel" data-type="module">
+import React, { useState, useMemo } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+
+const fmt = v => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);
+const fmtN = (v,d=1) => new Intl.NumberFormat('es-CO',{minimumFractionDigits:0,maximumFractionDigits:d}).format(v||0);
+
+// Simula pagos con estrategia dada (debts sorted externally)
+function simular(deudas, pool){
+    if(!deudas.length || pool <= 0) return null;
+    let ds = deudas.map(d=>({...d, saldo: d.saldo, pagado:0}));
+    let mes = 0, totalInt = 0;
+    const maxMeses = 600;
+    while(ds.some(d=>d.saldo>0.01) && mes < maxMeses){
+        mes++;
+        let extra = pool;
+        // minimums
+        for(let d of ds){
+            if(d.saldo<=0) continue;
+            const interes = d.saldo * d.tasa / 100 / 12;
+            const minPago = Math.min(d.saldo + interes, d.minimo);
+            const pago = Math.min(minPago, extra + 0);
+            totalInt += interes;
+            d.saldo = Math.max(0, d.saldo + interes - pago);
+            extra -= (pago - interes);
+            if(extra < 0) extra = 0;
+        }
+        // extra to first
+        for(let d of ds){
+            if(d.saldo>0 && extra>0){
+                const p = Math.min(d.saldo, extra);
+                d.saldo -= p; extra -= p;
+            }
+        }
+        // free up minimums of paid debts
+        for(let d of ds){ if(d.saldo<=0.01){ pool += 0; d.saldo=0; } }
+    }
+    return {meses:mes, totalIntereses:totalInt};
+}
+
+let idCnt = 4;
+const COLORES = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#8b5cf6','#ec4899'];
+
+function App(){
+    const [deudas, setDeudas] = useState([
+        {id:1, nombre:'Tarjeta Visa',     saldo:5000000,  tasa:28, minimo:150000},
+        {id:2, nombre:'Crédito consumo',  saldo:12000000, tasa:18, minimo:380000},
+        {id:3, nombre:'Tarjeta MC',       saldo:2500000,  tasa:32, minimo:75000},
+    ]);
+    const [poolExtra, setPoolExtra] = useState(500000);
+    const [estrategia, setEstrategia] = useState('avalanche');
+
+    const totalMins = deudas.reduce((a,b)=>a+b.minimo,0);
+    const pool = totalMins + poolExtra;
+
+    const snowball  = useMemo(()=>{
+        const sorted = [...deudas].sort((a,b)=>a.saldo-b.saldo);
+        return simular(sorted, pool);
+    },[deudas, pool]);
+
+    const avalanche = useMemo(()=>{
+        const sorted = [...deudas].sort((a,b)=>b.tasa-a.tasa);
+        return simular(sorted, pool);
+    },[deudas, pool]);
+
+    const orden = useMemo(()=>{
+        const arr = [...deudas];
+        if(estrategia==='snowball') arr.sort((a,b)=>a.saldo-b.saldo);
+        else arr.sort((a,b)=>b.tasa-a.tasa);
+        return arr;
+    },[deudas, estrategia]);
+
+    const upd = (id, key, val) => setDeudas(arr=>arr.map(d=>d.id===id?{...d,[key]:val}:d));
+    const del = id => setDeudas(arr=>arr.filter(d=>d.id!==id));
+    const add = () => { setDeudas(arr=>[...arr,{id:++idCnt,nombre:'Nueva deuda',saldo:0,tasa:20,minimo:0}]); };
+
+    const NumF = ({val, onCh}) => {
+        const display = val===0?'': new Intl.NumberFormat('es-CO').format(val);
+        return <input className="ni" value={display} onChange={e=>{const s=e.target.value.replace(/[^\d]/g,'');onCh(s===''?0:parseInt(s,10));}} placeholder="0" style={{textAlign:'right'}}/>;
+    };
+
+    const barData = snowball && avalanche ? [
+        {name:'Bola de Nieve', intereses: Math.round(snowball.totalIntereses), meses: snowball.meses, fill:'#f97316'},
+        {name:'Avalancha',     intereses: Math.round(avalanche.totalIntereses), meses: avalanche.meses, fill:'#0891b2'},
+    ] : [];
+
+    const ahorro = snowball && avalanche ? Math.abs(avalanche.totalIntereses - snowball.totalIntereses) : 0;
+
+    return (
+        <div style={{maxWidth:1100,margin:'0 auto',padding:'1.5rem'}}>
+            {/* Header */}
+            <div style={{marginBottom:'1.5rem',display:'flex',alignItems:'center',gap:'.75rem'}}>
+                <div style={{background:'#fffbeb',padding:'.6rem',borderRadius:12}}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                </div>
+                <div>
+                    <h1 className="font-sora" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0}}>Estrategia de Gestión de Deudas</h1>
+                    <p style={{color:'#64748b',fontSize:'.82rem',margin:0}}>Compara Bola de Nieve vs. Avalancha y elige el mejor camino para liberarte de deudas.</p>
+                </div>
+            </div>
+
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1.5rem'}}>
+                {/* IZQUIERDA: inputs */}
+                <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+                    <div className="card">
+                        <div className="stitle" style={{color:'#d97706'}}>💳 Mis Deudas</div>
+                        <div style={{display:'grid',gridTemplateColumns:'2fr 1.2fr 1.2fr 1.2fr auto',gap:'.4rem',marginBottom:'.5rem'}}>
+                            {['Deuda','Saldo','Tasa EA %','Mín. mensual',''].map(h=>(
+                                <div key={h} style={{fontSize:'.7rem',fontWeight:700,color:'#9ca3af',textTransform:'uppercase',letterSpacing:'.06em',textAlign:h?'right':'left'}}>{h}</div>
+                            ))}
+                        </div>
+                        {deudas.map((d,i)=>(
+                            <div key={d.id} style={{display:'grid',gridTemplateColumns:'2fr 1.2fr 1.2fr 1.2fr auto',gap:'.4rem',marginBottom:'.4rem',alignItems:'center'}}>
+                                <input className="ni" value={d.nombre} onChange={e=>upd(d.id,'nombre',e.target.value)}/>
+                                <NumF val={d.saldo} onCh={v=>upd(d.id,'saldo',v)}/>
+                                <input className="ni" type="number" min="0" max="200" step="0.1" value={d.tasa} onChange={e=>upd(d.id,'tasa',parseFloat(e.target.value)||0)} style={{textAlign:'right'}}/>
+                                <NumF val={d.minimo} onCh={v=>upd(d.id,'minimo',v)}/>
+                                <button className="del-btn" onClick={()=>del(d.id)}>
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                                </button>
+                            </div>
+                        ))}
+                        <button className="add-btn" onClick={add}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Agregar deuda
+                        </button>
+                    </div>
+
+                    <div className="card">
+                        <div className="stitle" style={{color:'#d97706'}}>💵 Presupuesto de Pago</div>
+                        <div style={{background:'#fffbeb',borderRadius:10,padding:'1rem',marginBottom:'1rem'}}>
+                            <div style={{fontSize:'.82rem',color:'#92400e',marginBottom:'.25rem'}}>Cuotas mínimas totales</div>
+                            <div className="font-sora" style={{fontSize:'1.1rem',fontWeight:800,color:'#d97706'}}>{fmt(totalMins)}/mes</div>
+                        </div>
+                        <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151',display:'block',marginBottom:'.35rem'}}>Dinero extra mensual para abonar</label>
+                        <input className="ni" value={new Intl.NumberFormat('es-CO').format(poolExtra)}
+                            onChange={e=>{const s=e.target.value.replace(/[^\d]/g,'');setPoolExtra(s===''?0:parseInt(s,10));}}
+                            placeholder="0" style={{textAlign:'right',marginBottom:'.5rem'}}/>
+                        <div style={{background:'#f0fdf4',borderRadius:10,padding:'.75rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                            <span style={{fontSize:'.82rem',color:'#374151'}}>Total mensual disponible</span>
+                            <span className="font-sora" style={{fontSize:'1rem',fontWeight:800,color:'#059669'}}>{fmt(pool)}</span>
+                        </div>
+                    </div>
+
+                    {/* Estrategia selector */}
+                    <div className="card">
+                        <div className="stitle" style={{color:'#d97706'}}>⚙️ Estrategia a Visualizar</div>
+                        <div style={{display:'flex',gap:'.5rem'}}>
+                            <button className={`tab ${estrategia==='avalanche'?'active':''}`} onClick={()=>setEstrategia('avalanche')}>🌊 Avalancha (menos intereses)</button>
+                            <button className={`tab ${estrategia==='snowball'?'active':''}`} onClick={()=>setEstrategia('snowball')}>⛄ Bola de Nieve (más motivación)</button>
+                        </div>
+                        <p style={{fontSize:'.8rem',color:'#6b7280',marginTop:'.75rem',lineHeight:1.5,margin:'.75rem 0 0'}}>
+                            {estrategia==='avalanche'
+                                ? 'Paga primero la deuda con la mayor tasa de interés. Minimiza el total pagado en intereses.'
+                                : 'Paga primero la deuda con el saldo más bajo. Genera victorias rápidas que mantienen la motivación.'}
+                        </p>
+                    </div>
+                </div>
+
+                {/* DERECHA: resultados */}
+                <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+                    {/* Comparativa */}
+                    {snowball && avalanche && (
+                        <>
+                        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.85rem'}}>
+                            {[
+                                {label:'⛄ Bola de Nieve',meses:snowball.meses,int:snowball.totalIntereses,color:'#ea580c'},
+                                {label:'🌊 Avalancha',meses:avalanche.meses,int:avalanche.totalIntereses,color:'#0891b2'},
+                            ].map(s=>(
+                                <div key={s.label} className="card" style={{padding:'1.1rem'}}>
+                                    <div className="font-sora" style={{fontSize:'.8rem',fontWeight:700,marginBottom:'.6rem',color:s.color}}>{s.label}</div>
+                                    <div style={{marginBottom:'.4rem'}}>
+                                        <div style={{fontSize:'.7rem',color:'#9ca3af',textTransform:'uppercase',letterSpacing:'.06em'}}>Meses hasta libertad</div>
+                                        <div className="font-sora" style={{fontSize:'1.4rem',fontWeight:800,color:'#0f172a'}}>{s.meses} <span style={{fontSize:'.75rem',color:'#6b7280'}}>meses</span></div>
+                                    </div>
+                                    <div>
+                                        <div style={{fontSize:'.7rem',color:'#9ca3af',textTransform:'uppercase',letterSpacing:'.06em'}}>Total en intereses</div>
+                                        <div className="font-sora" style={{fontSize:'1rem',fontWeight:800,color:s.color}}>{fmt(s.int)}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {ahorro > 100 && (
+                            <div style={{background:'#f0fdf4',border:'1.5px solid #86efac',borderRadius:14,padding:'1rem 1.25rem',display:'flex',alignItems:'center',gap:'.75rem'}}>
+                                <div style={{fontSize:'1.4rem'}}>💡</div>
+                                <div>
+                                    <div className="font-sora" style={{fontSize:'.88rem',fontWeight:700,color:'#15803d'}}>
+                                        La estrategia Avalancha ahorra {fmt(ahorro)} en intereses
+                                    </div>
+                                    <div style={{fontSize:'.78rem',color:'#166534',marginTop:'.15rem'}}>
+                                        {Math.abs(avalanche.meses - snowball.meses) > 0
+                                            ? `y se termina ${Math.abs(avalanche.meses-snowball.meses)} ${avalanche.meses<snowball.meses?'meses antes':'meses después'} que Bola de Nieve.`
+                                            : 'en el mismo tiempo que Bola de Nieve.'}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Gráfico comparativo */}
+                        <div className="card">
+                            <div className="stitle" style={{color:'#374151'}}>📊 Intereses Totales Pagados</div>
+                            <ResponsiveContainer width="100%" height={180}>
+                                <BarChart data={barData} margin={{top:5,right:10,left:0,bottom:5}}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
+                                    <XAxis dataKey="name" tick={{fontSize:12,fill:'#94a3b8'}} axisLine={false} tickLine={false}/>
+                                    <YAxis tickFormatter={v=>`${(v/1000000).toFixed(1)}M`} tick={{fontSize:11,fill:'#94a3b8'}} axisLine={false} tickLine={false} width={44}/>
+                                    <Tooltip formatter={v=>fmt(v)} labelStyle={{fontWeight:700}}/>
+                                    <Bar dataKey="intereses" name="Intereses" radius={[6,6,0,0]}>
+                                        {barData.map((e,i)=><React.Fragment key={i}><rect fill={e.fill}/></React.Fragment>)}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                        </>
+                    )}
+
+                    {/* Orden de ataque */}
+                    <div className="card">
+                        <div className="stitle" style={{color:'#374151'}}>🎯 Orden de Ataque — {estrategia==='avalanche'?'Avalancha':'Bola de Nieve'}</div>
+                        {orden.map((d,i)=>(
+                            <div key={d.id} style={{display:'flex',alignItems:'center',gap:.8+'rem',padding:'.75rem',background:i===0?'#fffbeb':'#fafafa',borderRadius:12,marginBottom:'.5rem',border:`1.5px solid ${i===0?'#fde68a':'#f1f5f9'}`}}>
+                                <div className="order-badge" style={{background:COLORES[i%COLORES.length]}}>{i+1}</div>
+                                <div style={{flex:1}}>
+                                    <div style={{fontSize:'.88rem',fontWeight:700,color:'#1e293b'}}>{d.nombre}</div>
+                                    <div style={{fontSize:'.75rem',color:'#94a3b8'}}>Saldo: {fmt(d.saldo)} · Tasa: {d.tasa}% EA · Mín: {fmt(d.minimo)}</div>
+                                </div>
+                                {i===0 && <span style={{background:'#d97706',color:'#fff',fontSize:'.68rem',fontWeight:700,padding:'.2rem .55rem',borderRadius:99}}>ATACAR PRIMERO</span>}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App/>);
+</script>
+<script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';</script>
+</body>
+</html>
