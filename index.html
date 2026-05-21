@@ -1,91 +1,345 @@
-body { 
-    font-family: 'Inter', sans-serif; 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>FinSuite Pro — Suite de Asesoría Financiera</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <style>
+        *{box-sizing:border-box;}
+        body{font-family:'DM Sans','Inter',sans-serif;margin:0;background:#0f172a;}
+        .font-sora{font-family:'Sora',sans-serif;}
+        ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#334155;border-radius:3px;}
+
+        /* LOGIN */
+        .login-bg{min-height:100vh;background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 50%,#0f172a 100%);display:flex;align-items:center;justify-content:center;padding:1.5rem;position:relative;overflow:hidden;}
+        .login-bg::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 50%,rgba(37,99,235,0.15) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(99,102,241,0.1) 0%,transparent 40%);pointer-events:none;}
+        .login-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+        .login-card{background:rgba(255,255,255,0.06);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:2.5rem;width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,0.4);animation:fadeUp .5s ease;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+        .login-input{width:100%;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:.85rem 1rem .85rem 2.75rem;color:#f1f5f9;font-size:.95rem;outline:none;transition:all .2s;}
+        .login-input::placeholder{color:rgba(148,163,184,0.7);}
+        .login-input:focus{border-color:#3b82f6;background:rgba(59,130,246,0.1);box-shadow:0 0 0 3px rgba(59,130,246,0.15);}
+        .login-btn{width:100%;padding:.9rem;background:linear-gradient(135deg,#2563eb,#4f46e5);border:none;border-radius:12px;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.02em;font-family:'Sora',sans-serif;}
+        .login-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,99,235,0.4);}
+        .login-btn:active:not(:disabled){transform:translateY(0);}
+        .login-btn:disabled{opacity:.5;cursor:not-allowed;}
+        .login-error{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:.75rem 1rem;color:#fca5a5;font-size:.85rem;margin-top:1rem;display:none;}
+        .login-error.show{display:block;animation:shake .3s ease;}
+        @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+        .demo-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.6rem .4rem;cursor:pointer;transition:background .2s;text-align:center;color:inherit;}
+        .demo-btn:hover{background:rgba(59,130,246,.15);}
+
+        /* DASHBOARD */
+        body.dashboard-mode{background:#f8fafc;}
+        .dash-header{background:#fff;border-bottom:1px solid #e2e8f0;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+        .dash-logo{display:flex;align-items:center;gap:.75rem;}
+        .dash-logo-icon{background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.6rem;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+        .module-card{background:#fff;border-radius:20px;padding:1.75rem;border:1px solid #e2e8f0;transition:all .25s;cursor:pointer;text-decoration:none;display:block;position:relative;overflow:hidden;color:inherit;}
+        .module-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.12);}
+        .module-card-bar{position:absolute;top:0;left:0;right:0;height:4px;}
+        .module-card-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;}
+        .tag{display:inline-block;background:#f1f5f9;color:#64748b;font-size:.7rem;font-weight:700;padding:.25rem .6rem;border-radius:99px;text-transform:uppercase;letter-spacing:.05em;}
+        .user-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;background:linear-gradient(135deg,#2563eb,#7c3aed);}
+        .logout-btn{display:flex;align-items:center;gap:.5rem;padding:.5rem .85rem;border-radius:10px;border:1px solid #e2e8f0;background:#fff;color:#64748b;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;}
+        .logout-btn:hover{background:#fee2e2;border-color:#fca5a5;color:#dc2626;}
+        .hero-section{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#312e81 100%);padding:4rem 1.5rem 5rem;position:relative;overflow:hidden;}
+        .hero-section::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 30% 60%,rgba(99,102,241,0.2) 0%,transparent 50%);pointer-events:none;}
+        .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;}
+        .stat-pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:.4rem 1rem;color:#e2e8f0;font-size:.78rem;font-weight:600;display:inline-flex;align-items:center;gap:.4rem;}
+        .dot-loader{display:inline-flex;gap:4px;align-items:center;}
+        .dot-loader span{width:6px;height:6px;border-radius:50%;background:#fff;animation:blink 1.2s infinite;}
+        .dot-loader span:nth-child(2){animation-delay:.2s;}
+        .dot-loader span:nth-child(3){animation-delay:.4s;}
+        @keyframes blink{0%,100%{opacity:.3;}50%{opacity:1;}}
+    </style>
+</head>
+<body>
+
+<!-- ========== LOGIN ========== -->
+<div id="loginScreen" class="login-bg">
+    <div class="login-grid"></div>
+    <div class="login-card">
+
+        <div style="display:flex;align-items:center;gap:.85rem;margin-bottom:2rem;">
+            <div style="background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.75rem;border-radius:14px;box-shadow:0 4px 16px rgba(37,99,235,0.4);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <div>
+                <div class="font-sora" style="color:#f1f5f9;font-size:1.4rem;font-weight:800;letter-spacing:-.02em;">FinSuite <span style="color:#60a5fa;">Pro</span></div>
+                <div style="color:#64748b;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;">Suite de Asesoría Financiera</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom:1.75rem;">
+            <h2 class="font-sora" style="color:#f1f5f9;font-size:1.3rem;font-weight:700;margin:0 0 .3rem;">Bienvenido de vuelta</h2>
+            <p style="color:#94a3b8;font-size:.88rem;margin:0;">Ingresa tus credenciales para continuar</p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:.85rem;">
+            <div style="position:relative;">
+                <svg style="position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:#64748b;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input id="loginUser" class="login-input" type="text" placeholder="Usuario" autocomplete="username"/>
+            </div>
+            <div style="position:relative;">
+                <svg style="position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:#64748b;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <input id="loginPass" class="login-input" type="password" placeholder="Contraseña" autocomplete="current-password" style="padding-right:3rem;"/>
+                <button onclick="togglePass()" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#64748b;padding:0;display:flex;" title="Mostrar/ocultar contraseña">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+            </div>
+            <div id="loginError" class="login-error">Usuario o contraseña incorrectos. Inténtalo de nuevo.</div>
+            <button id="loginBtn" class="login-btn" onclick="doLogin()" disabled>
+                <span id="loginBtnText">Cargando...</span>
+            </button>
+        </div>
+
+        <div style="margin-top:1.75rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.08);">
+            <p style="color:#64748b;font-size:.75rem;text-align:center;margin-bottom:.85rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Acceso rápido</p>
+            <div id="demoGrid" style="display:grid;gap:.5rem;">
+                <p style="color:#475569;font-size:.75rem;text-align:center;">Cargando usuarios...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== DASHBOARD ========== -->
+<div id="dashboardScreen" style="display:none;min-height:100vh;background:#f8fafc;">
+
+    <header class="dash-header">
+        <div class="dash-logo">
+            <div class="dash-logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <div>
+                <div class="font-sora" style="font-size:1.1rem;font-weight:800;color:#0f172a;letter-spacing:-.02em;">FinSuite <span style="color:#2563eb;">Pro</span></div>
+                <div style="font-size:.65rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.1em;">Suite Financiera</div>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.85rem;">
+            <div style="display:flex;align-items:center;gap:.6rem;">
+                <div class="user-avatar" id="userInitial">?</div>
+                <div id="userInfo" style="display:none;">
+                    <div style="font-size:.82rem;font-weight:700;color:#1e293b;" id="userName"></div>
+                    <div style="font-size:.67rem;color:#94a3b8;font-weight:600;" id="userRol"></div>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="doLogout()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Salir
+            </button>
+        </div>
+    </header>
+
+    <div class="hero-section">
+        <div class="hero-grid"></div>
+        <div style="position:relative;max-width:900px;margin:0 auto;text-align:center;">
+            <div style="display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1.75rem;">
+                <span class="stat-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Análisis en tiempo real</span>
+                <span class="stat-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>5 módulos especializados</span>
+                <span class="stat-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Cálculos instantáneos</span>
+            </div>
+            <h1 class="font-sora" style="color:#f1f5f9;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;letter-spacing:-.03em;margin:0 0 .9rem;line-height:1.15;">
+                Tu inteligencia financiera,<br/><span style="color:#60a5fa;">todo en un solo lugar</span>
+            </h1>
+            <p style="color:#94a3b8;font-size:1rem;max-width:560px;margin:0 auto 1.5rem;line-height:1.65;">
+                FinSuite Pro integra herramientas avanzadas de análisis hipotecario, planificación personal, gestión de deudas, retiro y valoración de negocios en una sola plataforma.
+            </p>
+            <p id="heroWelcome" style="color:#60a5fa;font-size:.9rem;font-weight:700;opacity:0;transition:opacity .5s;margin:0;"></p>
+        </div>
+    </div>
+
+    <div style="max-width:1100px;margin:-2.5rem auto 0;padding:0 1.5rem 4rem;position:relative;">
+        <div style="margin-bottom:1.5rem;">
+            <h2 class="font-sora" style="color:#0f172a;font-size:1.15rem;font-weight:800;margin:0 0 .25rem;">Módulos disponibles</h2>
+            <p style="color:#64748b;font-size:.85rem;margin:0;">Selecciona el módulo que necesitas para comenzar tu análisis.</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;">
+
+            <a href="modulos/hipotecario/index.html" class="module-card">
+                <div class="module-card-bar" style="background:linear-gradient(90deg,#2563eb,#60a5fa);"></div>
+                <div class="module-card-icon" style="background:#eff6ff;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+                <span class="tag" style="background:#eff6ff;color:#2563eb;">Motor Avanzado</span>
+                <h3 class="font-sora" style="color:#0f172a;font-size:1.05rem;font-weight:700;margin:.5rem 0;">Reestructuración Hipotecaria</h3>
+                <p style="color:#64748b;font-size:.83rem;line-height:1.6;margin:0 0 1.25rem;">Simula abonos extraordinarios, compara escenarios UVR/Pesos, calcula el ahorro en intereses y años de plazo. Incluye generador de cartas jurídicas.</p>
+                <div style="display:flex;align-items:center;gap:.4rem;color:#2563eb;font-size:.82rem;font-weight:700;">Abrir módulo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            </a>
+
+            <a href="modulos/finanzas-personales/index.html" class="module-card">
+                <div class="module-card-bar" style="background:linear-gradient(90deg,#059669,#34d399);"></div>
+                <div class="module-card-icon" style="background:#ecfdf5;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                <span class="tag" style="background:#ecfdf5;color:#059669;">Salud Financiera</span>
+                <h3 class="font-sora" style="color:#0f172a;font-size:1.05rem;font-weight:700;margin:.5rem 0;">Análisis Financiero Personal</h3>
+                <p style="color:#64748b;font-size:.83rem;line-height:1.6;margin:0 0 1.25rem;">Evalúa ingresos, gastos, activos y pasivos. Calcula tu flujo de caja, patrimonio neto y ratio de endeudamiento con semáforo de salud financiera.</p>
+                <div style="display:flex;align-items:center;gap:.4rem;color:#059669;font-size:.82rem;font-weight:700;">Abrir módulo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            </a>
+
+            <a href="modulos/gestion-deudas/index.html" class="module-card">
+                <div class="module-card-bar" style="background:linear-gradient(90deg,#d97706,#fbbf24);"></div>
+                <div class="module-card-icon" style="background:#fffbeb;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+                <span class="tag" style="background:#fffbeb;color:#d97706;">Estrategia Inteligente</span>
+                <h3 class="font-sora" style="color:#0f172a;font-size:1.05rem;font-weight:700;margin:.5rem 0;">Estrategia Gestión de Deudas</h3>
+                <p style="color:#64748b;font-size:.83rem;line-height:1.6;margin:0 0 1.25rem;">Compara las estrategias Bola de Nieve vs. Avalancha. Simula el pago óptimo de tus deudas y visualiza el ahorro total en intereses.</p>
+                <div style="display:flex;align-items:center;gap:.4rem;color:#d97706;font-size:.82rem;font-weight:700;">Abrir módulo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            </a>
+
+            <a href="modulos/retiro/index.html" class="module-card">
+                <div class="module-card-bar" style="background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div>
+                <div class="module-card-icon" style="background:#f5f3ff;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5 1.5-7.5 1.5-11 0-.2-.6-1.5-2-3-2H2C2 5 .8 6.3 1 8c.5 3 2.3 5.5 4.5 6.5l-.5 2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1l-.5-2c2.2-1 4-3.5 4.5-6.5.2-1.7-1-3-1-3h-1z"/></svg></div>
+                <span class="tag" style="background:#f5f3ff;color:#7c3aed;">Largo Plazo</span>
+                <h3 class="font-sora" style="color:#0f172a;font-size:1.05rem;font-weight:700;margin:.5rem 0;">Planificación para el Retiro</h3>
+                <p style="color:#64748b;font-size:.83rem;line-height:1.6;margin:0 0 1.25rem;">Proyecta tu fondo de retiro con interés compuesto y aportes mensuales. Visualiza el crecimiento año a año y define tus metas de independencia financiera.</p>
+                <div style="display:flex;align-items:center;gap:.4rem;color:#7c3aed;font-size:.82rem;font-weight:700;">Abrir módulo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            </a>
+
+            <a href="modulos/valoracion/index.html" class="module-card">
+                <div class="module-card-bar" style="background:linear-gradient(90deg,#0891b2,#22d3ee);"></div>
+                <div class="module-card-icon" style="background:#ecfeff;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+                <span class="tag" style="background:#ecfeff;color:#0891b2;">Finanzas Corporativas</span>
+                <h3 class="font-sora" style="color:#0f172a;font-size:1.05rem;font-weight:700;margin:.5rem 0;">Valoración de Proyectos</h3>
+                <p style="color:#64748b;font-size:.83rem;line-height:1.6;margin:0 0 1.25rem;">Calcula VPN, TIR y período de recuperación de inversiones. Obtén un veredicto claro sobre la viabilidad económica de tu proyecto o negocio.</p>
+                <div style="display:flex;align-items:center;gap:.4rem;color:#0891b2;font-size:.82rem;font-weight:700;">Abrir módulo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            </a>
+
+        </div>
+
+        <div style="margin-top:3rem;padding:1.75rem;background:#fff;border-radius:16px;border:1px solid #e2e8f0;display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center;justify-content:space-between;">
+            <div>
+                <div class="font-sora" style="color:#0f172a;font-size:.95rem;font-weight:700;margin-bottom:.25rem;">FinSuite Pro v1.1</div>
+                <div style="color:#94a3b8;font-size:.8rem;">Desarrollado por <strong style="color:#475569;">Jose Mejia</strong> · Suite de herramientas de asesoría financiera para Colombia</div>
+            </div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+                <span style="background:#f1f5f9;color:#64748b;font-size:.72rem;font-weight:700;padding:.3rem .7rem;border-radius:99px;">Cálculos UVR/Pesos</span>
+                <span style="background:#f1f5f9;color:#64748b;font-size:.72rem;font-weight:700;padding:.3rem .7rem;border-radius:99px;">Moneda COP</span>
+                <span style="background:#f1f5f9;color:#64748b;font-size:.72rem;font-weight:700;padding:.3rem .7rem;border-radius:99px;">Usuarios editables vía JSON</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ─── Estado ───────────────────────────────────────────────────
+let USUARIOS = [];
+
+// ─── Funciones de UI ─────────────────────────────────────────
+function togglePass() {
+    const p = document.getElementById('loginPass');
+    p.type = p.type === 'password' ? 'text' : 'password';
 }
 
-.font-serif { 
-    font-family: 'Merriweather', serif; 
+function fillCreds(u, p) {
+    document.getElementById('loginUser').value = u;
+    document.getElementById('loginPass').value = p;
+    document.getElementById('loginUser').focus();
 }
 
-.animate-in { 
-    animation: animateIn 0.5s ease-out; 
+function showDashboard(user) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboardScreen').style.display = 'block';
+    document.body.classList.add('dashboard-mode');
+    document.getElementById('userInitial').textContent = user.nombre.charAt(0).toUpperCase();
+    document.getElementById('userName').textContent = user.nombre;
+    document.getElementById('userRol').textContent = user.rol;
+    document.getElementById('userInfo').style.display = 'block';
+    const hw = document.getElementById('heroWelcome');
+    hw.textContent = 'Bienvenido, ' + user.nombre.split(' ')[0] + ' \uD83D\uDC4B';
+    hw.style.opacity = '1';
 }
 
-.fade-in { 
-    opacity: 0; 
-    animation-fill-mode: forwards; 
-    animation-name: fadeIn; 
+function doLogout() {
+    sessionStorage.removeItem('finsuite_auth');
+    document.getElementById('dashboardScreen').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.body.classList.remove('dashboard-mode');
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
 }
 
-.slide-in-from-bottom-4 { 
-    transform: translateY(1rem); 
-    animation-fill-mode: forwards; 
-    animation-name: slideIn; 
+function doLogin() {
+    const u   = document.getElementById('loginUser').value.trim();
+    const p   = document.getElementById('loginPass').value;
+    const err = document.getElementById('loginError');
+    const btn = document.getElementById('loginBtn');
+    const txt = document.getElementById('loginBtnText');
+
+    err.classList.remove('show');
+    btn.disabled = true;
+    txt.innerHTML = '<div class="dot-loader"><span></span><span></span><span></span></div>';
+
+    setTimeout(function () {
+        var found = USUARIOS.find(function (x) { return x.usuario === u && x.password === p; });
+        if (found) {
+            sessionStorage.setItem('finsuite_auth', JSON.stringify(found));
+            showDashboard(found);
+        } else {
+            err.classList.add('show');
+            btn.disabled = false;
+            txt.textContent = 'Iniciar Sesión';
+        }
+    }, 500);
 }
 
-@keyframes fadeIn { 
-    from { opacity: 0; } 
-    to { opacity: 1; } 
-}
+document.getElementById('loginPass').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
+document.getElementById('loginUser').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
 
-@keyframes slideIn { 
-    from { transform: translateY(1rem); opacity: 0; } 
-    to { transform: translateY(0); opacity: 1; } 
-}
+// ─── Carga de usuarios desde JSON ────────────────────────────
+// Los usuarios se leen SIEMPRE desde usuarios.json.
+// Mientras carga, el botón permanece deshabilitado para evitar
+// que se intente autenticar con la lista vacía.
+fetch('./usuarios.json')
+    .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+    })
+    .then(function (data) {
+        if (!Array.isArray(data) || data.length === 0) throw new Error('usuarios.json vacío o mal formado');
+        USUARIOS = data;
 
-html, body { 
-    overscroll-behavior-y: none; 
-}
+        // Habilitar botón de login
+        var btn = document.getElementById('loginBtn');
+        var txt = document.getElementById('loginBtnText');
+        btn.disabled = false;
+        txt.textContent = 'Iniciar Sesión';
 
-::-webkit-scrollbar { 
-    width: 6px; 
-    height: 6px; 
-}
+        // Poblar tarjetas de acceso rápido
+        var grid = document.getElementById('demoGrid');
+        var cols = Math.min(USUARIOS.length, 4);
+        grid.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+        grid.innerHTML = USUARIOS.slice(0, 4).map(function (u) {
+            return '<button class="demo-btn" onclick="fillCreds(\'' + u.usuario + '\',\'' + u.password + '\')">'
+                 + '<div style="color:#60a5fa;font-size:.72rem;font-weight:700;">' + u.usuario + '</div>'
+                 + '<div style="color:#64748b;font-size:.65rem;">' + u.rol + '</div>'
+                 + '</button>';
+        }).join('');
 
-::-webkit-scrollbar-track { 
-    background: transparent; 
-}
-
-::-webkit-scrollbar-thumb { 
-    background: #cbd5e1; 
-    border-radius: 3px; 
-}
-
-::-webkit-scrollbar-thumb:hover { 
-    background: #94a3b8; 
-}
-
-.pb-safe { 
-    padding-bottom: env(safe-area-inset-bottom); 
-}
-
-/* --- MEJORA DE IMPRESIÓN (PDF LIMPIO) --- */
-@media print {
-    body * {
-        visibility: hidden;
-    }
-    
-    #printable-area, #printable-area * {
-        visibility: visible;
-    }
-    
-    #printable-area {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        background: white;
-        box-shadow: none !important;
-        border: none !important;
-    }
-    
-    .no-print, nav, aside, button, header, .toast-container {
-        display: none !important;
-    }
-    
-    @page {
-        margin: 2.5cm;
-        size: auto;
-    }
-}
+        // Reanudar sesión si ya había una guardada
+        var saved = sessionStorage.getItem('finsuite_auth');
+        if (saved) {
+            try {
+                var savedUser = JSON.parse(saved);
+                // Verificar que el usuario guardado sigue existiendo en el JSON
+                var stillValid = USUARIOS.find(function (x) { return x.usuario === savedUser.usuario && x.password === savedUser.password; });
+                if (stillValid) {
+                    showDashboard(stillValid);
+                } else {
+                    sessionStorage.removeItem('finsuite_auth');
+                }
+            } catch (e) {
+                sessionStorage.removeItem('finsuite_auth');
+            }
+        }
+    })
+    .catch(function (err) {
+        console.error('Error cargando usuarios.json:', err.message);
+        var btn = document.getElementById('loginBtn');
+        var txt = document.getElementById('loginBtnText');
+        var grid = document.getElementById('demoGrid');
+        btn.disabled = false;
+        txt.textContent = 'Iniciar Sesión';
+        grid.innerHTML = '<p style="color:#f87171;font-size:.75rem;text-align:center;grid-column:1/-1;">No se pudo leer usuarios.json.<br/>Verifica que el servidor esté activo.</p>';
+    });
+</script>
+</body>
+</html>
