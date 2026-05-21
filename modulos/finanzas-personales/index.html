@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Análisis Financiero Personal — FinSuite Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
+    <script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","recharts":"https://esm.sh/recharts@2.12.0?deps=react@18.2.0","lucide-react":"https://esm.sh/lucide-react@0.292.0"}}</script>
+    <style>
+        body{font-family:'DM Sans',sans-serif;background:#f8fafc;margin:0;}
+        .font-sora{font-family:'Sora',sans-serif;}
+        ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+        .suite-bar{background:#0f172a;height:44px;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:50;}
+        .suite-bar a{color:#94a3b8;text-decoration:none;font-size:.8rem;font-weight:600;padding:.3rem .65rem;border-radius:8px;display:flex;align-items:center;gap:.45rem;transition:all .2s;}
+        .suite-bar a:hover{background:rgba(255,255,255,.07);color:#f1f5f9;}
+        .suite-bar .sep{color:rgba(255,255,255,.2);font-size:.8rem;}
+        .suite-bar .cur{color:#34d399;font-size:.8rem;font-weight:700;}
+        .num-input{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:.65rem .85rem;font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;background:#fff;}
+        .num-input:focus{border-color:#059669;box-shadow:0 0 0 3px rgba(5,150,105,.1);}
+        .card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:1.5rem;}
+        .section-title{font-family:'Sora',sans-serif;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;}
+        .semaforo-verde{background:#dcfce7;color:#15803d;border:1.5px solid #86efac;}
+        .semaforo-amarillo{background:#fef9c3;color:#854d0e;border:1.5px solid #fde047;}
+        .semaforo-rojo{background:#fee2e2;color:#991b1b;border:1.5px solid #fca5a5;}
+        .stat-box{border-radius:12px;padding:1.1rem 1.25rem;}
+        .add-btn{display:flex;align-items:center;gap:.4rem;padding:.5rem .9rem;border-radius:8px;border:1.5px dashed #d1d5db;background:#f9fafb;color:#6b7280;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;justify-content:center;transition:all .2s;}
+        .add-btn:hover{border-color:#059669;color:#059669;background:#f0fdf4;}
+        .del-btn{background:#fee2e2;border:none;border-radius:6px;padding:.3rem .5rem;cursor:pointer;color:#dc2626;display:flex;align-items:center;transition:all .2s;}
+        .del-btn:hover{background:#fca5a5;}
+    </style>
+</head>
+<body>
+<div class="suite-bar">
+    <a href="../../index.html">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Inicio
+    </a>
+    <span class="sep">›</span>
+    <span class="cur">Análisis Financiero Personal</span>
+    <div style="margin-left:auto;background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.28rem .65rem;border-radius:7px;">
+        <span style="color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.05em;">FinSuite Pro</span>
+    </div>
+</div>
+<div id="root"></div>
+<script type="text/babel" data-type="module">
+import React, { useState, useMemo } from 'react';
+import { createRoot } from 'react-dom/client';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+
+const fmt = v => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);
+const fmtN = (v,d=1) => new Intl.NumberFormat('es-CO',{minimumFractionDigits:0,maximumFractionDigits:d}).format(v||0);
+
+function NumInput({label, value, onChange, note}){
+    const [raw, setRaw] = useState(value===0?'':String(value));
+    const handle = e => {
+        const str = e.target.value.replace(/[^\d]/g,'');
+        setRaw(str);
+        onChange(str===''?0:parseInt(str,10));
+    };
+    const display = raw===''?'': new Intl.NumberFormat('es-CO').format(parseInt(raw,10)||0);
+    return (
+        <div>
+            <label style={{fontSize:'.8rem',fontWeight:600,color:'#374151',display:'block',marginBottom:'.3rem'}}>{label}</label>
+            <input className="num-input" value={display} onChange={handle} placeholder="0"/>
+            {note && <p style={{fontSize:'.72rem',color:'#9ca3af',marginTop:'.25rem'}}>{note}</p>}
+        </div>
+    );
+}
+
+function App(){
+    // Ingresos
+    const [ingresos, setIngresos] = useState([
+        {id:1, nombre:'Salario neto', valor:4500000},
+        {id:2, nombre:'Ingresos extra / freelance', valor:800000},
+    ]);
+    // Gastos fijos
+    const [fijos, setFijos] = useState([
+        {id:1, nombre:'Arriendo / hipoteca', valor:1200000},
+        {id:2, nombre:'Servicios públicos', valor:250000},
+        {id:3, nombre:'Internet y teléfono', valor:120000},
+        {id:4, nombre:'Seguro de salud', valor:180000},
+    ]);
+    // Gastos variables
+    const [variables, setVariables] = useState([
+        {id:1, nombre:'Alimentación', valor:600000},
+        {id:2, nombre:'Transporte', valor:200000},
+        {id:3, nombre:'Entretenimiento', valor:150000},
+        {id:4, nombre:'Ropa y personal', valor:100000},
+    ]);
+    // Activos
+    const [activos, setActivos] = useState([
+        {id:1, nombre:'Cuenta bancaria', valor:8000000},
+        {id:2, nombre:'Vehículo', valor:25000000},
+    ]);
+    // Pasivos
+    const [pasivos, setPasivos] = useState([
+        {id:1, nombre:'Tarjeta de crédito', valor:3500000},
+        {id:2, nombre:'Crédito de consumo', valor:8000000},
+    ]);
+
+    const nextId = arr => Math.max(0,...arr.map(x=>x.id))+1;
+
+    const addRow = (set, nombre='Nuevo ítem') => set(arr => [...arr, {id:nextId(arr), nombre, valor:0}]);
+    const delRow = (set, id) => set(arr => arr.filter(x=>x.id!==id));
+    const updNombre = (set, id, val) => set(arr => arr.map(x=>x.id===id?{...x,nombre:val}:x));
+    const updValor  = (set, id, val) => set(arr => arr.map(x=>x.id===id?{...x,valor:val}:x));
+
+    const sum = arr => arr.reduce((a,b)=>a+b.valor,0);
+
+    const totalIngresos  = sum(ingresos);
+    const totalFijos     = sum(fijos);
+    const totalVariables = sum(variables);
+    const totalGastos    = totalFijos + totalVariables;
+    const totalActivos   = sum(activos);
+    const totalPasivos   = sum(pasivos);
+
+    const flujoCaja      = totalIngresos - totalGastos;
+    const patrimonioNeto = totalActivos  - totalPasivos;
+    const ratioEndeudamiento = totalIngresos > 0 ? (totalGastos / totalIngresos) * 100 : 0;
+    const capacidadAhorro    = totalIngresos > 0 ? (flujoCaja / totalIngresos) * 100 : 0;
+
+    const semaforo = useMemo(() => {
+        if(ratioEndeudamiento < 50 && capacidadAhorro >= 20) return {cls:'semaforo-verde', label:'🟢 Salud Financiera EXCELENTE', msg:'Tu flujo de caja es positivo y tienes una sólida capacidad de ahorro. Considera invertir tu excedente.'};
+        if(ratioEndeudamiento < 70) return {cls:'semaforo-amarillo', label:'🟡 Salud Financiera MODERADA', msg:'Tus gastos representan más del 50% de tus ingresos. Revisa gastos variables y busca reducir compromisos fijos.'};
+        return {cls:'semaforo-rojo', label:'🔴 Salud Financiera EN RIESGO', msg:'Tus gastos superan o se acercan a tus ingresos. Es urgente reducir gastos o aumentar ingresos para evitar endeudamiento.'};
+    }, [ratioEndeudamiento, capacidadAhorro]);
+
+    const pieData = [
+        {name:'Gastos Fijos', value:totalFijos, color:'#ef4444'},
+        {name:'Gastos Variables', value:totalVariables, color:'#f97316'},
+        {name:'Ahorro/Excedente', value:Math.max(0,flujoCaja), color:'#22c55e'},
+    ].filter(x=>x.value>0);
+
+    const Section = ({title, color, rows, set, addLabel}) => (
+        <div className="card" style={{marginBottom:'1rem'}}>
+            <div className="section-title" style={{color}}>{title}</div>
+            <div style={{display:'flex',flexDirection:'column',gap:'.6rem'}}>
+                {rows.map(r => (
+                    <div key={r.id} style={{display:'flex',gap:'.6rem',alignItems:'center'}}>
+                        <input value={r.nombre} onChange={e=>updNombre(set,r.id,e.target.value)}
+                            style={{flex:'1 1 auto',border:'1.5px solid #e2e8f0',borderRadius:8,padding:'.55rem .75rem',fontSize:'.85rem',fontFamily:'DM Sans,sans-serif',outline:'none'}}/>
+                        <input value={r.valor===0?'':new Intl.NumberFormat('es-CO').format(r.valor)}
+                            onChange={e=>{const s=e.target.value.replace(/[^\d]/g,'');updValor(set,r.id,s===''?0:parseInt(s,10));}}
+                            style={{width:'140px',border:'1.5px solid #e2e8f0',borderRadius:8,padding:'.55rem .75rem',fontSize:'.85rem',fontFamily:'DM Sans,sans-serif',outline:'none',textAlign:'right'}}
+                            placeholder="0"/>
+                        <button className="del-btn" onClick={()=>delRow(set,r.id)}>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                        </button>
+                    </div>
+                ))}
+                <button className="add-btn" onClick={()=>addRow(set, addLabel)}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Agregar ítem
+                </button>
+            </div>
+            <div style={{borderTop:'1.5px solid #f1f5f9',marginTop:'.85rem',paddingTop:'.85rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <span style={{fontSize:'.8rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.06em'}}>Total</span>
+                <span style={{fontSize:'1.05rem',fontWeight:800,color,fontFamily:'Sora,sans-serif'}}>{fmt(sum(rows))}</span>
+            </div>
+        </div>
+    );
+
+    return (
+        <div style={{maxWidth:1100,margin:'0 auto',padding:'1.5rem'}}>
+            {/* Header */}
+            <div style={{marginBottom:'1.5rem'}}>
+                <div style={{display:'flex',alignItems:'center',gap:.75+'rem',marginBottom:'.3rem'}}>
+                    <div style={{background:'#ecfdf5',padding:'.6rem',borderRadius:12}}>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </div>
+                    <div>
+                        <h1 className="font-sora" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0,letterSpacing:'-.02em'}}>Análisis Financiero Personal</h1>
+                        <p style={{color:'#64748b',fontSize:'.82rem',margin:0}}>Registra tus ingresos, gastos, activos y pasivos para evaluar tu salud financiera.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1.5rem'}}>
+                {/* Columna izquierda: inputs */}
+                <div>
+                    <Section title="💰 Ingresos Mensuales" color="#059669" rows={ingresos} set={setIngresos} addLabel="Nuevo ingreso"/>
+                    <Section title="🏠 Gastos Fijos (compromisos)" color="#dc2626" rows={fijos} set={setFijos} addLabel="Nuevo gasto fijo"/>
+                    <Section title="🛒 Gastos Variables" color="#ea580c" rows={variables} set={setVariables} addLabel="Nuevo gasto variable"/>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem'}}>
+                        <Section title="🏦 Activos (lo que tienes)" color="#0891b2" rows={activos} set={setActivos} addLabel="Nuevo activo"/>
+                        <Section title="💳 Pasivos (lo que debes)" color="#7c3aed" rows={pasivos} set={setPasivos} addLabel="Nuevo pasivo"/>
+                    </div>
+                </div>
+
+                {/* Columna derecha: resultados */}
+                <div style={{position:'sticky',top:'60px',alignSelf:'start',display:'flex',flexDirection:'column',gap:'1rem'}}>
+
+                    {/* Semáforo */}
+                    <div className={`card ${semaforo.cls}`} style={{borderRadius:16,padding:'1.25rem 1.5rem'}}>
+                        <div className="font-sora" style={{fontSize:'1rem',fontWeight:800,marginBottom:'.4rem'}}>{semaforo.label}</div>
+                        <p style={{fontSize:'.84rem',lineHeight:1.55,margin:0}}>{semaforo.msg}</p>
+                    </div>
+
+                    {/* KPIs */}
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.85rem'}}>
+                        <div className="stat-box" style={{background: flujoCaja>=0?'#f0fdf4':'#fff1f2',border:`1.5px solid ${flujoCaja>=0?'#86efac':'#fca5a5'}`}}>
+                            <div style={{fontSize:'.72rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>Flujo de Caja</div>
+                            <div className="font-sora" style={{fontSize:'1.25rem',fontWeight:800,color:flujoCaja>=0?'#15803d':'#991b1b'}}>{fmt(flujoCaja)}</div>
+                            <div style={{fontSize:'.75rem',color:'#9ca3af',marginTop:'.15rem'}}>Ingresos − Gastos</div>
+                        </div>
+                        <div className="stat-box" style={{background:patrimonioNeto>=0?'#eff6ff':'#fff1f2',border:`1.5px solid ${patrimonioNeto>=0?'#93c5fd':'#fca5a5'}`}}>
+                            <div style={{fontSize:'.72rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>Patrimonio Neto</div>
+                            <div className="font-sora" style={{fontSize:'1.25rem',fontWeight:800,color:patrimonioNeto>=0?'#1d4ed8':'#991b1b'}}>{fmt(patrimonioNeto)}</div>
+                            <div style={{fontSize:'.75rem',color:'#9ca3af',marginTop:'.15rem'}}>Activos − Pasivos</div>
+                        </div>
+                        <div className="stat-box" style={{background:'#fffbeb',border:'1.5px solid #fde68a'}}>
+                            <div style={{fontSize:'.72rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>Ratio Endeudamiento</div>
+                            <div className="font-sora" style={{fontSize:'1.25rem',fontWeight:800,color:ratioEndeudamiento<50?'#15803d':ratioEndeudamiento<70?'#92400e':'#991b1b'}}>{fmtN(ratioEndeudamiento)}%</div>
+                            <div style={{fontSize:'.75rem',color:'#9ca3af',marginTop:'.15rem'}}>Gastos / Ingresos</div>
+                        </div>
+                        <div className="stat-box" style={{background:'#f5f3ff',border:'1.5px solid #c4b5fd'}}>
+                            <div style={{fontSize:'.72rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>Capacidad de Ahorro</div>
+                            <div className="font-sora" style={{fontSize:'1.25rem',fontWeight:800,color:'#6d28d9'}}>{fmtN(capacidadAhorro)}%</div>
+                            <div style={{fontSize:'.75rem',color:'#9ca3af',marginTop:'.15rem'}}>Excedente / Ingresos</div>
+                        </div>
+                    </div>
+
+                    {/* Resumen totales */}
+                    <div className="card">
+                        <div className="font-sora section-title" style={{color:'#374151'}}>📊 Resumen Mensual</div>
+                        {[
+                            ['Total Ingresos', fmt(totalIngresos), '#059669'],
+                            ['Gastos Fijos', fmt(totalFijos), '#dc2626'],
+                            ['Gastos Variables', fmt(totalVariables), '#ea580c'],
+                            ['Total Gastos', fmt(totalGastos), '#991b1b'],
+                        ].map(([l,v,c]) => (
+                            <div key={l} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'.5rem 0',borderBottom:'1px solid #f1f5f9'}}>
+                                <span style={{fontSize:'.85rem',color:'#6b7280'}}>{l}</span>
+                                <span style={{fontSize:'.9rem',fontWeight:700,color:c,fontFamily:'Sora,sans-serif'}}>{v}</span>
+                            </div>
+                        ))}
+                        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'.75rem 0 0'}}>
+                            <span style={{fontSize:'.9rem',fontWeight:700,color:'#374151'}}>Flujo Neto</span>
+                            <span style={{fontSize:'1.1rem',fontWeight:800,color:flujoCaja>=0?'#059669':'#dc2626',fontFamily:'Sora,sans-serif'}}>{fmt(flujoCaja)}</span>
+                        </div>
+                    </div>
+
+                    {/* Gráfico Pie */}
+                    {pieData.length > 0 && (
+                        <div className="card">
+                            <div className="font-sora section-title" style={{color:'#374151'}}>🍩 Distribución del Ingreso</div>
+                            <ResponsiveContainer width="100%" height={200}>
+                                <PieChart>
+                                    <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} innerRadius={40} paddingAngle={3}>
+                                        {pieData.map((e,i) => <Cell key={i} fill={e.color}/>)}
+                                    </Pie>
+                                    <Tooltip formatter={v=>fmt(v)}/>
+                                    <Legend formatter={v=><span style={{fontSize:'.75rem',color:'#374151'}}>{v}</span>}/>
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                    )}
+
+                    {/* Recomendaciones */}
+                    <div className="card" style={{background:'#f8fafc'}}>
+                        <div className="font-sora section-title" style={{color:'#374151'}}>💡 Recomendaciones</div>
+                        <ul style={{margin:0,paddingLeft:'1.2rem',display:'flex',flexDirection:'column',gap:'.5rem'}}>
+                            {capacidadAhorro < 10 && <li style={{fontSize:'.83rem',color:'#374151',lineHeight:1.5}}>Revisa gastos variables: son los más fáciles de reducir en el corto plazo.</li>}
+                            {ratioEndeudamiento > 60 && <li style={{fontSize:'.83rem',color:'#374151',lineHeight:1.5}}>Tu ratio de endeudamiento es alto. Considera consolidar deudas con tasas bajas.</li>}
+                            {capacidadAhorro >= 20 && <li style={{fontSize:'.83rem',color:'#374151',lineHeight:1.5}}>Excelente capacidad de ahorro. Considera invertir en CDTs o fondos de inversión.</li>}
+                            {patrimonioNeto > 0 && <li style={{fontSize:'.83rem',color:'#374151',lineHeight:1.5}}>Patrimonio neto positivo: tus activos superan tus deudas. ¡Buen indicador!</li>}
+                            {patrimonioNeto < 0 && <li style={{fontSize:'.83rem',color:'#374151',lineHeight:1.5}}>Patrimonio neto negativo: enfócate en reducir deudas antes de incrementar activos.</li>}
+                            <li style={{fontSize:'.83rem',color:'#374151',lineHeight:1.5}}>Apunta a un fondo de emergencia de al menos 3 meses de gastos: {fmt(totalGastos*3)}.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App/>);
+</script>
+<script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';</script>
+</body>
+</html>
