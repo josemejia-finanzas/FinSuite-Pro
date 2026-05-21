@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediMaster Pro v3.3 — FinSuite Pro</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Babel para procesar JSX en el navegador -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Estilos CrediMaster originales -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Estilos del banner de suite -->
+    <style>
+        .suite-topbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+            background: #0f172a;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex; align-items: center; gap: .75rem;
+            padding: .55rem 1.25rem;
+            height: 44px;
+        }
+        .suite-topbar a {
+            display: flex; align-items: center; gap: .5rem;
+            color: #94a3b8; text-decoration: none; font-size: .8rem; font-weight: 600;
+            padding: .3rem .7rem; border-radius: 8px;
+            transition: all .2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .suite-topbar a:hover { background: rgba(255,255,255,.07); color: #f1f5f9; }
+        .suite-topbar .sep { color: rgba(255,255,255,.2); font-size: .7rem; }
+        .suite-topbar .current { color: #60a5fa; font-size: .8rem; font-weight: 700; font-family: 'Inter', sans-serif; }
+        body { padding-top: 44px !important; }
+        /* Override sidebar top to account for topbar */
+        aside { top: 44px !important; height: calc(100vh - 44px) !important; }
+        main { padding-top: 0 !important; }
+    </style>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "lucide-react": "https://esm.sh/lucide-react@0.292.0",
+            "recharts": "https://esm.sh/recharts@2.12.0?deps=react@18.2.0,react-dom@18.2.0"
+        }
+    }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Barra de navegación de la suite -->
+    <div class="suite-topbar no-print">
+        <a href="../../index.html">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Volver al inicio
+        </a>
+        <span class="sep">›</span>
+        <span class="current">Reestructuración Hipotecaria</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:.4rem;">
+            <div style="background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.3rem .55rem;border-radius:7px;display:flex;align-items:center;gap:.4rem;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span style="color:white;font-size:.68rem;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:.05em;">FinSuite Pro</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module" src="scripts.js"></script>
+
+    <!-- Auth guard -->
+    <script>
+        const auth = sessionStorage.getItem('finsuite_auth');
+        if(!auth){ window.location.href = '../../index.html'; }
+    </script>
+</body>
+</html>
