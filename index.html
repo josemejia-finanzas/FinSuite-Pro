@@ -32,8 +32,6 @@
         .login-error{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:.75rem 1rem;color:#fca5a5;font-size:.85rem;margin-top:1rem;display:none;}
         .login-error.show{display:block;animation:shake .3s ease;}
         @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
-        .demo-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.6rem .4rem;cursor:pointer;transition:background .2s;text-align:center;}
-        .demo-btn:hover{background:rgba(59,130,246,.15);}
 
         /* DASHBOARD */
         body.dashboard-mode{background:#f8fafc;}
@@ -48,7 +46,7 @@
         .user-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;background:linear-gradient(135deg,#2563eb,#7c3aed);}
         .logout-btn{display:flex;align-items:center;gap:.5rem;padding:.5rem .85rem;border-radius:10px;border:1px solid #e2e8f0;background:#fff;color:#64748b;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;}
         .logout-btn:hover{background:#fee2e2;border-color:#fca5a5;color:#dc2626;}
-        .hero-section{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#312e81 100%);padding:4rem 1.5rem 5rem;position:relative;overflow:hidden;}
+        .hero-section{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#312e81 100%);padding:4rem 1.5rem 3.5rem;position:relative;overflow:hidden;}
         .hero-section::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 30% 60%,rgba(99,102,241,0.2) 0%,transparent 50%);pointer-events:none;}
         .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;}
         .stat-pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:.4rem 1rem;color:#e2e8f0;font-size:.78rem;font-weight:600;display:inline-flex;align-items:center;gap:.4rem;}
@@ -97,10 +95,6 @@
             <button id="loginBtn" class="login-btn" onclick="doLogin()">Iniciar Sesión</button>
         </div>
 
-        <div style="margin-top:1.75rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.08);">
-            <p style="color:#64748b;font-size:.75rem;text-align:center;margin-bottom:.85rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Acceso rápido</p>
-            <div id="demoGrid" style="display:grid;gap:.5rem;"></div>
-        </div>
     </div>
 </div>
 
@@ -150,7 +144,7 @@
         </div>
     </div>
 
-    <div style="max-width:1100px;margin:-2.5rem auto 0;padding:0 1.5rem 4rem;position:relative;">
+    <div style="max-width:1100px;margin:0 auto;padding:2.5rem 1.5rem 4rem;">
         <div style="margin-bottom:1.5rem;">
             <h2 class="font-sora" style="color:#0f172a;font-size:1.15rem;font-weight:800;margin:0 0 .25rem;">Módulos disponibles</h2>
             <p style="color:#64748b;font-size:.85rem;margin:0;">Selecciona el módulo que necesitas para comenzar tu análisis.</p>
@@ -228,12 +222,6 @@ function togglePass() {
     p.type = p.type === 'password' ? 'text' : 'password';
 }
 
-function fillCreds(u, p) {
-    document.getElementById('loginUser').value = u;
-    document.getElementById('loginPass').value = p;
-    document.getElementById('loginUser').focus();
-}
-
 function showDashboard(user) {
     document.getElementById('loginScreen').style.display  = 'none';
     document.getElementById('dashboardScreen').style.display = 'block';
@@ -281,19 +269,6 @@ function doLogin() {
 
 document.getElementById('loginPass').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
 document.getElementById('loginUser').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
-
-// Poblar tarjetas de acceso rápido desde el array USUARIOS
-(function () {
-    var grid = document.getElementById('demoGrid');
-    var list = USUARIOS.slice(0, 4);
-    grid.style.gridTemplateColumns = 'repeat(' + list.length + ', 1fr)';
-    grid.innerHTML = list.map(function (u) {
-        return '<button class="demo-btn" onclick="fillCreds(\'' + u.usuario + '\',\'' + u.password + '\')">'
-             + '<div style="color:#60a5fa;font-size:.72rem;font-weight:700;">' + u.usuario + '</div>'
-             + '<div style="color:#64748b;font-size:.65rem;">' + u.rol + '</div>'
-             + '</button>';
-    }).join('');
-})();
 
 // Reanudar sesión si ya había una guardada y el usuario sigue en la lista
 (function () {
