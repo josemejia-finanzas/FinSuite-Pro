@@ -6,6 +6,10 @@
     <title>FinSuite Pro — Suite de Asesoría Financiera</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+    <!-- Credenciales: edita usuarios.js para agregar o cambiar usuarios -->
+    <script src="usuarios.js"></script>
+
     <style>
         *{box-sizing:border-box;}
         body{font-family:'DM Sans','Inter',sans-serif;margin:0;background:#0f172a;}
@@ -28,7 +32,7 @@
         .login-error{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:.75rem 1rem;color:#fca5a5;font-size:.85rem;margin-top:1rem;display:none;}
         .login-error.show{display:block;animation:shake .3s ease;}
         @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
-        .demo-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.6rem .4rem;cursor:pointer;transition:background .2s;text-align:center;color:inherit;}
+        .demo-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.6rem .4rem;cursor:pointer;transition:background .2s;text-align:center;}
         .demo-btn:hover{background:rgba(59,130,246,.15);}
 
         /* DASHBOARD */
@@ -90,16 +94,12 @@
                 </button>
             </div>
             <div id="loginError" class="login-error">Usuario o contraseña incorrectos. Inténtalo de nuevo.</div>
-            <button id="loginBtn" class="login-btn" onclick="doLogin()" disabled>
-                <span id="loginBtnText">Cargando...</span>
-            </button>
+            <button id="loginBtn" class="login-btn" onclick="doLogin()">Iniciar Sesión</button>
         </div>
 
         <div style="margin-top:1.75rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.08);">
             <p style="color:#64748b;font-size:.75rem;text-align:center;margin-bottom:.85rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Acceso rápido</p>
-            <div id="demoGrid" style="display:grid;gap:.5rem;">
-                <p style="color:#475569;font-size:.75rem;text-align:center;">Cargando usuarios...</p>
-            </div>
+            <div id="demoGrid" style="display:grid;gap:.5rem;"></div>
         </div>
     </div>
 </div>
@@ -213,19 +213,18 @@
             <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
                 <span style="background:#f1f5f9;color:#64748b;font-size:.72rem;font-weight:700;padding:.3rem .7rem;border-radius:99px;">Cálculos UVR/Pesos</span>
                 <span style="background:#f1f5f9;color:#64748b;font-size:.72rem;font-weight:700;padding:.3rem .7rem;border-radius:99px;">Moneda COP</span>
-                <span style="background:#f1f5f9;color:#64748b;font-size:.72rem;font-weight:700;padding:.3rem .7rem;border-radius:99px;">Usuarios editables vía JSON</span>
+                <span style="background:#f1f5f9;color:#64748b;font-size:.72rem;font-weight:700;padding:.3rem .7rem;border-radius:99px;">Usuarios editables vía JS</span>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-// ─── Estado ───────────────────────────────────────────────────
-let USUARIOS = [];
+// USUARIOS está definido en usuarios.js (cargado antes de este script)
+// No hay fetch, no hay async: funciona en GitHub Pages y cualquier hosting estático.
 
-// ─── Funciones de UI ─────────────────────────────────────────
 function togglePass() {
-    const p = document.getElementById('loginPass');
+    var p = document.getElementById('loginPass');
     p.type = p.type === 'password' ? 'text' : 'password';
 }
 
@@ -236,14 +235,14 @@ function fillCreds(u, p) {
 }
 
 function showDashboard(user) {
-    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('loginScreen').style.display  = 'none';
     document.getElementById('dashboardScreen').style.display = 'block';
     document.body.classList.add('dashboard-mode');
     document.getElementById('userInitial').textContent = user.nombre.charAt(0).toUpperCase();
-    document.getElementById('userName').textContent = user.nombre;
-    document.getElementById('userRol').textContent = user.rol;
-    document.getElementById('userInfo').style.display = 'block';
-    const hw = document.getElementById('heroWelcome');
+    document.getElementById('userName').textContent    = user.nombre;
+    document.getElementById('userRol').textContent     = user.rol;
+    document.getElementById('userInfo').style.display  = 'block';
+    var hw = document.getElementById('heroWelcome');
     hw.textContent = 'Bienvenido, ' + user.nombre.split(' ')[0] + ' \uD83D\uDC4B';
     hw.style.opacity = '1';
 }
@@ -251,22 +250,21 @@ function showDashboard(user) {
 function doLogout() {
     sessionStorage.removeItem('finsuite_auth');
     document.getElementById('dashboardScreen').style.display = 'none';
-    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('loginScreen').style.display     = 'flex';
     document.body.classList.remove('dashboard-mode');
     document.getElementById('loginUser').value = '';
     document.getElementById('loginPass').value = '';
 }
 
 function doLogin() {
-    const u   = document.getElementById('loginUser').value.trim();
-    const p   = document.getElementById('loginPass').value;
-    const err = document.getElementById('loginError');
-    const btn = document.getElementById('loginBtn');
-    const txt = document.getElementById('loginBtnText');
+    var u   = document.getElementById('loginUser').value.trim();
+    var p   = document.getElementById('loginPass').value;
+    var err = document.getElementById('loginError');
+    var btn = document.getElementById('loginBtn');
 
     err.classList.remove('show');
     btn.disabled = true;
-    txt.innerHTML = '<div class="dot-loader"><span></span><span></span><span></span></div>';
+    btn.innerHTML = '<div class="dot-loader"><span></span><span></span><span></span></div>';
 
     setTimeout(function () {
         var found = USUARIOS.find(function (x) { return x.usuario === u && x.password === p; });
@@ -275,8 +273,8 @@ function doLogin() {
             showDashboard(found);
         } else {
             err.classList.add('show');
-            btn.disabled = false;
-            txt.textContent = 'Iniciar Sesión';
+            btn.disabled  = false;
+            btn.innerHTML = 'Iniciar Sesión';
         }
     }, 500);
 }
@@ -284,62 +282,31 @@ function doLogin() {
 document.getElementById('loginPass').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
 document.getElementById('loginUser').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
 
-// ─── Carga de usuarios desde JSON ────────────────────────────
-// Los usuarios se leen SIEMPRE desde usuarios.json.
-// Mientras carga, el botón permanece deshabilitado para evitar
-// que se intente autenticar con la lista vacía.
-fetch('./usuarios.json')
-    .then(function (r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-    })
-    .then(function (data) {
-        if (!Array.isArray(data) || data.length === 0) throw new Error('usuarios.json vacío o mal formado');
-        USUARIOS = data;
+// Poblar tarjetas de acceso rápido desde el array USUARIOS
+(function () {
+    var grid = document.getElementById('demoGrid');
+    var list = USUARIOS.slice(0, 4);
+    grid.style.gridTemplateColumns = 'repeat(' + list.length + ', 1fr)';
+    grid.innerHTML = list.map(function (u) {
+        return '<button class="demo-btn" onclick="fillCreds(\'' + u.usuario + '\',\'' + u.password + '\')">'
+             + '<div style="color:#60a5fa;font-size:.72rem;font-weight:700;">' + u.usuario + '</div>'
+             + '<div style="color:#64748b;font-size:.65rem;">' + u.rol + '</div>'
+             + '</button>';
+    }).join('');
+})();
 
-        // Habilitar botón de login
-        var btn = document.getElementById('loginBtn');
-        var txt = document.getElementById('loginBtnText');
-        btn.disabled = false;
-        txt.textContent = 'Iniciar Sesión';
-
-        // Poblar tarjetas de acceso rápido
-        var grid = document.getElementById('demoGrid');
-        var cols = Math.min(USUARIOS.length, 4);
-        grid.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
-        grid.innerHTML = USUARIOS.slice(0, 4).map(function (u) {
-            return '<button class="demo-btn" onclick="fillCreds(\'' + u.usuario + '\',\'' + u.password + '\')">'
-                 + '<div style="color:#60a5fa;font-size:.72rem;font-weight:700;">' + u.usuario + '</div>'
-                 + '<div style="color:#64748b;font-size:.65rem;">' + u.rol + '</div>'
-                 + '</button>';
-        }).join('');
-
-        // Reanudar sesión si ya había una guardada
-        var saved = sessionStorage.getItem('finsuite_auth');
-        if (saved) {
-            try {
-                var savedUser = JSON.parse(saved);
-                // Verificar que el usuario guardado sigue existiendo en el JSON
-                var stillValid = USUARIOS.find(function (x) { return x.usuario === savedUser.usuario && x.password === savedUser.password; });
-                if (stillValid) {
-                    showDashboard(stillValid);
-                } else {
-                    sessionStorage.removeItem('finsuite_auth');
-                }
-            } catch (e) {
-                sessionStorage.removeItem('finsuite_auth');
-            }
-        }
-    })
-    .catch(function (err) {
-        console.error('Error cargando usuarios.json:', err.message);
-        var btn = document.getElementById('loginBtn');
-        var txt = document.getElementById('loginBtnText');
-        var grid = document.getElementById('demoGrid');
-        btn.disabled = false;
-        txt.textContent = 'Iniciar Sesión';
-        grid.innerHTML = '<p style="color:#f87171;font-size:.75rem;text-align:center;grid-column:1/-1;">No se pudo leer usuarios.json.<br/>Verifica que el servidor esté activo.</p>';
-    });
+// Reanudar sesión si ya había una guardada y el usuario sigue en la lista
+(function () {
+    var saved = sessionStorage.getItem('finsuite_auth');
+    if (!saved) return;
+    try {
+        var s = JSON.parse(saved);
+        var still = USUARIOS.find(function (x) { return x.usuario === s.usuario && x.password === s.password; });
+        if (still) { showDashboard(still); } else { sessionStorage.removeItem('finsuite_auth'); }
+    } catch (e) {
+        sessionStorage.removeItem('finsuite_auth');
+    }
+})();
 </script>
 </body>
 </html>
