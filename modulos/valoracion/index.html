@@ -31,13 +31,13 @@
 </style></head>
 <body>
 <div class="bar">
-  <a href="../../index.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Inicio</a>
+  <a href="../../dashboard.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Mis Módulos</a>
   <span class="sep">&#8250;</span><span class="cur">Valoración de Proyectos</span>
   <span class="badge">FinSuite Pro</span>
 </div>
 <div id="root"></div>
 <script type="text/babel" data-type="module">
-import React,{useState,useMemo} from 'react';
+import React,{useState,useMemo,useEffect,useRef} from 'react';
 import {createRoot} from 'react-dom/client';
 import {BarChart,Bar,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,Cell,LineChart,Line,ReferenceLine} from 'recharts';
 
@@ -67,6 +67,44 @@ function MoneyInput({label,value,onChange,note,style={}}){
 
 // ── Generadores ───────────────────────────────────────────────────────────────
 
+
+function pdfClientBlock(doc,client,user){
+  const W=doc.internal.pageSize.getWidth();const M=14;
+  const y0=42;const h=30;
+  doc.setFillColor(248,250,252);doc.roundedRect(M,y0,W-M*2,h,3,3,'F');
+  doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.roundedRect(M,y0,W-M*2,h,3,3,'S');
+  // Label
+  doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(148,163,184);
+  doc.text('CLIENTE',M+5,y0+5.5);
+  // Name
+  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(15,23,42);
+  const nombre=client?.nombre||'Sin cliente';
+  doc.text(nombre,M+5,y0+12.5);
+  // Company / type
+  const sub=[];if(client?.empresa)sub.push(client.empresa);if(client?.tipo)sub.push(client.tipo);
+  if(sub.length){doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);doc.text(sub.join(' · '),M+5,y0+18.5);}
+  // ID
+  if(client?.tipoDoc&&client?.numeroDoc){
+    const lbl=client.tipoDoc==='Cédula de Ciudadanía'?'CC':client.tipoDoc==='NIT'?'NIT':client.tipoDoc;
+    doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(71,85,105);
+    doc.text(lbl+': '+client.numeroDoc,M+5,y0+25);
+  }
+  // Right column
+  const rx=W/2+2;let ry=y0+6;
+  const rItems=[];
+  if(client?.email)rItems.push('Email: '+client.email);
+  if(client?.celular||client?.telefono)rItems.push('Tel: '+(client.celular||client.telefono));
+  if(client?.ciudad)rItems.push('Ciudad: '+client.ciudad);
+  if(client?.direccion)rItems.push('Dir: '+client.direccion);
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);
+  rItems.forEach(item=>{
+    if(ry<y0+h-4){doc.text(item,rx,ry);ry+=5.2;}
+  });
+  // Asesor + date
+  doc.setFont('helvetica','italic');doc.setFontSize(7);doc.setTextColor(148,163,184);
+  doc.text('Asesor: '+(user?.nombre||'No especificado'),W-M,y0+h-5,{align:'right'});
+  return y0+h+8;
+}
 function generarPDF(d){
   const {jsPDF}=window.jspdf;const doc=new jsPDF('p','mm','a4');const M=14;const W=doc.internal.pageSize.getWidth();const H=doc.internal.pageSize.getHeight();
 
@@ -88,7 +126,9 @@ function generarPDF(d){
   doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(165,243,252);
   doc.text('Valoración de Proyectos e Inversiones',M,27);
   doc.text('Generado: '+new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}),W-M,27,{align:'right'});
-  let y=48;
+  const _cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+  const _usr=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
+  let y=pdfClientBlock(doc,_cl,_usr);
 
   // Veredicto
   const ok=d.npv>0;
@@ -153,15 +193,24 @@ function generarPDF(d){
     didDrawPage:()=>ftrs(),
   });
 
-  ftrs();doc.save('valoracion-proyecto.pdf');
+  ftrs();const _fpdf=(_cl?.nombre?_cl.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'')+'valoracion-proyecto';
+doc.save(_fpdf+'.pdf');
 }
 
-function generarExcel(d){
+function generarExcel(d){const _cl_xls=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');const _usr_xls=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
   const XLSX=window.XLSX;const wb=XLSX.utils.book_new();const n=v=>Number(v)||0;
 
   const wsR=XLSX.utils.aoa_to_sheet([
     ['VALORACIÓN DE PROYECTO — FinSuite Pro v1.2'],
     ['Fecha',new Date().toLocaleDateString('es-CO')],[''],
+    ['DATOS DEL CLIENTE',''],
+    ['Nombre',_cl_xls?.nombre||'No especificado'],
+    [(_cl_xls?.tipoDoc||'Documento'),_cl_xls?.numeroDoc||'—'],
+    ['Empresa',_cl_xls?.empresa||'—'],
+    ['Email',_cl_xls?.email||'—'],
+    ['Teléfono',_cl_xls?.celular||_cl_xls?.telefono||'—'],
+    ['Ciudad',_cl_xls?.ciudad||'—'],
+    ['Asesor',_usr_xls?.nombre||'—'],[''],
     ['PARÁMETROS DE ENTRADA',''],
     ['Inversión inicial (COP)',n(d.inv)],['Tasa de descuento (% EA)',d.tasa],
     ['Horizonte de análisis (años)',d.nY],[''],
@@ -191,7 +240,8 @@ function generarExcel(d){
   wsS['!cols']=[{wch:25},{wch:20}];
   XLSX.utils.book_append_sheet(wb,wsS,'Sensibilidad_VPN');
 
-  XLSX.writeFile(wb,'valoracion-proyecto.xlsx');
+  const _fn_xls=(_cl_xls?.nombre?_cl_xls.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'')+'valoracion-proyecto';
+XLSX.writeFile(wb,_fn_xls+'.xlsx');
 }
 
 // ── App ────────────────────────────────────────────────────────────────────────
@@ -203,6 +253,28 @@ function App(){
   const [nY,setNY]=useState(5);
   const [flujos,setFlujos]=useState([30000000,45000000,50000000,55000000,60000000,0,0,0,0,0]);
   const [gen,setGen]=useState('');
+  const [client,setClient]=useState(null);
+  const [saved,setSaved]=useState(false);
+  const ready=useRef(false);
+
+  useEffect(()=>{
+    const cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+    setClient(cl);
+    if(cl){const raw=localStorage.getItem('finsuite_'+cl.id+'_valoracion');if(raw){try{const d=JSON.parse(raw);setInv(d.inv||100000000);setTasa(d.tasa||12);setNY(d.nY||5);setFlujos(d.flujos||[30000000,45000000,50000000,55000000,60000000,0,0,0,0,0]);}catch(e){}}}
+    setTimeout(()=>{ready.current=true;},100);
+  },[]);
+
+  useEffect(()=>{
+    if(!ready.current) return;
+    const cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+    if(!cl) return;
+    const t=setTimeout(()=>{
+      localStorage.setItem('finsuite_'+cl.id+'_valoracion',JSON.stringify({inv,tasa,nY,flujos}));
+      try{const cls=JSON.parse(localStorage.getItem('finsuite_clients')||'[]');const idx=cls.findIndex(x=>x.id===cl.id);if(idx>=0){cls[idx].updatedAt=new Date().toISOString();localStorage.setItem('finsuite_clients',JSON.stringify(cls));}}catch(e){}
+      setSaved(true);setTimeout(()=>setSaved(false),2000);
+    },600);
+    return ()=>clearTimeout(t);
+  },[inv,tasa,nY,flujos]);
 
   const setF=(i,v)=>setFlujos(f=>f.map((x,j)=>j===i?v:x));
   const flows=flujos.slice(0,nY);const r=tasa/100;
@@ -236,9 +308,10 @@ function App(){
       </div>
       <div style={{flex:1,minWidth:0}}>
         <h1 className="fs" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0}}>Valoración de Proyectos e Inversiones</h1>
-        <p style={{color:'#64748b',fontSize:'.84rem',margin:0}}>Calcula VPN, TIR y payback para evaluar la viabilidad económica de tu proyecto.</p>
+        <p style={{color:'#64748b',fontSize:'.84rem',margin:0}}>{client?<><strong style={{color:'#0891b2'}}>{client.nombre}</strong> — Valoración de proyecto</>:'Calcula VPN, TIR y payback de inversiones.'}</p>
       </div>
-      <div style={{display:'flex',gap:'.5rem',flexShrink:0}}>
+      <div style={{display:'flex',alignItems:'center',gap:'.5rem',flexShrink:0}}>
+          {saved&&<span style={{fontSize:'.75rem',color:'#059669',display:'flex',alignItems:'center',gap:'.3rem'}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Guardado</span>}
         <button className="rpt-btn" style={{background:'linear-gradient(135deg,#dc2626,#b91c1c)',color:'#fff'}} onClick={dPDF} disabled={!!gen}>
           {gen==='pdf'?'Generando...':<><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Informe PDF</>}
         </button>
@@ -369,5 +442,5 @@ function App(){
 }
 createRoot(document.getElementById('root')).render(<App/>);
 </script>
-<script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';</script>
+<script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';if(!sessionStorage.getItem('finsuite_current_client'))window.location.href='../../clientes.html';</script>
 </body></html>
