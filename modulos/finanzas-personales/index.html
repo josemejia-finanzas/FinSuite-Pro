@@ -1,283 +1,355 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Análisis Financiero Personal — FinSuite Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-    <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
-    <script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","recharts":"https://esm.sh/recharts@2.12.0?deps=react@18.2.0","lucide-react":"https://esm.sh/lucide-react@0.292.0"}}</script>
-    <style>
-        body{font-family:'DM Sans',sans-serif;background:#f8fafc;margin:0;}
-        .font-sora{font-family:'Sora',sans-serif;}
-        ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
-        .suite-bar{background:#0f172a;height:44px;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:50;}
-        .suite-bar a{color:#94a3b8;text-decoration:none;font-size:.8rem;font-weight:600;padding:.3rem .65rem;border-radius:8px;display:flex;align-items:center;gap:.45rem;transition:all .2s;}
-        .suite-bar a:hover{background:rgba(255,255,255,.07);color:#f1f5f9;}
-        .suite-bar .sep{color:rgba(255,255,255,.2);font-size:.8rem;}
-        .suite-bar .cur{color:#34d399;font-size:.8rem;font-weight:700;}
-        .num-input{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:.65rem .85rem;font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;background:#fff;}
-        .num-input:focus{border-color:#059669;box-shadow:0 0 0 3px rgba(5,150,105,.1);}
-        .card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:1.5rem;}
-        .section-title{font-family:'Sora',sans-serif;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;}
-        .semaforo-verde{background:#dcfce7;color:#15803d;border:1.5px solid #86efac;}
-        .semaforo-amarillo{background:#fef9c3;color:#854d0e;border:1.5px solid #fde047;}
-        .semaforo-rojo{background:#fee2e2;color:#991b1b;border:1.5px solid #fca5a5;}
-        .stat-box{border-radius:12px;padding:1.1rem 1.25rem;}
-        .add-btn{display:flex;align-items:center;gap:.4rem;padding:.5rem .9rem;border-radius:8px;border:1.5px dashed #d1d5db;background:#f9fafb;color:#6b7280;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;justify-content:center;transition:all .2s;}
-        .add-btn:hover{border-color:#059669;color:#059669;background:#f0fdf4;}
-        .del-btn{background:#fee2e2;border:none;border-radius:6px;padding:.3rem .5rem;cursor:pointer;color:#dc2626;display:flex;align-items:center;transition:all .2s;}
-        .del-btn:hover{background:#fca5a5;}
-    </style>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Análisis Financiero Personal — FinSuite Pro</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
+<script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","recharts":"https://esm.sh/recharts@2.12.0?deps=react@18.2.0"}}</script>
+<style>
+*{box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:#f1f5f9;margin:0;}
+.fs{font-family:'Sora',sans-serif;}
+.bar{background:#0f172a;height:46px;display:flex;align-items:center;padding:0 1.5rem;gap:.5rem;position:sticky;top:0;z-index:100;}
+.bar a{color:#94a3b8;text-decoration:none;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:.4rem;padding:.3rem .65rem;border-radius:8px;transition:.15s;}
+.bar a:hover{background:rgba(255,255,255,.08);color:#f1f5f9;}
+.bar .sep{color:#334155;}.bar .cur{color:#34d399;font-size:.8rem;font-weight:700;}
+.badge{background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.25rem .7rem;border-radius:8px;color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.05em;margin-left:auto;}
+.card{background:#fff;border-radius:18px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.ni{border:1.5px solid #e2e8f0;border-radius:9px;padding:.55rem .75rem;font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none;transition:.15s;background:#fff;width:100%;}
+.ni:focus{border-color:#059669;box-shadow:0 0 0 3px rgba(5,150,105,.1);}
+.section-hdr{display:flex;align-items:center;gap:.6rem;padding:1.1rem 1.4rem;border-bottom:1px solid #f1f5f9;}
+.section-body{padding:1.1rem 1.4rem;}
+.col-hdr{font-size:.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;}
+.row-wrap{display:flex;gap:.5rem;align-items:center;margin-bottom:.45rem;}
+.del{background:#fff;border:1.5px solid #fecaca;border-radius:8px;padding:.38rem .5rem;cursor:pointer;color:#f87171;display:flex;align-items:center;flex-shrink:0;transition:.15s;}
+.del:hover{background:#fef2f2;border-color:#f87171;color:#dc2626;}
+.add-row{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;padding:.5rem;border:1.5px dashed #d1d5db;border-radius:9px;background:transparent;color:#94a3b8;font-size:.8rem;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
+.add-row:hover{border-color:#059669;color:#059669;background:#f0fdf4;}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:.75rem 0 0;border-top:1.5px solid #f1f5f9;margin-top:.6rem;}
+.kpi{border-radius:14px;padding:1.1rem 1.25rem;}
+.rpt-btn{display:flex;align-items:center;gap:.45rem;padding:.55rem 1.1rem;border-radius:10px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
+.rpt-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
+.rpt-btn:disabled{opacity:.6;cursor:not-allowed;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+</style>
 </head>
 <body>
-<div class="suite-bar">
-    <a href="../../index.html">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        Inicio
-    </a>
-    <span class="sep">›</span>
-    <span class="cur">Análisis Financiero Personal</span>
-    <div style="margin-left:auto;background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.28rem .65rem;border-radius:7px;">
-        <span style="color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.05em;">FinSuite Pro</span>
-    </div>
+<div class="bar">
+  <a href="../../index.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Inicio</a>
+  <span class="sep">&#8250;</span><span class="cur">Análisis Financiero Personal</span>
+  <span class="badge">FinSuite Pro</span>
 </div>
 <div id="root"></div>
 <script type="text/babel" data-type="module">
-import React, { useState, useMemo } from 'react';
-import { createRoot } from 'react-dom/client';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import React,{useState,useMemo} from 'react';
+import {createRoot} from 'react-dom/client';
+import {PieChart,Pie,Cell,Tooltip,ResponsiveContainer,Legend,BarChart,Bar,XAxis,YAxis,CartesianGrid} from 'recharts';
 
-const fmt = v => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);
-const fmtN = (v,d=1) => new Intl.NumberFormat('es-CO',{minimumFractionDigits:0,maximumFractionDigits:d}).format(v||0);
+const COP=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);
+const PCT=(v,d=1)=>new Intl.NumberFormat('es-CO',{minimumFractionDigits:0,maximumFractionDigits:d}).format(v||0);
 
-function NumInput({label, value, onChange, note}){
-    const [raw, setRaw] = useState(value===0?'':String(value));
-    const handle = e => {
-        const str = e.target.value.replace(/[^\d]/g,'');
-        setRaw(str);
-        onChange(str===''?0:parseInt(str,10));
-    };
-    const display = raw===''?'': new Intl.NumberFormat('es-CO').format(parseInt(raw,10)||0);
-    return (
-        <div>
-            <label style={{fontSize:'.8rem',fontWeight:600,color:'#374151',display:'block',marginBottom:'.3rem'}}>{label}</label>
-            <input className="num-input" value={display} onChange={handle} placeholder="0"/>
-            {note && <p style={{fontSize:'.72rem',color:'#9ca3af',marginTop:'.25rem'}}>{note}</p>}
-        </div>
-    );
+function MoneyInput({value,onChange,style={}}){
+  const [f,setF]=useState(false);const [r,setR]=useState('');
+  return <input className="ni" style={{textAlign:'right',...style}}
+    value={f?r:(value===0?'':new Intl.NumberFormat('es-CO').format(value))}
+    onChange={e=>{const d=e.target.value.replace(/[^\d]/g,'');setR(d);onChange(d===''?0:parseInt(d,10));}}
+    onFocus={()=>{setF(true);setR(value===0?'':String(value));}} onBlur={()=>setF(false)}
+    placeholder="0" inputMode="numeric"/>;
+}
+function TextInput({value,onChange}){
+  return <input className="ni" style={{flex:1,minWidth:0}} value={value} onChange={e=>onChange(e.target.value)} placeholder="Concepto..."/>;
 }
 
+function SectionCard({title,color,bg,icon,rows,onAdd,onDel,onNom,onVal,total_label}){
+  const total=rows.reduce((a,b)=>a+b.valor,0);
+  return <div className="card" style={{marginBottom:'1rem'}}>
+    <div className="section-hdr">
+      <div style={{width:34,height:34,borderRadius:10,background:bg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{icon}</div>
+      <div className="fs" style={{fontSize:'.85rem',fontWeight:700,color:'#0f172a'}}>{title}</div>
+    </div>
+    <div className="section-body">
+      <div style={{display:'flex',gap:'.5rem',marginBottom:'.4rem'}}>
+        <span className="col-hdr" style={{flex:1}}>Concepto</span>
+        <span className="col-hdr" style={{width:130,textAlign:'right'}}>Monto mensual</span>
+        <span style={{width:34}}></span>
+      </div>
+      {rows.map(r=><div key={r.id} className="row-wrap">
+        <TextInput value={r.nombre} onChange={v=>onNom(r.id,v)}/>
+        <MoneyInput value={r.valor} onChange={v=>onVal(r.id,v)} style={{width:130}}/>
+        <button className="del" onClick={()=>onDel(r.id)}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+      </div>)}
+      <button className="add-row" onClick={onAdd}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Agregar fila</button>
+      <div className="total-row">
+        <span style={{fontSize:'.82rem',fontWeight:600,color:'#64748b'}}>{total_label}</span>
+        <span className="fs" style={{fontSize:'1.05rem',fontWeight:800,color}}>{COP(total)}</span>
+      </div>
+    </div>
+  </div>;
+}
+
+// ── Generadores de Informe ─────────────────────────────────────────────────────
+
+function pdfHeader(doc,titulo){
+  const W=doc.internal.pageSize.getWidth();
+  doc.setFillColor(15,23,42);doc.rect(0,0,W,36,'F');
+  doc.setFillColor(5,150,105);doc.rect(0,36,W,3,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(241,245,249);
+  doc.text('FinSuite Pro',14,16);
+  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(148,163,184);
+  doc.text(titulo,14,27);
+  doc.text('Generado: '+new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}),W-14,27,{align:'right'});
+}
+function pdfFooters(doc){
+  const pg=doc.getNumberOfPages();const W=doc.internal.pageSize.getWidth();const H=doc.internal.pageSize.getHeight();
+  for(let i=1;i<=pg;i++){
+    doc.setPage(i);
+    doc.setFillColor(248,250,252);doc.rect(0,H-10,W,10,'F');
+    doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.line(0,H-10,W,H-10);
+    doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(148,163,184);
+    doc.text('FinSuite Pro v1.2 — Suite de Asesoría Financiera',14,H-3.5);
+    doc.text('Página '+i+' de '+pg,W-14,H-3.5,{align:'right'});
+  }
+}
+function pdfSection(doc,title,y,rgb){
+  if(y>doc.internal.pageSize.getHeight()-50){doc.addPage();y=20;}
+  doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(...rgb);
+  doc.text(title,14,y);
+  doc.setDrawColor(...rgb);doc.setLineWidth(.3);doc.line(14,y+1.5,doc.internal.pageSize.getWidth()-14,y+1.5);
+  return y+9;
+}
+
+function generarPDF(d){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF('p','mm','a4');
+  const W=doc.internal.pageSize.getWidth();const M=14;
+  const tb=(sy,head,body,hc,altFill)=>doc.autoTable({
+    startY:sy,head,body,theme:'grid',margin:{left:M,right:M},
+    headStyles:{fillColor:hc,textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
+    bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
+    alternateRowStyles:{fillColor:altFill||[248,250,252]},
+    columnStyles:{1:{halign:'right'}},
+    didDrawPage:()=>pdfFooters(doc),
+  });
+
+  pdfHeader(doc,'Análisis Financiero Personal');
+  let y=48;
+
+  // Semáforo
+  const sc=d.sem.level===3?[22,163,74]:d.sem.level===2?[161,98,7]:[185,28,28];
+  const sb=d.sem.level===3?[220,252,231]:d.sem.level===2?[254,249,195]:[254,226,226];
+  doc.setFillColor(...sb);doc.roundedRect(M,y,W-M*2,20,3,3,'F');
+  doc.setDrawColor(...sc);doc.setLineWidth(.4);doc.roundedRect(M,y,W-M*2,20,3,3,'S');
+  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(...sc);
+  doc.text('Salud Financiera: '+d.sem.label.toUpperCase(),M+5,y+8);
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);
+  doc.text(doc.splitTextToSize(d.sem.msg,W-M*2-10),M+5,y+15);
+  y+=28;
+
+  // KPIs 2x2
+  const kpis=[
+    {l:'Flujo de Caja Mensual',v:COP(d.flujo),ok:d.flujo>=0},
+    {l:'Patrimonio Neto',v:COP(d.patrim),ok:d.patrim>=0},
+    {l:'Ratio de Endeudamiento',v:PCT(d.rd)+'%',ok:d.rd<50},
+    {l:'Capacidad de Ahorro',v:PCT(d.ca)+'%',ok:d.ca>=10},
+  ];
+  const kW=(W-M*2-5)/2;
+  kpis.forEach((k,i)=>{
+    const kx=M+(i%2)*(kW+5);const ky=y+Math.floor(i/2)*23;
+    doc.setFillColor(k.ok?240:255,k.ok?253:241,k.ok?244:242);
+    doc.roundedRect(kx,ky,kW,19,2,2,'F');
+    doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(100,116,139);
+    doc.text(k.l.toUpperCase(),kx+5,ky+6.5);
+    doc.setFont('helvetica','bold');doc.setFontSize(12);
+    doc.setTextColor(k.ok?21:153,k.ok?128:27,k.ok?61:27);
+    doc.text(k.v,kx+5,ky+15);
+  });
+  y+=54;
+
+  y=pdfSection(doc,'INGRESOS MENSUALES',y,[5,150,105]);
+  tb(y,[['Concepto','Monto COP']],[...d.ing.map(r=>[r.nombre,COP(r.valor)]),['TOTAL INGRESOS',COP(d.tI)]]  ,[5,150,105],[240,253,244]);
+  y=doc.lastAutoTable.finalY+10;
+
+  y=pdfSection(doc,'GASTOS FIJOS',y,[220,38,38]);
+  tb(y,[['Concepto','Monto COP']],[...d.fij.map(r=>[r.nombre,COP(r.valor)]),['TOTAL FIJOS',COP(d.tF)]]  ,[220,38,38],[255,241,242]);
+  y=doc.lastAutoTable.finalY+10;
+
+  y=pdfSection(doc,'GASTOS VARIABLES',y,[234,88,12]);
+  tb(y,[['Concepto','Monto COP']],[...d.var_.map(r=>[r.nombre,COP(r.valor)]),['TOTAL VARIABLES',COP(d.tV)]]  ,[234,88,12],[255,247,237]);
+  y=doc.lastAutoTable.finalY+10;
+
+  y=pdfSection(doc,'BALANCE PATRIMONIAL',y,[8,145,178]);
+  const maxLen=Math.max(d.act.length,d.pas.length);
+  const balBody=Array.from({length:maxLen},(_,i)=>[d.act[i]?.nombre||'',d.act[i]?COP(d.act[i].valor):'',d.pas[i]?.nombre||'',d.pas[i]?COP(d.pas[i].valor):'']);
+  balBody.push(['TOTAL ACTIVOS',COP(d.tA),'TOTAL PASIVOS',COP(d.tP)]);
+  balBody.push(['PATRIMONIO NETO',COP(d.patrim),'','']);
+  doc.autoTable({
+    startY:y,head:[['Activo','Valor COP','Pasivo','Valor COP']],body:balBody,
+    theme:'grid',margin:{left:M,right:M},
+    headStyles:{fillColor:[8,145,178],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
+    bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
+    alternateRowStyles:{fillColor:[236,254,255]},
+    columnStyles:{1:{halign:'right'},3:{halign:'right'}},
+    didDrawPage:()=>pdfFooters(doc),
+  });
+  y=doc.lastAutoTable.finalY+10;
+
+  if(d.rec.length){
+    y=pdfSection(doc,'RECOMENDACIONES',y,[37,99,235]);
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(30,41,59);
+    d.rec.forEach((r,i)=>{
+      if(y>doc.internal.pageSize.getHeight()-25){doc.addPage();y=20;}
+      const lines=doc.splitTextToSize((i+1)+'. '+r,W-M*2-6);
+      doc.text(lines,M+4,y);y+=lines.length*5.5+3;
+    });
+  }
+
+  pdfFooters(doc);
+  doc.save('analisis-financiero-personal.pdf');
+}
+
+function generarExcel(d){
+  const XLSX=window.XLSX;const wb=XLSX.utils.book_new();
+  const n=v=>Number(v)||0;
+  const mk=(rows,hdr)=>{
+    const ws=XLSX.utils.aoa_to_sheet([[hdr,'Monto (COP)'],...rows.map(r=>[r.nombre,n(r.valor)]),['TOTAL',rows.reduce((a,b)=>a+b.valor,0)]]);
+    ws['!cols']=[{wch:40},{wch:20}];return ws;
+  };
+  const wsRes=XLSX.utils.aoa_to_sheet([
+    ['ANÁLISIS FINANCIERO PERSONAL — FinSuite Pro v1.2'],
+    ['Fecha de generación',new Date().toLocaleDateString('es-CO')],
+    [''],['INDICADORES CLAVE',''],
+    ['Flujo de Caja Mensual',n(d.flujo)],['Patrimonio Neto',n(d.patrim)],
+    ['Total Ingresos',n(d.tI)],['Total Gastos Fijos',n(d.tF)],['Total Gastos Variables',n(d.tV)],
+    ['Total Activos',n(d.tA)],['Total Pasivos',n(d.tP)],
+    ['Ratio Endeudamiento (%)',Math.round(d.rd*10)/10],['Capacidad de Ahorro (%)',Math.round(d.ca*10)/10],
+    [''],['DIAGNÓSTICO',d.sem.label],['Observación',d.sem.msg],
+  ]);
+  wsRes['!cols']=[{wch:35},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,wsRes,'Resumen');
+  XLSX.utils.book_append_sheet(wb,mk(d.ing,'Concepto'),'Ingresos');
+  XLSX.utils.book_append_sheet(wb,mk(d.fij,'Concepto'),'Gastos_Fijos');
+  XLSX.utils.book_append_sheet(wb,mk(d.var_,'Concepto'),'Gastos_Variables');
+  const apData=[['Activo','Valor COP','Pasivo','Valor COP']];
+  for(let i=0;i<Math.max(d.act.length,d.pas.length);i++) apData.push([d.act[i]?.nombre||'',n(d.act[i]?.valor),d.pas[i]?.nombre||'',n(d.pas[i]?.valor)]);
+  apData.push(['Total Activos',n(d.tA),'Total Pasivos',n(d.tP)],['Patrimonio Neto',n(d.patrim),'','']);
+  const wsAP=XLSX.utils.aoa_to_sheet(apData);wsAP['!cols']=[{wch:35},{wch:20},{wch:35},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,wsAP,'Activos_Pasivos');
+  XLSX.writeFile(wb,'analisis-financiero-personal.xlsx');
+}
+
+// ── App ───────────────────────────────────────────────────────────────────────
+let uid=10;const nid=()=>++uid;
 function App(){
-    // Ingresos
-    const [ingresos, setIngresos] = useState([
-        {id:1, nombre:'Salario neto', valor:4500000},
-        {id:2, nombre:'Ingresos extra / freelance', valor:800000},
-    ]);
-    // Gastos fijos
-    const [fijos, setFijos] = useState([
-        {id:1, nombre:'Arriendo / hipoteca', valor:1200000},
-        {id:2, nombre:'Servicios públicos', valor:250000},
-        {id:3, nombre:'Internet y teléfono', valor:120000},
-        {id:4, nombre:'Seguro de salud', valor:180000},
-    ]);
-    // Gastos variables
-    const [variables, setVariables] = useState([
-        {id:1, nombre:'Alimentación', valor:600000},
-        {id:2, nombre:'Transporte', valor:200000},
-        {id:3, nombre:'Entretenimiento', valor:150000},
-        {id:4, nombre:'Ropa y personal', valor:100000},
-    ]);
-    // Activos
-    const [activos, setActivos] = useState([
-        {id:1, nombre:'Cuenta bancaria', valor:8000000},
-        {id:2, nombre:'Vehículo', valor:25000000},
-    ]);
-    // Pasivos
-    const [pasivos, setPasivos] = useState([
-        {id:1, nombre:'Tarjeta de crédito', valor:3500000},
-        {id:2, nombre:'Crédito de consumo', valor:8000000},
-    ]);
+  const [ing,setIng]=useState([{id:1,nombre:'Salario neto',valor:4500000},{id:2,nombre:'Ingresos extra / freelance',valor:800000}]);
+  const [fij,setFij]=useState([{id:3,nombre:'Arriendo / cuota hipotecaria',valor:1200000},{id:4,nombre:'Servicios públicos',valor:250000},{id:5,nombre:'Internet y telefonía',valor:120000},{id:6,nombre:'Seguro de salud',valor:180000}]);
+  const [var_,setVar]=useState([{id:7,nombre:'Alimentación y mercado',valor:600000},{id:8,nombre:'Transporte',valor:200000},{id:9,nombre:'Entretenimiento',valor:150000},{id:10,nombre:'Ropa y cuidado personal',valor:100000}]);
+  const [act,setAct]=useState([{id:11,nombre:'Cuenta de ahorros / CDTs',valor:8000000},{id:12,nombre:'Vehículo',valor:25000000}]);
+  const [pas,setPas]=useState([{id:13,nombre:'Tarjeta de crédito',valor:3500000},{id:14,nombre:'Crédito de consumo',valor:8000000}]);
+  const [gen,setGen]=useState('');
 
-    const nextId = arr => Math.max(0,...arr.map(x=>x.id))+1;
+  const mkA=(s,n)=>()=>s(a=>[...a,{id:nid(),nombre:n,valor:0}]);
+  const mkD=s=>id=>s(a=>a.filter(x=>x.id!==id));
+  const mkN=s=>(id,v)=>s(a=>a.map(x=>x.id===id?{...x,nombre:v}:x));
+  const mkV=s=>(id,v)=>s(a=>a.map(x=>x.id===id?{...x,valor:v}:x));
 
-    const addRow = (set, nombre='Nuevo ítem') => set(arr => [...arr, {id:nextId(arr), nombre, valor:0}]);
-    const delRow = (set, id) => set(arr => arr.filter(x=>x.id!==id));
-    const updNombre = (set, id, val) => set(arr => arr.map(x=>x.id===id?{...x,nombre:val}:x));
-    const updValor  = (set, id, val) => set(arr => arr.map(x=>x.id===id?{...x,valor:val}:x));
+  const sum=a=>a.reduce((s,x)=>s+x.valor,0);
+  const tI=sum(ing),tF=sum(fij),tV=sum(var_),tG=tF+tV,tA=sum(act),tP=sum(pas);
+  const flujo=tI-tG,patrim=tA-tP,rd=tI>0?(tG/tI)*100:0,ca=tI>0?(flujo/tI)*100:0;
 
-    const sum = arr => arr.reduce((a,b)=>a+b.valor,0);
+  const sem=useMemo(()=>{
+    if(rd<50&&ca>=20) return{level:3,label:'Excelente',color:'#15803d',bg:'#dcfce7',border:'#86efac',msg:'Tu flujo de caja es sólido. Considera diversificar inversiones para maximizar tu patrimonio.'};
+    if(rd<70) return{level:2,label:'Moderada',color:'#92400e',bg:'#fef9c3',border:'#fde047',msg:'Tus gastos superan el 50% del ingreso. Revisa gastos variables y compromisos fijos.'};
+    return{level:1,label:'En riesgo',color:'#991b1b',bg:'#fee2e2',border:'#fca5a5',msg:'Tus gastos igualan o superan tus ingresos. Toma acción para evitar endeudamiento.'};
+  },[rd,ca]);
 
-    const totalIngresos  = sum(ingresos);
-    const totalFijos     = sum(fijos);
-    const totalVariables = sum(variables);
-    const totalGastos    = totalFijos + totalVariables;
-    const totalActivos   = sum(activos);
-    const totalPasivos   = sum(pasivos);
+  const rec=[];
+  if(ca<10) rec.push('Revisa gastos variables: son los más fáciles de recortar sin afectar calidad de vida.');
+  if(rd>60) rec.push('Ratio de endeudamiento alto. Evalúa consolidar deudas a una tasa menor.');
+  if(ca>=20) rec.push('Gran capacidad de ahorro. Considera CDTs, fondos de inversión o ETFs.');
+  if(patrim>0) rec.push('Patrimonio neto positivo: activos superan pasivos. ¡Mantén esa tendencia!');
+  if(patrim<0) rec.push('Patrimonio neto negativo. Prioriza reducir deudas de alto costo.');
+  if(tG>0) rec.push('Fondo de emergencia recomendado (3 meses): '+COP(tG*3)+'.');
 
-    const flujoCaja      = totalIngresos - totalGastos;
-    const patrimonioNeto = totalActivos  - totalPasivos;
-    const ratioEndeudamiento = totalIngresos > 0 ? (totalGastos / totalIngresos) * 100 : 0;
-    const capacidadAhorro    = totalIngresos > 0 ? (flujoCaja / totalIngresos) * 100 : 0;
+  const pieData=[{name:'G.Fijos',value:tF,color:'#ef4444'},{name:'G.Variables',value:tV,color:'#f97316'},{name:'Ahorro',value:Math.max(0,flujo),color:'#22c55e'}].filter(x=>x.value>0);
+  const barData=[{name:'Ingresos',val:tI,fill:'#22c55e'},{name:'G.Fijos',val:tF,fill:'#ef4444'},{name:'G.Var.',val:tV,fill:'#f97316'},{name:'Flujo',val:Math.abs(flujo),fill:flujo>=0?'#2563eb':'#dc2626'}];
 
-    const semaforo = useMemo(() => {
-        if(ratioEndeudamiento < 50 && capacidadAhorro >= 20) return {cls:'semaforo-verde', label:'🟢 Salud Financiera EXCELENTE', msg:'Tu flujo de caja es positivo y tienes una sólida capacidad de ahorro. Considera invertir tu excedente.'};
-        if(ratioEndeudamiento < 70) return {cls:'semaforo-amarillo', label:'🟡 Salud Financiera MODERADA', msg:'Tus gastos representan más del 50% de tus ingresos. Revisa gastos variables y busca reducir compromisos fijos.'};
-        return {cls:'semaforo-rojo', label:'🔴 Salud Financiera EN RIESGO', msg:'Tus gastos superan o se acercan a tus ingresos. Es urgente reducir gastos o aumentar ingresos para evitar endeudamiento.'};
-    }, [ratioEndeudamiento, capacidadAhorro]);
+  const dPDF=()=>{setGen('pdf');setTimeout(()=>{generarPDF({ing,fij,var_,act,pas,tI,tF,tV,tA,tP,flujo,patrim,rd,ca,sem,rec});setGen('');},50);};
+  const dXLS=()=>generarExcel({ing,fij,var_,act,pas,tI,tF,tV,tA,tP,flujo,patrim,rd,ca,sem,rec});
 
-    const pieData = [
-        {name:'Gastos Fijos', value:totalFijos, color:'#ef4444'},
-        {name:'Gastos Variables', value:totalVariables, color:'#f97316'},
-        {name:'Ahorro/Excedente', value:Math.max(0,flujoCaja), color:'#22c55e'},
-    ].filter(x=>x.value>0);
+  const icon=(path)=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" dangerouslySetInnerHTML={{__html:path}}/>;
 
-    const Section = ({title, color, rows, set, addLabel}) => (
-        <div className="card" style={{marginBottom:'1rem'}}>
-            <div className="section-title" style={{color}}>{title}</div>
-            <div style={{display:'flex',flexDirection:'column',gap:'.6rem'}}>
-                {rows.map(r => (
-                    <div key={r.id} style={{display:'flex',gap:'.6rem',alignItems:'center'}}>
-                        <input value={r.nombre} onChange={e=>updNombre(set,r.id,e.target.value)}
-                            style={{flex:'1 1 auto',border:'1.5px solid #e2e8f0',borderRadius:8,padding:'.55rem .75rem',fontSize:'.85rem',fontFamily:'DM Sans,sans-serif',outline:'none'}}/>
-                        <input value={r.valor===0?'':new Intl.NumberFormat('es-CO').format(r.valor)}
-                            onChange={e=>{const s=e.target.value.replace(/[^\d]/g,'');updValor(set,r.id,s===''?0:parseInt(s,10));}}
-                            style={{width:'140px',border:'1.5px solid #e2e8f0',borderRadius:8,padding:'.55rem .75rem',fontSize:'.85rem',fontFamily:'DM Sans,sans-serif',outline:'none',textAlign:'right'}}
-                            placeholder="0"/>
-                        <button className="del-btn" onClick={()=>delRow(set,r.id)}>
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-                        </button>
-                    </div>
-                ))}
-                <button className="add-btn" onClick={()=>addRow(set, addLabel)}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    Agregar ítem
-                </button>
-            </div>
-            <div style={{borderTop:'1.5px solid #f1f5f9',marginTop:'.85rem',paddingTop:'.85rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                <span style={{fontSize:'.8rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.06em'}}>Total</span>
-                <span style={{fontSize:'1.05rem',fontWeight:800,color,fontFamily:'Sora,sans-serif'}}>{fmt(sum(rows))}</span>
-            </div>
+  return <div style={{maxWidth:1200,margin:'0 auto',padding:'1.5rem'}}>
+    {/* PAGE HEADER */}
+    <div style={{marginBottom:'1.5rem',display:'flex',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
+      <div style={{background:'#ecfdf5',padding:'.75rem',borderRadius:14,border:'1px solid #a7f3d0'}}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div style={{flex:1,minWidth:0}}>
+        <h1 className="fs" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0}}>Análisis Financiero Personal</h1>
+        <p style={{color:'#64748b',fontSize:'.84rem',margin:0}}>Diagnóstico completo de tu salud financiera mensual.</p>
+      </div>
+      <div style={{display:'flex',gap:'.5rem',flexShrink:0}}>
+        <button className="rpt-btn" style={{background:'linear-gradient(135deg,#dc2626,#b91c1c)',color:'#fff'}} onClick={dPDF} disabled={!!gen}>
+          {gen==='pdf'?'Generando...':<><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Informe PDF</>}
+        </button>
+        <button className="rpt-btn" style={{background:'linear-gradient(135deg,#059669,#047857)',color:'#fff'}} onClick={dXLS}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          Exportar Excel
+        </button>
+      </div>
+    </div>
+
+    <div style={{display:'grid',gridTemplateColumns:'1fr 400px',gap:'1.5rem'}}>
+      <div>
+        <SectionCard title="Ingresos Mensuales" color="#059669" bg="#ecfdf5" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>} rows={ing} onAdd={mkA(setIng,'Nuevo ingreso')} onDel={mkD(setIng)} onNom={mkN(setIng)} onVal={mkV(setIng)} total_label="Total ingresos"/>
+        <SectionCard title="Gastos Fijos (compromisos recurrentes)" color="#dc2626" bg="#fef2f2" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>} rows={fij} onAdd={mkA(setFij,'Nuevo gasto fijo')} onDel={mkD(setFij)} onNom={mkN(setFij)} onVal={mkV(setFij)} total_label="Total fijos"/>
+        <SectionCard title="Gastos Variables (discrecionales)" color="#ea580c" bg="#fff7ed" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>} rows={var_} onAdd={mkA(setVar,'Nuevo gasto variable')} onDel={mkD(setVar)} onNom={mkN(setVar)} onVal={mkV(setVar)} total_label="Total variables"/>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem'}}>
+          <SectionCard title="Activos" color="#0891b2" bg="#ecfeff" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>} rows={act} onAdd={mkA(setAct,'Nuevo activo')} onDel={mkD(setAct)} onNom={mkN(setAct)} onVal={mkV(setAct)} total_label="Total activos"/>
+          <SectionCard title="Pasivos" color="#7c3aed" bg="#f5f3ff" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>} rows={pas} onAdd={mkA(setPas,'Nuevo pasivo')} onDel={mkD(setPas)} onNom={mkN(setPas)} onVal={mkV(setPas)} total_label="Total pasivos"/>
         </div>
-    );
+      </div>
 
-    return (
-        <div style={{maxWidth:1100,margin:'0 auto',padding:'1.5rem'}}>
-            {/* Header */}
-            <div style={{marginBottom:'1.5rem'}}>
-                <div style={{display:'flex',alignItems:'center',gap:.75+'rem',marginBottom:'.3rem'}}>
-                    <div style={{background:'#ecfdf5',padding:'.6rem',borderRadius:12}}>
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                    </div>
-                    <div>
-                        <h1 className="font-sora" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0,letterSpacing:'-.02em'}}>Análisis Financiero Personal</h1>
-                        <p style={{color:'#64748b',fontSize:'.82rem',margin:0}}>Registra tus ingresos, gastos, activos y pasivos para evaluar tu salud financiera.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1.5rem'}}>
-                {/* Columna izquierda: inputs */}
-                <div>
-                    <Section title="💰 Ingresos Mensuales" color="#059669" rows={ingresos} set={setIngresos} addLabel="Nuevo ingreso"/>
-                    <Section title="🏠 Gastos Fijos (compromisos)" color="#dc2626" rows={fijos} set={setFijos} addLabel="Nuevo gasto fijo"/>
-                    <Section title="🛒 Gastos Variables" color="#ea580c" rows={variables} set={setVariables} addLabel="Nuevo gasto variable"/>
-                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem'}}>
-                        <Section title="🏦 Activos (lo que tienes)" color="#0891b2" rows={activos} set={setActivos} addLabel="Nuevo activo"/>
-                        <Section title="💳 Pasivos (lo que debes)" color="#7c3aed" rows={pasivos} set={setPasivos} addLabel="Nuevo pasivo"/>
-                    </div>
-                </div>
-
-                {/* Columna derecha: resultados */}
-                <div style={{position:'sticky',top:'60px',alignSelf:'start',display:'flex',flexDirection:'column',gap:'1rem'}}>
-
-                    {/* Semáforo */}
-                    <div className={`card ${semaforo.cls}`} style={{borderRadius:16,padding:'1.25rem 1.5rem'}}>
-                        <div className="font-sora" style={{fontSize:'1rem',fontWeight:800,marginBottom:'.4rem'}}>{semaforo.label}</div>
-                        <p style={{fontSize:'.84rem',lineHeight:1.55,margin:0}}>{semaforo.msg}</p>
-                    </div>
-
-                    {/* KPIs */}
-                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.85rem'}}>
-                        <div className="stat-box" style={{background: flujoCaja>=0?'#f0fdf4':'#fff1f2',border:`1.5px solid ${flujoCaja>=0?'#86efac':'#fca5a5'}`}}>
-                            <div style={{fontSize:'.72rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>Flujo de Caja</div>
-                            <div className="font-sora" style={{fontSize:'1.25rem',fontWeight:800,color:flujoCaja>=0?'#15803d':'#991b1b'}}>{fmt(flujoCaja)}</div>
-                            <div style={{fontSize:'.75rem',color:'#9ca3af',marginTop:'.15rem'}}>Ingresos − Gastos</div>
-                        </div>
-                        <div className="stat-box" style={{background:patrimonioNeto>=0?'#eff6ff':'#fff1f2',border:`1.5px solid ${patrimonioNeto>=0?'#93c5fd':'#fca5a5'}`}}>
-                            <div style={{fontSize:'.72rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>Patrimonio Neto</div>
-                            <div className="font-sora" style={{fontSize:'1.25rem',fontWeight:800,color:patrimonioNeto>=0?'#1d4ed8':'#991b1b'}}>{fmt(patrimonioNeto)}</div>
-                            <div style={{fontSize:'.75rem',color:'#9ca3af',marginTop:'.15rem'}}>Activos − Pasivos</div>
-                        </div>
-                        <div className="stat-box" style={{background:'#fffbeb',border:'1.5px solid #fde68a'}}>
-                            <div style={{fontSize:'.72rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>Ratio Endeudamiento</div>
-                            <div className="font-sora" style={{fontSize:'1.25rem',fontWeight:800,color:ratioEndeudamiento<50?'#15803d':ratioEndeudamiento<70?'#92400e':'#991b1b'}}>{fmtN(ratioEndeudamiento)}%</div>
-                            <div style={{fontSize:'.75rem',color:'#9ca3af',marginTop:'.15rem'}}>Gastos / Ingresos</div>
-                        </div>
-                        <div className="stat-box" style={{background:'#f5f3ff',border:'1.5px solid #c4b5fd'}}>
-                            <div style={{fontSize:'.72rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>Capacidad de Ahorro</div>
-                            <div className="font-sora" style={{fontSize:'1.25rem',fontWeight:800,color:'#6d28d9'}}>{fmtN(capacidadAhorro)}%</div>
-                            <div style={{fontSize:'.75rem',color:'#9ca3af',marginTop:'.15rem'}}>Excedente / Ingresos</div>
-                        </div>
-                    </div>
-
-                    {/* Resumen totales */}
-                    <div className="card">
-                        <div className="font-sora section-title" style={{color:'#374151'}}>📊 Resumen Mensual</div>
-                        {[
-                            ['Total Ingresos', fmt(totalIngresos), '#059669'],
-                            ['Gastos Fijos', fmt(totalFijos), '#dc2626'],
-                            ['Gastos Variables', fmt(totalVariables), '#ea580c'],
-                            ['Total Gastos', fmt(totalGastos), '#991b1b'],
-                        ].map(([l,v,c]) => (
-                            <div key={l} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'.5rem 0',borderBottom:'1px solid #f1f5f9'}}>
-                                <span style={{fontSize:'.85rem',color:'#6b7280'}}>{l}</span>
-                                <span style={{fontSize:'.9rem',fontWeight:700,color:c,fontFamily:'Sora,sans-serif'}}>{v}</span>
-                            </div>
-                        ))}
-                        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'.75rem 0 0'}}>
-                            <span style={{fontSize:'.9rem',fontWeight:700,color:'#374151'}}>Flujo Neto</span>
-                            <span style={{fontSize:'1.1rem',fontWeight:800,color:flujoCaja>=0?'#059669':'#dc2626',fontFamily:'Sora,sans-serif'}}>{fmt(flujoCaja)}</span>
-                        </div>
-                    </div>
-
-                    {/* Gráfico Pie */}
-                    {pieData.length > 0 && (
-                        <div className="card">
-                            <div className="font-sora section-title" style={{color:'#374151'}}>🍩 Distribución del Ingreso</div>
-                            <ResponsiveContainer width="100%" height={200}>
-                                <PieChart>
-                                    <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} innerRadius={40} paddingAngle={3}>
-                                        {pieData.map((e,i) => <Cell key={i} fill={e.color}/>)}
-                                    </Pie>
-                                    <Tooltip formatter={v=>fmt(v)}/>
-                                    <Legend formatter={v=><span style={{fontSize:'.75rem',color:'#374151'}}>{v}</span>}/>
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                    )}
-
-                    {/* Recomendaciones */}
-                    <div className="card" style={{background:'#f8fafc'}}>
-                        <div className="font-sora section-title" style={{color:'#374151'}}>💡 Recomendaciones</div>
-                        <ul style={{margin:0,paddingLeft:'1.2rem',display:'flex',flexDirection:'column',gap:'.5rem'}}>
-                            {capacidadAhorro < 10 && <li style={{fontSize:'.83rem',color:'#374151',lineHeight:1.5}}>Revisa gastos variables: son los más fáciles de reducir en el corto plazo.</li>}
-                            {ratioEndeudamiento > 60 && <li style={{fontSize:'.83rem',color:'#374151',lineHeight:1.5}}>Tu ratio de endeudamiento es alto. Considera consolidar deudas con tasas bajas.</li>}
-                            {capacidadAhorro >= 20 && <li style={{fontSize:'.83rem',color:'#374151',lineHeight:1.5}}>Excelente capacidad de ahorro. Considera invertir en CDTs o fondos de inversión.</li>}
-                            {patrimonioNeto > 0 && <li style={{fontSize:'.83rem',color:'#374151',lineHeight:1.5}}>Patrimonio neto positivo: tus activos superan tus deudas. ¡Buen indicador!</li>}
-                            {patrimonioNeto < 0 && <li style={{fontSize:'.83rem',color:'#374151',lineHeight:1.5}}>Patrimonio neto negativo: enfócate en reducir deudas antes de incrementar activos.</li>}
-                            <li style={{fontSize:'.83rem',color:'#374151',lineHeight:1.5}}>Apunta a un fondo de emergencia de al menos 3 meses de gastos: {fmt(totalGastos*3)}.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+      <div style={{position:'sticky',top:'62px',display:'flex',flexDirection:'column',gap:'1rem'}}>
+        <div style={{borderRadius:14,padding:'1.1rem 1.4rem',background:sem.bg,border:'1.5px solid '+sem.border}}>
+          <div style={{display:'flex',alignItems:'center',gap:'.6rem',marginBottom:'.4rem'}}>
+            <div style={{width:10,height:10,borderRadius:'50%',background:sem.color,boxShadow:'0 0 6px '+sem.color}}></div>
+            <span className="fs" style={{fontSize:'.9rem',fontWeight:800,color:sem.color}}>Salud Financiera {sem.label}</span>
+          </div>
+          <p style={{fontSize:'.82rem',color:sem.color,margin:0,lineHeight:1.55,opacity:.85}}>{sem.msg}</p>
         </div>
-    );
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.75rem'}}>
+          {[{l:'Flujo de Caja',v:COP(flujo),ok:flujo>=0,bg:flujo>=0?'#f0fdf4':'#fff1f2',bdr:flujo>=0?'#86efac':'#fca5a5',c:flujo>=0?'#15803d':'#991b1b',s:'Ingresos − Gastos'},
+            {l:'Patrimonio Neto',v:COP(patrim),ok:patrim>=0,bg:patrim>=0?'#eff6ff':'#fff1f2',bdr:patrim>=0?'#93c5fd':'#fca5a5',c:patrim>=0?'#1d4ed8':'#991b1b',s:'Activos − Pasivos'},
+            {l:'Endeudamiento',v:PCT(rd)+'%',ok:rd<50,bg:'#fffbeb',bdr:'#fde68a',c:rd<50?'#15803d':rd<70?'#92400e':'#991b1b',s:'Gastos / Ingresos'},
+            {l:'Cap. Ahorro',v:PCT(ca)+'%',ok:ca>=10,bg:'#f5f3ff',bdr:'#c4b5fd',c:'#6d28d9',s:'Excedente / Ingresos'},
+          ].map(k=><div key={k.l} style={{borderRadius:14,padding:'1.1rem 1.25rem',background:k.bg,border:'1.5px solid '+k.bdr}}>
+            <div style={{fontSize:'.7rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'.08em',color:'#64748b',marginBottom:'.3rem'}}>{k.l}</div>
+            <div className="fs" style={{fontSize:'1.25rem',fontWeight:800,color:k.c}}>{k.v}</div>
+            <div style={{fontSize:'.72rem',color:'#94a3b8',marginTop:'.2rem'}}>{k.s}</div>
+          </div>)}
+        </div>
+        {tI>0&&<div className="card" style={{padding:'1.1rem 1.3rem'}}>
+          <div className="fs" style={{fontSize:'.75rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.75rem'}}>Resumen mensual</div>
+          <ResponsiveContainer width="100%" height={145}><BarChart data={barData} margin={{top:0,right:5,left:0,bottom:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/><XAxis dataKey="name" tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false}/><YAxis tickFormatter={v=>`${(v/1e6).toFixed(1)}M`} tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false} width={36}/><Tooltip formatter={v=>COP(v)} cursor={{fill:'rgba(0,0,0,.04)'}}/><Bar dataKey="val" name="Monto" radius={[5,5,0,0]}>{barData.map((e,i)=><React.Fragment key={i}><rect fill={e.fill}/></React.Fragment>)}</Bar></BarChart></ResponsiveContainer>
+        </div>}
+        {pieData.length>0&&<div className="card" style={{padding:'1.1rem 1.3rem'}}>
+          <div className="fs" style={{fontSize:'.75rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.5rem'}}>Distribución del ingreso</div>
+          <ResponsiveContainer width="100%" height={160}><PieChart><Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={62} innerRadius={36} paddingAngle={3}>{pieData.map((e,i)=><Cell key={i} fill={e.color}/>)}</Pie><Tooltip formatter={v=>COP(v)}/><Legend formatter={v=><span style={{fontSize:'.73rem',color:'#374151'}}>{v}</span>}/></PieChart></ResponsiveContainer>
+        </div>}
+        {rec.length>0&&<div className="card" style={{padding:'1.1rem 1.3rem',background:'#f8fafc'}}>
+          <div className="fs" style={{fontSize:'.75rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.75rem'}}>Recomendaciones</div>
+          {rec.map((r,i)=><div key={i} style={{display:'flex',gap:'.6rem',marginBottom:'.5rem'}}><div style={{width:6,height:6,borderRadius:'50%',background:'#059669',marginTop:5,flexShrink:0}}></div><p style={{margin:0,fontSize:'.82rem',color:'#374151',lineHeight:1.55}}>{r}</p></div>)}
+        </div>}
+      </div>
+    </div>
+  </div>;
 }
-
-const root = createRoot(document.getElementById('root'));
-root.render(<App/>);
+createRoot(document.getElementById('root')).render(<App/>);
 </script>
 <script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';</script>
 </body>
