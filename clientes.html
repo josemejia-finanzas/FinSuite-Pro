@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Clientes — FinSuite Pro</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
+<script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client"}}</script>
+<style>
+*{box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:#f0f4f8;margin:0;min-height:100vh;}
+.fs{font-family:'Sora',sans-serif;}
+
+/* Topbar */
+.topbar{background:linear-gradient(135deg,#0c1426 0%,#111827 100%);height:58px;display:flex;align-items:center;padding:0 2rem;gap:1rem;position:sticky;top:0;z-index:200;box-shadow:0 1px 0 rgba(255,255,255,.06),0 4px 20px rgba(0,0,0,.4);}
+.logo-wrap{display:flex;align-items:center;gap:.65rem;text-decoration:none;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,#3b82f6,#6366f1);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(99,102,241,.4);}
+.logo-name{font-size:1rem;font-weight:800;color:#f8fafc;letter-spacing:-.02em;font-family:'Sora',sans-serif;}
+.logo-version{font-size:.65rem;background:rgba(99,102,241,.2);color:#a5b4fc;padding:.1rem .4rem;border-radius:4px;font-weight:700;letter-spacing:.05em;margin-left:.3rem;}
+.nav-divider{width:1px;height:22px;background:rgba(255,255,255,.08);margin:0 .25rem;}
+.nav-link{color:#64748b;text-decoration:none;font-size:.8rem;font-weight:600;padding:.3rem .6rem;border-radius:7px;transition:.15s;display:flex;align-items:center;gap:.35rem;}
+.nav-link:hover{color:#e2e8f0;background:rgba(255,255,255,.06);}
+.nav-link.active{color:#93c5fd;background:rgba(59,130,246,.12);}
+.user-chip{display:flex;align-items:center;gap:.5rem;padding:.25rem .7rem .25rem .3rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:99px;cursor:default;}
+.u-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:#fff;letter-spacing:-.01em;}
+.btn-logout{display:flex;align-items:center;gap:.35rem;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.32rem .8rem;color:#64748b;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s;}
+.btn-logout:hover{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#fca5a5;}
+
+/* Hero strip */
+.hero-strip{background:linear-gradient(135deg,#0f172a 0%,#1e293b 60%,#0f172a 100%);padding:2rem 2rem 0;position:relative;overflow:hidden;}
+.hero-strip::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(99,102,241,.12) 0%,transparent 65%);}
+.hero-strip::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(to bottom,transparent,#f0f4f8);}
+
+/* Stats */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;padding:0 2rem;margin-top:-1px;position:relative;z-index:1;}
+.stat-card{background:#fff;border-radius:16px;border:1px solid #e8edf3;box-shadow:0 2px 8px rgba(15,23,42,.06);padding:1.15rem 1.4rem;display:flex;align-items:center;gap:.9rem;}
+.stat-icon-wrap{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.stat-num{font-size:1.65rem;font-weight:900;letter-spacing:-.04em;line-height:1;font-family:'Sora',sans-serif;}
+.stat-label{font-size:.72rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-top:.15rem;}
+
+/* Toolbar */
+.toolbar{display:flex;align-items:center;gap:.75rem;padding:1.25rem 2rem .75rem;flex-wrap:wrap;}
+.search-wrap{position:relative;flex:0 0 300px;}
+.search-input{width:100%;background:#fff;border:1.5px solid #e2e8f0;border-radius:11px;padding:.6rem 1rem .6rem 2.3rem;font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none;transition:.2s;color:#1e293b;}
+.search-input:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.1);}
+.search-icon{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);pointer-events:none;}
+.filter-select{background:#fff;border:1.5px solid #e2e8f0;border-radius:11px;padding:.6rem .9rem;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none;color:#374151;cursor:pointer;transition:.2s;}
+.filter-select:focus{border-color:#6366f1;}
+.view-toggle{display:flex;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;}
+.view-btn{padding:.5rem .7rem;background:transparent;border:none;cursor:pointer;transition:.15s;color:#94a3b8;display:flex;align-items:center;}
+.view-btn.on{background:#6366f1;color:#fff;}
+
+/* Client card */
+.client-card{background:#fff;border-radius:20px;border:1px solid #e8edf3;box-shadow:0 2px 8px rgba(15,23,42,.05);overflow:hidden;transition:.22s cubic-bezier(.4,0,.2,1);cursor:pointer;display:flex;flex-direction:column;}
+.client-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(15,23,42,.12);border-color:#c7d2fe;}
+.card-accent{height:4px;background:var(--accent);}
+.card-body{padding:1.25rem 1.35rem 1rem;flex:1;}
+.card-avatar{width:54px;height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;color:#fff;font-family:'Sora',sans-serif;box-shadow:0 4px 12px rgba(0,0,0,.15);flex-shrink:0;}
+.card-name{font-size:.98rem;font-weight:800;color:#0f172a;line-height:1.25;font-family:'Sora',sans-serif;}
+.card-company{font-size:.78rem;color:#64748b;margin-top:.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.type-pill{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:700;padding:.2rem .65rem;border-radius:99px;text-transform:uppercase;letter-spacing:.06em;margin-top:.4rem;}
+.card-detail{display:flex;align-items:center;gap:.45rem;font-size:.75rem;color:#64748b;margin-top:.3rem;overflow:hidden;}
+.card-detail span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.card-id-badge{background:#f1f5f9;border-radius:7px;padding:.2rem .55rem;font-size:.72rem;font-weight:700;color:#475569;font-family:'DM Mono',monospace;letter-spacing:.03em;display:inline-block;margin-top:.5rem;}
+.card-actions{display:flex;gap:.3rem;}
+.icon-btn{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;}
+.card-footer{background:#f8fafc;border-top:1px solid #f1f5f9;padding:.75rem 1.35rem;display:flex;align-items:center;justify-content:space-between;}
+.mod-dots{display:flex;gap:.3rem;}
+.mod-dot{width:7px;height:7px;border-radius:50%;}
+.open-btn{display:flex;align-items:center;gap:.45rem;background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;border:none;border-radius:9px;padding:.45rem .9rem;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s;}
+.open-btn:hover{filter:brightness(1.1);}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(9,18,38,.65);backdrop-filter:blur(6px);z-index:400;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal{background:#fff;border-radius:24px;width:100%;max-width:640px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(9,18,38,.4);}
+.modal-head{padding:1.6rem 2rem 1.1rem;position:sticky;top:0;background:#fff;border-bottom:1px solid #f1f5f9;z-index:1;border-radius:24px 24px 0 0;}
+.form-section{padding:.9rem 2rem;}
+.form-section-title{font-size:.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem;}
+.form-section-title::after{content:'';flex:1;height:1px;background:#f1f5f9;}
+.field-lbl{font-size:.78rem;font-weight:700;color:#374151;display:block;margin-bottom:.4rem;letter-spacing:.01em;}
+.ni{width:100%;border:1.5px solid #e2e8f0;border-radius:11px;padding:.65rem .95rem;font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:.18s;color:#1e293b;background:#fff;}
+.ni:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.1);}
+.ni.err{border-color:#f87171;box-shadow:0 0 0 3px rgba(248,113,113,.1);}
+.ni-error{font-size:.73rem;color:#f43f5e;margin-top:.25rem;}
+.modal-foot{padding:1rem 2rem 1.5rem;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;gap:.75rem;position:sticky;bottom:0;background:#fff;border-radius:0 0 24px 24px;}
+.btn-cancel{background:#f1f5f9;color:#475569;border:none;border-radius:11px;padding:.65rem 1.35rem;font-size:.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s;}
+.btn-cancel:hover{background:#e2e8f0;}
+.btn-save{background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;border:none;border-radius:11px;padding:.65rem 1.6rem;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(99,102,241,.3);transition:.15s;}
+.btn-save:hover{filter:brightness(1.07);}
+.btn-delete{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;border-radius:11px;padding:.65rem 1.5rem;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-new{display:flex;align-items:center;gap:.45rem;background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;border:none;border-radius:12px;padding:.65rem 1.35rem;font-size:.875rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(99,102,241,.35);transition:.18s;white-space:nowrap;}
+.btn-new:hover{filter:brightness(1.07);transform:translateY(-1px);}
+
+/* Toast */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#0f172a;color:#f1f5f9;padding:.75rem 1.5rem;border-radius:14px;font-size:.88rem;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:600;display:flex;align-items:center;gap:.55rem;border:1px solid rgba(255,255,255,.08);}
+
+/* Empty state */
+.empty{text-align:center;padding:5rem 2rem;max-width:440px;margin:0 auto;}
+
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+input[type='number']{-moz-appearance:textfield;}input[type='number']::-webkit-inner-spin-button{-webkit-appearance:none;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-type="module">
+import React,{useState,useEffect,useCallback,useRef} from 'react';
+import {createRoot} from 'react-dom/client';
+
+// ── Utils ─────────────────────────────────────────────────────────────────────
+const uuid=()=>'c'+Math.random().toString(36).slice(2)+Date.now().toString(36);
+const now_=()=>new Date().toISOString();
+const fmtDate=s=>{try{return new Date(s).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'});}catch{return'-';}};
+const COLORS=['#4f46e5','#0891b2','#059669','#d97706','#dc2626','#7c3aed','#db2777','#0d9488','#ea580c','#2563eb'];
+const colorFor=id=>COLORS[(id||'a').charCodeAt(0)%COLORS.length];
+const initials=n=>(n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]?.toUpperCase()||'').join('');
+const TIPOS=['Persona Natural','Empresa','PyME','Startup','Corporativo','Inversionista'];
+const TIPO_DOCS=['Cédula de Ciudadanía','NIT','Cédula de Extranjería','Pasaporte','RUT','DNI'];
+const MOD_KEYS=['finanzas','deudas','retiro','valoracion'];
+const MOD_COLORS=['#059669','#d97706','#7c3aed','#0891b2'];
+const MOD_LABELS=['Finanzas','Deudas','Retiro','Valoración'];
+
+const loadClients=()=>{try{return JSON.parse(localStorage.getItem('finsuite_clients')||'[]');}catch{return[];}};
+const saveClients=cl=>localStorage.setItem('finsuite_clients',JSON.stringify(cl));
+const countMods=id=>MOD_KEYS.filter(k=>localStorage.getItem('finsuite_'+id+'_'+k)).length;
+
+// ── Icono SVG inline ──────────────────────────────────────────────────────────
+const Ic=({d,s=14,c='currentColor',sw=2})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{__html:d}}/>;
+
+// ── Componentes ───────────────────────────────────────────────────────────────
+
+function TopBar({user,onLogout}){
+  return <div className="topbar">
+    <a href="#" className="logo-wrap" onClick={e=>e.preventDefault()}>
+      <div className="logo-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <span className="logo-name">FinSuite Pro</span>
+      <span className="logo-version">v1.2</span>
+    </a>
+    <div className="nav-divider"/>
+    <span className="nav-link active" style={{cursor:'default'}}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Clientes
+    </span>
+    <div style={{flex:1}}/>
+    {user&&<div className="user-chip">
+      <div className="u-av" style={{background:colorFor(user.usuario)}}>{initials(user.nombre)}</div>
+      <div>
+        <div style={{fontSize:'.78rem',fontWeight:700,color:'#e2e8f0',lineHeight:1.2}}>{user.nombre}</div>
+        <div style={{fontSize:'.65rem',color:'#475569'}}>{user.rol}</div>
+      </div>
+    </div>}
+    <button className="btn-logout" onClick={onLogout}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Cerrar sesión
+    </button>
+  </div>;
+}
+
+function ClientCard({c,onOpen,onEdit,onDelete}){
+  const mods=countMods(c.id);
+  const col=colorFor(c.id);
+  const typeCfg={
+    'Persona Natural':{bg:'#eff6ff',t:'#1d4ed8'},'Empresa':{bg:'#f0fdf4',t:'#15803d'},
+    'PyME':{bg:'#fffbeb',t:'#92400e'},'Startup':{bg:'#fdf4ff',t:'#7e22ce'},
+    'Corporativo':{bg:'#f0f9ff',t:'#075985'},'Inversionista':{bg:'#fff1f2',t:'#be123c'},
+  };
+  const tc=typeCfg[c.tipo]||{bg:'#f1f5f9',t:'#475569'};
+  const hasDoc=c.tipoDoc&&c.numeroDoc;
+  const docLabel=hasDoc?`${c.tipoDoc==='Cédula de Ciudadanía'?'CC':c.tipoDoc==='NIT'?'NIT':c.tipoDoc} ${c.numeroDoc}`:'';
+
+  return <div className="client-card">
+    <div className="card-accent" style={{'--accent':col}}/>
+    <div className="card-body">
+      <div style={{display:'flex',alignItems:'flex-start',gap:'.9rem',marginBottom:'.75rem'}}>
+        <div className="card-avatar" style={{background:col}}>{initials(c.nombre)}</div>
+        <div style={{flex:1,minWidth:0}}>
+          <div className="card-name" style={{whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{c.nombre}</div>
+          {c.empresa&&<div className="card-company">{c.empresa}</div>}
+          <div><span className="type-pill" style={{background:tc.bg,color:tc.t}}>{c.tipo||'Persona Natural'}</span></div>
+        </div>
+        <div className="card-actions" onClick={e=>e.stopPropagation()}>
+          <button className="icon-btn" style={{background:'#f0f9ff',color:'#0891b2'}} onClick={()=>onEdit(c)} title="Editar">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button className="icon-btn" style={{background:'#fff1f2',color:'#f43f5e'}} onClick={()=>onDelete(c)} title="Eliminar">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          </button>
+        </div>
+      </div>
+      {docLabel&&<div className="card-id-badge">{docLabel}</div>}
+      <div style={{marginTop:'.6rem',display:'flex',flexDirection:'column',gap:'.22rem'}}>
+        {c.email&&<div className="card-detail"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span>{c.email}</span></div>}
+        {(c.celular||c.telefono)&&<div className="card-detail"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.08 6.08l1.88-1.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>{c.celular||c.telefono}</span></div>}
+        {c.ciudad&&<div className="card-detail"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>{c.ciudad}</span></div>}
+      </div>
+    </div>
+    <div className="card-footer">
+      <div>
+        <div style={{display:'flex',gap:'.25rem',marginBottom:'.25rem'}}>
+          {MOD_KEYS.map((k,i)=><div key={k} className="mod-dot" style={{background:localStorage.getItem('finsuite_'+c.id+'_'+k)?MOD_COLORS[i]:'#e2e8f0'}} title={MOD_LABELS[i]}/>)}
+        </div>
+        <div style={{fontSize:'.68rem',color:'#94a3b8'}}>{mods>0?mods+' módulo'+(mods>1?'s':'')+' activo'+(mods>1?'s':''):'Sin análisis aún'} · {fmtDate(c.updatedAt||c.createdAt)}</div>
+      </div>
+      <button className="open-btn" onClick={()=>onOpen(c)}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Abrir
+      </button>
+    </div>
+  </div>;
+}
+
+const EMPTY_F={nombre:'',tipoDoc:'Cédula de Ciudadanía',numeroDoc:'',empresa:'',tipo:'Persona Natural',email:'',telefono:'',celular:'',ciudad:'',direccion:'',notas:''};
+
+function ClientModal({client,onSave,onClose}){
+  const [f,setF]=useState(client?{nombre:client.nombre||'',tipoDoc:client.tipoDoc||'Cédula de Ciudadanía',numeroDoc:client.numeroDoc||'',empresa:client.empresa||'',tipo:client.tipo||'Persona Natural',email:client.email||'',telefono:client.telefono||'',celular:client.celular||'',ciudad:client.ciudad||'',direccion:client.direccion||'',notas:client.notas||''}:EMPTY_F);
+  const [errs,setErrs]=useState({});
+  const up=k=>e=>setF(x=>({...x,[k]:e.target.value}));
+  const chk=()=>{const e={};if(!f.nombre.trim())e.nombre='El nombre es requerido';setErrs(e);return!Object.keys(e).length;};
+  const handleSave=()=>{ if(chk()) onSave(f); };
+  return <div className="overlay" onClick={onClose}>
+    <div className="modal" onClick={e=>e.stopPropagation()}>
+      <div className="modal-head">
+        <div style={{display:'flex',alignItems:'center',gap:'.75rem'}}>
+          <div style={{width:40,height:40,borderRadius:11,background:f.nombre?colorFor(client?.id||f.nombre):'#e2e8f0',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.95rem',fontWeight:800,color:'#fff',fontFamily:'Sora,sans-serif',transition:'.2s'}}>{f.nombre?initials(f.nombre):'?'}</div>
+          <div>
+            <div className="fs" style={{fontSize:'1.05rem',fontWeight:800,color:'#0f172a'}}>{client?'Editar cliente':'Registrar nuevo cliente'}</div>
+            <div style={{fontSize:'.78rem',color:'#94a3b8'}}>{client?'Actualiza la información del cliente':'Completa los datos de identificación y contacto'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="form-section">
+        <div className="form-section-title">Datos de identidad</div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr',gap:'.85rem'}}>
+          <div>
+            <label className="field-lbl">Nombre completo *</label>
+            <input className={`ni${errs.nombre?' err':''}`} value={f.nombre} onChange={up('nombre')} placeholder="Juan Carlos Pérez García"/>
+            {errs.nombre&&<p className="ni-error">{errs.nombre}</p>}
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1.2fr 1fr',gap:'.75rem'}}>
+            <div>
+              <label className="field-lbl">Tipo de documento</label>
+              <select className="ni" value={f.tipoDoc} onChange={up('tipoDoc')}>{TIPO_DOCS.map(t=><option key={t}>{t}</option>)}</select>
+            </div>
+            <div>
+              <label className="field-lbl">Número de documento</label>
+              <input className="ni" value={f.numeroDoc} onChange={up('numeroDoc')} placeholder="12.345.678" style={{fontFamily:'monospace'}}/>
+            </div>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1.5fr 1fr',gap:'.75rem'}}>
+            <div>
+              <label className="field-lbl">Empresa / Organización</label>
+              <input className="ni" value={f.empresa} onChange={up('empresa')} placeholder="Nombre de la empresa"/>
+            </div>
+            <div>
+              <label className="field-lbl">Tipo de cliente</label>
+              <select className="ni" value={f.tipo} onChange={up('tipo')}>{['Persona Natural','Empresa','PyME','Startup','Corporativo','Inversionista'].map(t=><option key={t}>{t}</option>)}</select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="form-section" style={{paddingTop:0}}>
+        <div className="form-section-title">Información de contacto</div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.85rem'}}>
+          <div style={{gridColumn:'1/-1'}}>
+            <label className="field-lbl">Correo electrónico</label>
+            <input className="ni" type="email" value={f.email} onChange={up('email')} placeholder="cliente@empresa.com"/>
+          </div>
+          <div>
+            <label className="field-lbl">Celular</label>
+            <input className="ni" value={f.celular} onChange={up('celular')} placeholder="+57 310 000 0000"/>
+          </div>
+          <div>
+            <label className="field-lbl">Teléfono fijo</label>
+            <input className="ni" value={f.telefono} onChange={up('telefono')} placeholder="601-000-0000"/>
+          </div>
+          <div>
+            <label className="field-lbl">Ciudad / Municipio</label>
+            <input className="ni" value={f.ciudad} onChange={up('ciudad')} placeholder="Bogotá D.C."/>
+          </div>
+          <div>
+            <label className="field-lbl">Dirección</label>
+            <input className="ni" value={f.direccion} onChange={up('direccion')} placeholder="Cra 7 # 12-34 Of. 501"/>
+          </div>
+        </div>
+      </div>
+
+      <div className="form-section" style={{paddingTop:0}}>
+        <div className="form-section-title">Notas internas</div>
+        <textarea className="ni" value={f.notas} onChange={up('notas')} rows={3} placeholder="Objetivos financieros, referencias, observaciones del asesor..." style={{resize:'vertical'}}/>
+      </div>
+
+      <div className="modal-foot">
+        <button className="btn-cancel" onClick={onClose}>Cancelar</button>
+        <button className="btn-save" onClick={handleSave}>{client?'Guardar cambios':'Registrar cliente'}</button>
+      </div>
+    </div>
+  </div>;
+}
+
+function DeleteModal({c,onConfirm,onClose}){
+  return <div className="overlay" onClick={onClose}>
+    <div className="modal" style={{maxWidth:420}} onClick={e=>e.stopPropagation()}>
+      <div className="modal-head" style={{textAlign:'center'}}>
+        <div style={{width:54,height:54,borderRadius:'50%',background:'linear-gradient(135deg,#fee2e2,#fecaca)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto .9rem',boxShadow:'0 4px 12px rgba(220,38,38,.2)'}}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </div>
+        <div className="fs" style={{fontSize:'1.05rem',fontWeight:800,color:'#0f172a'}}>Eliminar cliente</div>
+      </div>
+      <div style={{padding:'0 2rem',textAlign:'center'}}>
+        <p style={{fontSize:'.92rem',color:'#374151',marginBottom:'.75rem',lineHeight:1.6}}>¿Deseas eliminar a <strong style={{color:'#0f172a'}}>{c?.nombre}</strong>?</p>
+        <p style={{fontSize:'.82rem',color:'#94a3b8',lineHeight:1.7,background:'#fef2f2',borderRadius:10,padding:'.75rem 1rem',border:'1px solid #fecaca'}}>Esta acción eliminará el cliente y <strong style={{color:'#dc2626'}}>todos sus análisis financieros</strong> guardados. No se puede deshacer.</p>
+      </div>
+      <div className="modal-foot" style={{justifyContent:'center',paddingTop:'1.25rem'}}>
+        <button className="btn-cancel" onClick={onClose}>Cancelar</button>
+        <button className="btn-delete" onClick={onConfirm}>Eliminar definitivamente</button>
+      </div>
+    </div>
+  </div>;
+}
+
+// ── App ───────────────────────────────────────────────────────────────────────
+function App(){
+  const [user,setUser]=useState(null);
+  const [clients,setClients]=useState([]);
+  const [q,setQ]=useState('');
+  const [fTipo,setFTipo]=useState('');
+  const [modal,setModal]=useState(null);
+  const [sel,setSel]=useState(null);
+  const [toast,setToast]=useState('');
+
+  useEffect(()=>{
+    const a=sessionStorage.getItem('finsuite_auth');
+    if(!a){window.location.href='index.html';return;}
+    setUser(JSON.parse(a));setClients(loadClients());
+  },[]);
+
+  const flash=msg=>{setToast(msg);setTimeout(()=>setToast(''),3000);};
+  const logout=()=>{sessionStorage.clear();window.location.href='index.html';};
+  const openClient=c=>{sessionStorage.setItem('finsuite_current_client',JSON.stringify(c));window.location.href='dashboard.html';};
+
+  const handleSave=form=>{
+    let newList;
+    if(modal==='edit'&&sel){
+      const up={...sel,...form,updatedAt:now_()};
+      newList=clients.map(c=>c.id===sel.id?up:c);
+      flash('Cliente actualizado');
+    } else {
+      newList=[{id:uuid(),...form,createdAt:now_(),updatedAt:now_()},...clients];
+      flash('Cliente registrado');
+    }
+    setClients(newList);saveClients(newList);setModal(null);setSel(null);
+  };
+
+  const handleDelete=()=>{
+    MOD_KEYS.forEach(k=>localStorage.removeItem('finsuite_'+sel.id+'_'+k));
+    const nl=clients.filter(c=>c.id!==sel.id);
+    setClients(nl);saveClients(nl);flash('Cliente eliminado');setModal(null);setSel(null);
+  };
+
+  const filtered=clients.filter(c=>{
+    const q2=q.toLowerCase();
+    return(!q2||(c.nombre||'').toLowerCase().includes(q2)||(c.empresa||'').toLowerCase().includes(q2)||(c.email||'').toLowerCase().includes(q2)||(c.numeroDoc||'').includes(q2)||(c.ciudad||'').toLowerCase().includes(q2))&&(!fTipo||c.tipo===fTipo);
+  });
+
+  const withData=clients.filter(c=>countMods(c.id)>0).length;
+  const thisMonth=clients.filter(c=>new Date(c.createdAt||0).getMonth()===new Date().getMonth()&&new Date(c.createdAt||0).getFullYear()===new Date().getFullYear()).length;
+  const totalMods=clients.reduce((a,c)=>a+countMods(c.id),0);
+
+  return <div style={{minHeight:'100vh',background:'#f0f4f8'}}>
+    <TopBar user={user} onLogout={logout}/>
+
+    {/* Hero */}
+    <div className="hero-strip">
+      <div style={{maxWidth:1280,margin:'0 auto',position:'relative',zIndex:1}}>
+        <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',paddingBottom:'1.5rem'}}>
+          <div>
+            <div style={{fontSize:'.72rem',fontWeight:700,color:'#4f83cc',textTransform:'uppercase',letterSpacing:'.12em',marginBottom:'.4rem'}}>Panel de Clientes</div>
+            <h1 className="fs" style={{fontSize:'1.8rem',fontWeight:900,color:'#f1f5f9',letterSpacing:'-.04em',margin:0}}>Gestión de Clientes</h1>
+            <p style={{color:'#64748b',fontSize:'.88rem',margin:'.3rem 0 0'}}>Administra perfiles, analiza portafolios y genera informes personalizados por cliente.</p>
+          </div>
+          <button className="btn-new" onClick={()=>{setSel(null);setModal('new');}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nuevo cliente
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {/* Stats row */}
+    <div className="stat-row" style={{maxWidth:1280,margin:'0 auto',padding:'0 2rem',marginTop:'-8px',position:'relative',zIndex:2}}>
+      {[{icon:<svg viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,val:clients.length,lbl:'Clientes totales',c:'#4f46e5',bg:'#eef2ff'},
+        {icon:<svg viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,val:withData,lbl:'Con análisis activos',c:'#059669',bg:'#ecfdf5'},
+        {icon:<svg viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,val:thisMonth,lbl:'Registrados este mes',c:'#d97706',bg:'#fffbeb'},
+        {icon:<svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>,val:totalMods,lbl:'Módulos analizados',c:'#7c3aed',bg:'#f5f3ff'},
+      ].map((s,i)=><div key={i} className="stat-card">
+        <div className="stat-icon-wrap" style={{background:s.bg}}>{React.cloneElement(s.icon,{width:20,height:20})}</div>
+        <div><div className="stat-num" style={{color:s.c}}>{s.val}</div><div className="stat-label">{s.lbl}</div></div>
+      </div>)}
+    </div>
+
+    {/* Main content */}
+    <div style={{maxWidth:1280,margin:'0 auto',padding:'1.5rem 2rem 3rem'}}>
+
+      {/* Toolbar */}
+      <div className="toolbar" style={{padding:'1rem 0 1rem',background:'transparent'}}>
+        <div className="search-wrap">
+          <svg className="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input className="search-input" value={q} onChange={e=>setQ(e.target.value)} placeholder="Buscar por nombre, NIT, empresa, ciudad..."/>
+        </div>
+        <select className="filter-select" value={fTipo} onChange={e=>setFTipo(e.target.value)}>
+          <option value="">Todos los tipos</option>
+          {['Persona Natural','Empresa','PyME','Startup','Corporativo','Inversionista'].map(t=><option key={t}>{t}</option>)}
+        </select>
+        {(q||fTipo)&&<button onClick={()=>{setQ('');setFTipo('');}} style={{background:'#fff',border:'1.5px solid #e2e8f0',borderRadius:9,padding:'.5rem .9rem',fontSize:'.8rem',fontWeight:600,color:'#64748b',cursor:'pointer',fontFamily:'inherit',display:'flex',alignItems:'center',gap:'.35rem'}}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Limpiar
+        </button>}
+        <span style={{fontSize:'.82rem',color:'#94a3b8',marginLeft:'auto',fontWeight:500}}>{filtered.length} de {clients.length} clientes</span>
+      </div>
+
+      {filtered.length>0
+        ?<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(290px,1fr))',gap:'1.15rem'}}>
+          {filtered.map(c=><ClientCard key={c.id} c={c} onOpen={openClient} onEdit={c=>{setSel(c);setModal('edit');}} onDelete={c=>{setSel(c);setModal('delete');}}/>)}
+        </div>
+        :<div className="empty">
+          {clients.length===0
+            ?<><div style={{width:80,height:80,borderRadius:24,background:'linear-gradient(135deg,#eef2ff,#e0e7ff)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 1.25rem',boxShadow:'0 8px 24px rgba(79,70,229,.15)'}}>
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              </div>
+              <div className="fs" style={{fontSize:'1.15rem',fontWeight:800,color:'#0f172a',marginBottom:'.6rem'}}>Registra tu primer cliente</div>
+              <p style={{color:'#94a3b8',marginBottom:'1.5rem',lineHeight:1.65}}>Comienza agregando un cliente para gestionar sus análisis financieros de forma organizada e independiente.</p>
+              <button className="btn-new" style={{margin:'0 auto'}} onClick={()=>setModal('new')}>Agregar primer cliente</button></>
+            :<><div className="fs" style={{fontSize:'1.1rem',fontWeight:800,color:'#0f172a',marginBottom:'.5rem'}}>Sin resultados</div>
+              <p style={{color:'#94a3b8'}}>Ningún cliente coincide con los filtros actuales.</p></>}
+        </div>}
+    </div>
+
+    {(modal==='new'||modal==='edit')&&<ClientModal client={modal==='edit'?sel:null} onSave={handleSave} onClose={()=>{setModal(null);setSel(null);}}/>}
+    {modal==='delete'&&<DeleteModal c={sel} onConfirm={handleDelete} onClose={()=>{setModal(null);setSel(null);}}/>}
+    {toast&&<div className="toast"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>{toast}</div>}
+  </div>;
+}
+createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
