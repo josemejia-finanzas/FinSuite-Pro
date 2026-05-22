@@ -1,291 +1,391 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Gestión de Deudas — FinSuite Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-    <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
-    <script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","recharts":"https://esm.sh/recharts@2.12.0?deps=react@18.2.0","lucide-react":"https://esm.sh/lucide-react@0.292.0"}}</script>
-    <style>
-        body{font-family:'DM Sans',sans-serif;background:#f8fafc;margin:0;}
-        .font-sora{font-family:'Sora',sans-serif;}
-        ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
-        .suite-bar{background:#0f172a;height:44px;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:50;}
-        .suite-bar a{color:#94a3b8;text-decoration:none;font-size:.8rem;font-weight:600;padding:.3rem .65rem;border-radius:8px;display:flex;align-items:center;gap:.45rem;transition:all .2s;}
-        .suite-bar a:hover{background:rgba(255,255,255,.07);color:#f1f5f9;}
-        .suite-bar .sep{color:rgba(255,255,255,.2);}
-        .suite-bar .cur{color:#fbbf24;font-size:.8rem;font-weight:700;}
-        .card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:1.4rem;}
-        .stitle{font-family:'Sora',sans-serif;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;}
-        .ni{width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:.55rem .75rem;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none;}
-        .ni:focus{border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.1);}
-        .add-btn{display:flex;align-items:center;gap:.4rem;padding:.5rem;border-radius:8px;border:1.5px dashed #d1d5db;background:#f9fafb;color:#6b7280;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;justify-content:center;transition:all .2s;}
-        .add-btn:hover{border-color:#d97706;color:#d97706;background:#fffbeb;}
-        .del-btn{background:#fee2e2;border:none;border-radius:6px;padding:.3rem .45rem;cursor:pointer;color:#dc2626;flex-shrink:0;}
-        .del-btn:hover{background:#fca5a5;}
-        .tab{padding:.55rem 1.1rem;border-radius:8px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
-        .tab.active{background:#d97706;color:#fff;}
-        .tab:not(.active){background:#f1f5f9;color:#6b7280;}
-        .tab:not(.active):hover{background:#fef9c3;color:#92400e;}
-        .order-badge{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:#fff;flex-shrink:0;}
-    </style>
-</head>
+<html lang="es"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Gestión de Deudas — FinSuite Pro</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
+<script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","recharts":"https://esm.sh/recharts@2.12.0?deps=react@18.2.0"}}</script>
+<style>
+*{box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:#f1f5f9;margin:0;}
+.fs{font-family:'Sora',sans-serif;}
+.bar{background:#0f172a;height:46px;display:flex;align-items:center;padding:0 1.5rem;gap:.5rem;position:sticky;top:0;z-index:100;}
+.bar a{color:#94a3b8;text-decoration:none;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:.4rem;padding:.3rem .65rem;border-radius:8px;transition:.15s;}
+.bar a:hover{background:rgba(255,255,255,.08);color:#f1f5f9;}
+.bar .sep{color:#334155;}.bar .cur{color:#fbbf24;font-size:.8rem;font-weight:700;}
+.badge{background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.25rem .7rem;border-radius:8px;color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.05em;margin-left:auto;}
+.card{background:#fff;border-radius:18px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.ni{border:1.5px solid #e2e8f0;border-radius:9px;padding:.55rem .75rem;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none;transition:.15s;background:#fff;width:100%;}
+.ni:focus{border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.1);}
+.del{background:#fff;border:1.5px solid #fecaca;border-radius:8px;padding:.38rem .5rem;cursor:pointer;color:#f87171;display:flex;align-items:center;flex-shrink:0;transition:.15s;}
+.del:hover{background:#fef2f2;border-color:#f87171;color:#dc2626;}
+.add-row{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;padding:.55rem;border:1.5px dashed #d1d5db;border-radius:9px;background:transparent;color:#94a3b8;font-size:.82rem;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;margin-top:.5rem;}
+.add-row:hover{border-color:#d97706;color:#d97706;background:#fffbeb;}
+.tab-btn{padding:.55rem 1.1rem;border-radius:10px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s;}
+.tab-btn.on{background:#d97706;color:#fff;box-shadow:0 2px 8px rgba(217,119,6,.3);}
+.tab-btn.off{background:#f1f5f9;color:#6b7280;}
+.tab-btn.off:hover{background:#fef9c3;color:#92400e;}
+.rpt-btn{display:flex;align-items:center;gap:.45rem;padding:.55rem 1.1rem;border-radius:10px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
+.rpt-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
+.rpt-btn:disabled{opacity:.6;cursor:not-allowed;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+</style></head>
 <body>
-<div class="suite-bar">
-    <a href="../../index.html">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        Inicio
-    </a>
-    <span class="sep">›</span>
-    <span class="cur">Estrategia Gestión de Deudas</span>
-    <div style="margin-left:auto;background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.28rem .65rem;border-radius:7px;">
-        <span style="color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.05em;">FinSuite Pro</span>
-    </div>
+<div class="bar">
+  <a href="../../index.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Inicio</a>
+  <span class="sep">&#8250;</span><span class="cur">Gestión de Deudas</span>
+  <span class="badge">FinSuite Pro</span>
 </div>
 <div id="root"></div>
 <script type="text/babel" data-type="module">
-import React, { useState, useMemo } from 'react';
-import { createRoot } from 'react-dom/client';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import React,{useState,useMemo} from 'react';
+import {createRoot} from 'react-dom/client';
+import {BarChart,Bar,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,Cell} from 'recharts';
 
-const fmt = v => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);
-const fmtN = (v,d=1) => new Intl.NumberFormat('es-CO',{minimumFractionDigits:0,maximumFractionDigits:d}).format(v||0);
+const COP=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);
+const N=(v,d=1)=>new Intl.NumberFormat('es-CO',{minimumFractionDigits:0,maximumFractionDigits:d}).format(v||0);
 
-// Simula pagos con estrategia dada (debts sorted externally)
-function simular(deudas, pool){
-    if(!deudas.length || pool <= 0) return null;
-    let ds = deudas.map(d=>({...d, saldo: d.saldo, pagado:0}));
-    let mes = 0, totalInt = 0;
-    const maxMeses = 600;
-    while(ds.some(d=>d.saldo>0.01) && mes < maxMeses){
-        mes++;
-        let extra = pool;
-        // minimums
-        for(let d of ds){
-            if(d.saldo<=0) continue;
-            const interes = d.saldo * d.tasa / 100 / 12;
-            const minPago = Math.min(d.saldo + interes, d.minimo);
-            const pago = Math.min(minPago, extra + 0);
-            totalInt += interes;
-            d.saldo = Math.max(0, d.saldo + interes - pago);
-            extra -= (pago - interes);
-            if(extra < 0) extra = 0;
-        }
-        // extra to first
-        for(let d of ds){
-            if(d.saldo>0 && extra>0){
-                const p = Math.min(d.saldo, extra);
-                d.saldo -= p; extra -= p;
-            }
-        }
-        // free up minimums of paid debts
-        for(let d of ds){ if(d.saldo<=0.01){ pool += 0; d.saldo=0; } }
-    }
-    return {meses:mes, totalIntereses:totalInt};
+function MoneyInput({value,onChange,style={}}){
+  const [f,setF]=useState(false);const [r,setR]=useState('');
+  return <input className="ni" style={{textAlign:'right',...style}}
+    value={f?r:(value===0?'':new Intl.NumberFormat('es-CO').format(value))}
+    onChange={e=>{const d=e.target.value.replace(/[^\d]/g,'');setR(d);onChange(d===''?0:parseInt(d,10));}}
+    onFocus={()=>{setF(true);setR(value===0?'':String(value));}} onBlur={()=>setF(false)}
+    placeholder="0" inputMode="numeric"/>;
+}
+function RateInput({value,onChange}){
+  const [v,setV]=useState(String(value));
+  return <input className="ni" style={{textAlign:'right'}} value={v}
+    onChange={e=>{const s=e.target.value.replace(/[^\d.]/g,'');setV(s);onChange(parseFloat(s)||0);}}
+    onBlur={()=>setV(String(value))} placeholder="0" inputMode="decimal"/>;
+}
+function TextInput({value,onChange,style={}}){
+  return <input className="ni" style={style} value={value} onChange={e=>onChange(e.target.value)} placeholder="Nombre de la deuda..."/>;
 }
 
-let idCnt = 4;
-const COLORES = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#8b5cf6','#ec4899'];
+function simular(deudas,pool){
+  if(!deudas.length||pool<=0) return null;
+  let ds=deudas.map(d=>({...d,saldo:d.saldo}));
+  let mes=0,totalInt=0;
+  while(ds.some(d=>d.saldo>1)&&mes<600){
+    mes++;let extra=pool;
+    for(let d of ds){
+      if(d.saldo<=0) continue;
+      const int=d.saldo*d.tasa/100/12;
+      const pagMin=Math.min(d.saldo+int,d.minimo);
+      const pagReal=Math.min(pagMin,extra+int);
+      totalInt+=int;
+      d.saldo=Math.max(0,d.saldo+int-Math.min(pagReal,d.saldo+int));
+      extra-=Math.max(0,pagReal-int);
+      if(extra<0)extra=0;
+    }
+    for(let d of ds){if(d.saldo>0&&extra>0){const p=Math.min(d.saldo,extra);d.saldo-=p;extra-=p;}}
+  }
+  return{meses:mes,totalIntereses:totalInt};
+}
+
+// ── Generadores ───────────────────────────────────────────────────────────────
+
+function pdfHdr(doc,titulo){
+  const W=doc.internal.pageSize.getWidth();
+  doc.setFillColor(15,23,42);doc.rect(0,0,W,36,'F');
+  doc.setFillColor(217,119,6);doc.rect(0,36,W,3,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(241,245,249);
+  doc.text('FinSuite Pro',14,16);
+  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(148,163,184);
+  doc.text(titulo,14,27);
+  doc.text('Generado: '+new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}),W-14,27,{align:'right'});
+}
+function pdfFtrs(doc){
+  const pg=doc.getNumberOfPages();const W=doc.internal.pageSize.getWidth();const H=doc.internal.pageSize.getHeight();
+  for(let i=1;i<=pg;i++){
+    doc.setPage(i);
+    doc.setFillColor(248,250,252);doc.rect(0,H-10,W,10,'F');
+    doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.line(0,H-10,W,H-10);
+    doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(148,163,184);
+    doc.text('FinSuite Pro v1.2 — Estrategia de Gestión de Deudas',14,H-3.5);
+    doc.text('Pág. '+i+' de '+pg,W-14,H-3.5,{align:'right'});
+  }
+}
+function pdfSec(doc,title,y,rgb){
+  if(y>doc.internal.pageSize.getHeight()-50){doc.addPage();y=20;}
+  doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(...rgb);
+  doc.text(title,14,y);
+  doc.setDrawColor(...rgb);doc.setLineWidth(.3);doc.line(14,y+1.5,doc.internal.pageSize.getWidth()-14,y+1.5);
+  return y+9;
+}
+
+function generarPDF(d){
+  const {jsPDF}=window.jspdf;const doc=new jsPDF('p','mm','a4');const M=14;
+  pdfHdr(doc,'Estrategia de Gestión de Deudas');
+  let y=48;
+
+  // Resumen de deudas
+  y=pdfSec(doc,'RESUMEN DE DEUDAS',y,[217,119,6]);
+  doc.autoTable({
+    startY:y,
+    head:[['Deuda','Saldo','Tasa EA','Cuota Mínima']],
+    body:[...d.deudas.map(dd=>[dd.nombre,COP(dd.saldo),N(dd.tasa,1)+'%',COP(dd.minimo)]),
+      ['TOTALES',COP(d.deudas.reduce((a,b)=>a+b.saldo,0)),'—',COP(d.deudas.reduce((a,b)=>a+b.minimo,0))]],
+    theme:'grid',margin:{left:M,right:M},
+    headStyles:{fillColor:[217,119,6],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
+    bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
+    alternateRowStyles:{fillColor:[255,251,235]},
+    columnStyles:{1:{halign:'right'},2:{halign:'center'},3:{halign:'right'}},
+    didDrawPage:()=>pdfFtrs(doc),
+  });
+  y=doc.lastAutoTable.finalY+10;
+
+  // Presupuesto
+  y=pdfSec(doc,'PRESUPUESTO MENSUAL DE PAGO',y,[15,118,110]);
+  doc.autoTable({
+    startY:y,head:[['Concepto','Monto']],
+    body:[['Suma de cuotas mínimas',COP(d.totalMins)],['Abono extra disponible',COP(d.extra)],['Total mensual a deudas',COP(d.pool)]],
+    theme:'grid',margin:{left:M,right:M},
+    headStyles:{fillColor:[15,118,110],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
+    bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
+    columnStyles:{1:{halign:'right',fontStyle:'bold'}},
+    didDrawPage:()=>pdfFtrs(doc),
+  });
+  y=doc.lastAutoTable.finalY+10;
+
+  // Comparativa
+  if(d.snow&&d.aval){
+    y=pdfSec(doc,'COMPARATIVA DE ESTRATEGIAS',y,[30,64,175]);
+    doc.autoTable({
+      startY:y,head:[['Métrica','⛄ Bola de Nieve','🌊 Avalancha','Diferencia']],
+      body:[
+        ['Meses hasta liquidar deudas',d.snow.meses+' meses',d.aval.meses+' meses',Math.abs(d.snow.meses-d.aval.meses)+' meses'],
+        ['Total intereses pagados',COP(Math.round(d.snow.totalIntereses)),COP(Math.round(d.aval.totalIntereses)),COP(Math.round(Math.abs(d.snow.totalIntereses-d.aval.totalIntereses)))],
+        ['Estrategia óptima (menos intereses)','','','✅ '+d.mejorStr],
+      ],
+      theme:'grid',margin:{left:M,right:M},
+      headStyles:{fillColor:[30,64,175],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
+      bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
+      alternateRowStyles:{fillColor:[239,246,255]},
+      columnStyles:{1:{halign:'right'},2:{halign:'right'},3:{halign:'right',fontStyle:'bold'}},
+      didDrawPage:()=>pdfFtrs(doc),
+    });
+    y=doc.lastAutoTable.finalY+10;
+  }
+
+  // Orden de ataque
+  y=pdfSec(doc,'ORDEN DE ATAQUE — '+d.estrategia.toUpperCase(),y,[79,70,229]);
+  doc.autoTable({
+    startY:y,head:[['#','Deuda','Saldo','Tasa EA','Cuota Mín.','Acción']],
+    body:d.orden.map((dd,i)=>[i+1,dd.nombre,COP(dd.saldo),N(dd.tasa,1)+'%',COP(dd.minimo),i===0?'⚡ ATACAR YA':'Esperar']),
+    theme:'grid',margin:{left:M,right:M},
+    headStyles:{fillColor:[79,70,229],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
+    bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
+    alternateRowStyles:{fillColor:[245,243,255]},
+    columnStyles:{0:{halign:'center'},2:{halign:'right'},3:{halign:'center'},4:{halign:'right'},5:{halign:'center'}},
+    didDrawPage:()=>pdfFtrs(doc),
+  });
+
+  pdfFtrs(doc);
+  doc.save('estrategia-gestion-deudas.pdf');
+}
+
+function generarExcel(d){
+  const XLSX=window.XLSX;const wb=XLSX.utils.book_new();const n=v=>Number(v)||0;
+
+  const wsRes=XLSX.utils.aoa_to_sheet([
+    ['ESTRATEGIA DE GESTIÓN DE DEUDAS — FinSuite Pro v1.2'],
+    ['Fecha',new Date().toLocaleDateString('es-CO')],[''],
+    ['RESUMEN GENERAL',''],
+    ['Total deuda pendiente',n(d.deudas.reduce((a,b)=>a+b.saldo,0))],
+    ['Cuotas mínimas mensuales',n(d.totalMins)],
+    ['Abono extra disponible',n(d.extra)],
+    ['Total mensual a deudas',n(d.pool)],[''],
+    ['COMPARATIVA ESTRATEGIAS',''],
+    ['','Bola de Nieve','Avalancha'],
+    ['Meses hasta libertad',d.snow?.meses||'N/A',d.aval?.meses||'N/A'],
+    ['Total intereses',n(d.snow?.totalIntereses),n(d.aval?.totalIntereses)],
+    ['Ahorro con Avalancha',Math.abs(n(d.snow?.totalIntereses)-n(d.aval?.totalIntereses)),''],
+    ['Estrategia óptima',d.mejorStr,''],
+  ]);
+  wsRes['!cols']=[{wch:35},{wch:20},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,wsRes,'Resumen');
+
+  const wsD=XLSX.utils.aoa_to_sheet([
+    ['Deuda','Saldo (COP)','Tasa EA (%)','Cuota Mínima (COP)','Tipo'],
+    ...d.deudas.map(dd=>[dd.nombre,n(dd.saldo),n(dd.tasa),n(dd.minimo),'Deuda']),
+    ['TOTAL',d.deudas.reduce((a,b)=>a+b.saldo,0),'',d.deudas.reduce((a,b)=>a+b.minimo,0),''],
+  ]);
+  wsD['!cols']=[{wch:35},{wch:20},{wch:15},{wch:22},{wch:15}];
+  XLSX.utils.book_append_sheet(wb,wsD,'Deudas');
+
+  const wsPlan=XLSX.utils.aoa_to_sheet([
+    ['ORDEN DE ATAQUE — '+d.estrategia.toUpperCase()],
+    ['Prioridad','Deuda','Saldo','Tasa EA','Cuota Mín.','Acción'],
+    ...d.orden.map((dd,i)=>[i+1,dd.nombre,n(dd.saldo),n(dd.tasa),n(dd.minimo),i===0?'ATACAR PRIMERO':'Esperar turno']),
+  ]);
+  wsPlan['!cols']=[{wch:12},{wch:35},{wch:20},{wch:15},{wch:22},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,wsPlan,'Plan_de_Pago');
+
+  XLSX.writeFile(wb,'estrategia-gestion-deudas.xlsx');
+}
+
+// ── App ───────────────────────────────────────────────────────────────────────
+let uid=5;const nid=()=>++uid;
+const COLORS=['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#8b5cf6','#ec4899'];
 
 function App(){
-    const [deudas, setDeudas] = useState([
-        {id:1, nombre:'Tarjeta Visa',     saldo:5000000,  tasa:28, minimo:150000},
-        {id:2, nombre:'Crédito consumo',  saldo:12000000, tasa:18, minimo:380000},
-        {id:3, nombre:'Tarjeta MC',       saldo:2500000,  tasa:32, minimo:75000},
-    ]);
-    const [poolExtra, setPoolExtra] = useState(500000);
-    const [estrategia, setEstrategia] = useState('avalanche');
+  const [deudas,setDeudas]=useState([
+    {id:1,nombre:'Tarjeta Visa',saldo:5000000,tasa:28,minimo:150000},
+    {id:2,nombre:'Crédito de consumo',saldo:12000000,tasa:18,minimo:380000},
+    {id:3,nombre:'Tarjeta Mastercard',saldo:2500000,tasa:32,minimo:75000},
+  ]);
+  const [extra,setExtra]=useState(500000);
+  const [estr,setEstr]=useState('avalanche');
+  const [gen,setGen]=useState('');
 
-    const totalMins = deudas.reduce((a,b)=>a+b.minimo,0);
-    const pool = totalMins + poolExtra;
+  const upd=(id,k,v)=>setDeudas(a=>a.map(d=>d.id===id?{...d,[k]:v}:d));
+  const del=id=>setDeudas(a=>a.filter(d=>d.id!==id));
+  const add=()=>setDeudas(a=>[...a,{id:nid(),nombre:'Nueva deuda',saldo:0,tasa:20,minimo:0}]);
 
-    const snowball  = useMemo(()=>{
-        const sorted = [...deudas].sort((a,b)=>a.saldo-b.saldo);
-        return simular(sorted, pool);
-    },[deudas, pool]);
+  const totalMins=deudas.reduce((a,b)=>a+b.minimo,0);
+  const pool=totalMins+extra;
+  const snow=useMemo(()=>simular([...deudas].sort((a,b)=>a.saldo-b.saldo),pool),[deudas,pool]);
+  const aval=useMemo(()=>simular([...deudas].sort((a,b)=>b.tasa-a.tasa),pool),[deudas,pool]);
+  const orden=useMemo(()=>{const a=[...deudas];return estr==='snowball'?a.sort((a,b)=>a.saldo-b.saldo):a.sort((a,b)=>b.tasa-a.tasa);},[deudas,estr]);
 
-    const avalanche = useMemo(()=>{
-        const sorted = [...deudas].sort((a,b)=>b.tasa-a.tasa);
-        return simular(sorted, pool);
-    },[deudas, pool]);
+  const ahorro=snow&&aval?Math.abs(snow.totalIntereses-aval.totalIntereses):0;
+  const mejorStr=snow&&aval&&aval.totalIntereses<snow.totalIntereses?'Avalancha':'Bola de Nieve';
+  const barData=snow&&aval?[{name:'Bola de Nieve',val:Math.round(snow.totalIntereses)},{name:'Avalancha',val:Math.round(aval.totalIntereses)}]:[];
 
-    const orden = useMemo(()=>{
-        const arr = [...deudas];
-        if(estrategia==='snowball') arr.sort((a,b)=>a.saldo-b.saldo);
-        else arr.sort((a,b)=>b.tasa-a.tasa);
-        return arr;
-    },[deudas, estrategia]);
+  const dPDF=()=>{setGen('pdf');setTimeout(()=>{generarPDF({deudas,totalMins,extra,pool,snow,aval,orden,mejorStr,estrategia:estr});setGen('');},50);};
+  const dXLS=()=>generarExcel({deudas,totalMins,extra,pool,snow,aval,orden,mejorStr,estrategia:estr});
 
-    const upd = (id, key, val) => setDeudas(arr=>arr.map(d=>d.id===id?{...d,[key]:val}:d));
-    const del = id => setDeudas(arr=>arr.filter(d=>d.id!==id));
-    const add = () => { setDeudas(arr=>[...arr,{id:++idCnt,nombre:'Nueva deuda',saldo:0,tasa:20,minimo:0}]); };
+  return <div style={{maxWidth:1200,margin:'0 auto',padding:'1.5rem'}}>
+    {/* Header */}
+    <div style={{marginBottom:'1.5rem',display:'flex',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
+      <div style={{background:'#fffbeb',padding:'.75rem',borderRadius:14,border:'1px solid #fde68a'}}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      </div>
+      <div style={{flex:1,minWidth:0}}>
+        <h1 className="fs" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0}}>Estrategia de Gestión de Deudas</h1>
+        <p style={{color:'#64748b',fontSize:'.84rem',margin:0}}>Compara Bola de Nieve vs. Avalancha y planifica el camino hacia la libertad financiera.</p>
+      </div>
+      <div style={{display:'flex',gap:'.5rem',flexShrink:0}}>
+        <button className="rpt-btn" style={{background:'linear-gradient(135deg,#dc2626,#b91c1c)',color:'#fff'}} onClick={dPDF} disabled={!!gen}>
+          {gen==='pdf'?'Generando...':<><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Informe PDF</>}
+        </button>
+        <button className="rpt-btn" style={{background:'linear-gradient(135deg,#059669,#047857)',color:'#fff'}} onClick={dXLS}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          Exportar Excel
+        </button>
+      </div>
+    </div>
 
-    const NumF = ({val, onCh}) => {
-        const display = val===0?'': new Intl.NumberFormat('es-CO').format(val);
-        return <input className="ni" value={display} onChange={e=>{const s=e.target.value.replace(/[^\d]/g,'');onCh(s===''?0:parseInt(s,10));}} placeholder="0" style={{textAlign:'right'}}/>;
-    };
-
-    const barData = snowball && avalanche ? [
-        {name:'Bola de Nieve', intereses: Math.round(snowball.totalIntereses), meses: snowball.meses, fill:'#f97316'},
-        {name:'Avalancha',     intereses: Math.round(avalanche.totalIntereses), meses: avalanche.meses, fill:'#0891b2'},
-    ] : [];
-
-    const ahorro = snowball && avalanche ? Math.abs(avalanche.totalIntereses - snowball.totalIntereses) : 0;
-
-    return (
-        <div style={{maxWidth:1100,margin:'0 auto',padding:'1.5rem'}}>
-            {/* Header */}
-            <div style={{marginBottom:'1.5rem',display:'flex',alignItems:'center',gap:'.75rem'}}>
-                <div style={{background:'#fffbeb',padding:'.6rem',borderRadius:12}}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                </div>
-                <div>
-                    <h1 className="font-sora" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0}}>Estrategia de Gestión de Deudas</h1>
-                    <p style={{color:'#64748b',fontSize:'.82rem',margin:0}}>Compara Bola de Nieve vs. Avalancha y elige el mejor camino para liberarte de deudas.</p>
-                </div>
+    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1.5rem',alignItems:'start'}}>
+      <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+        {/* Tabla deudas */}
+        <div className="card">
+          <div style={{padding:'1.1rem 1.4rem',borderBottom:'1px solid #f1f5f9',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <div className="fs" style={{fontSize:'.88rem',fontWeight:700,color:'#0f172a'}}>💳 Mis deudas actuales</div>
+            <div style={{fontSize:'.75rem',color:'#94a3b8'}}>Total: <strong style={{color:'#d97706'}}>{COP(deudas.reduce((a,b)=>a+b.saldo,0))}</strong></div>
+          </div>
+          <div style={{padding:'1.1rem 1.4rem'}}>
+            <div style={{display:'grid',gridTemplateColumns:'1.8fr 1.2fr .85fr 1.1fr auto',gap:'.4rem',marginBottom:'.5rem'}}>
+              {['Deuda','Saldo','Tasa EA','Cuota mín.',''].map(h=><div key={h} style={{fontSize:'.68rem',fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'.07em'}}>{h}</div>)}
             </div>
-
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1.5rem'}}>
-                {/* IZQUIERDA: inputs */}
-                <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-                    <div className="card">
-                        <div className="stitle" style={{color:'#d97706'}}>💳 Mis Deudas</div>
-                        <div style={{display:'grid',gridTemplateColumns:'2fr 1.2fr 1.2fr 1.2fr auto',gap:'.4rem',marginBottom:'.5rem'}}>
-                            {['Deuda','Saldo','Tasa EA %','Mín. mensual',''].map(h=>(
-                                <div key={h} style={{fontSize:'.7rem',fontWeight:700,color:'#9ca3af',textTransform:'uppercase',letterSpacing:'.06em',textAlign:h?'right':'left'}}>{h}</div>
-                            ))}
-                        </div>
-                        {deudas.map((d,i)=>(
-                            <div key={d.id} style={{display:'grid',gridTemplateColumns:'2fr 1.2fr 1.2fr 1.2fr auto',gap:'.4rem',marginBottom:'.4rem',alignItems:'center'}}>
-                                <input className="ni" value={d.nombre} onChange={e=>upd(d.id,'nombre',e.target.value)}/>
-                                <NumF val={d.saldo} onCh={v=>upd(d.id,'saldo',v)}/>
-                                <input className="ni" type="number" min="0" max="200" step="0.1" value={d.tasa} onChange={e=>upd(d.id,'tasa',parseFloat(e.target.value)||0)} style={{textAlign:'right'}}/>
-                                <NumF val={d.minimo} onCh={v=>upd(d.id,'minimo',v)}/>
-                                <button className="del-btn" onClick={()=>del(d.id)}>
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-                                </button>
-                            </div>
-                        ))}
-                        <button className="add-btn" onClick={add}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                            Agregar deuda
-                        </button>
-                    </div>
-
-                    <div className="card">
-                        <div className="stitle" style={{color:'#d97706'}}>💵 Presupuesto de Pago</div>
-                        <div style={{background:'#fffbeb',borderRadius:10,padding:'1rem',marginBottom:'1rem'}}>
-                            <div style={{fontSize:'.82rem',color:'#92400e',marginBottom:'.25rem'}}>Cuotas mínimas totales</div>
-                            <div className="font-sora" style={{fontSize:'1.1rem',fontWeight:800,color:'#d97706'}}>{fmt(totalMins)}/mes</div>
-                        </div>
-                        <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151',display:'block',marginBottom:'.35rem'}}>Dinero extra mensual para abonar</label>
-                        <input className="ni" value={new Intl.NumberFormat('es-CO').format(poolExtra)}
-                            onChange={e=>{const s=e.target.value.replace(/[^\d]/g,'');setPoolExtra(s===''?0:parseInt(s,10));}}
-                            placeholder="0" style={{textAlign:'right',marginBottom:'.5rem'}}/>
-                        <div style={{background:'#f0fdf4',borderRadius:10,padding:'.75rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                            <span style={{fontSize:'.82rem',color:'#374151'}}>Total mensual disponible</span>
-                            <span className="font-sora" style={{fontSize:'1rem',fontWeight:800,color:'#059669'}}>{fmt(pool)}</span>
-                        </div>
-                    </div>
-
-                    {/* Estrategia selector */}
-                    <div className="card">
-                        <div className="stitle" style={{color:'#d97706'}}>⚙️ Estrategia a Visualizar</div>
-                        <div style={{display:'flex',gap:'.5rem'}}>
-                            <button className={`tab ${estrategia==='avalanche'?'active':''}`} onClick={()=>setEstrategia('avalanche')}>🌊 Avalancha (menos intereses)</button>
-                            <button className={`tab ${estrategia==='snowball'?'active':''}`} onClick={()=>setEstrategia('snowball')}>⛄ Bola de Nieve (más motivación)</button>
-                        </div>
-                        <p style={{fontSize:'.8rem',color:'#6b7280',marginTop:'.75rem',lineHeight:1.5,margin:'.75rem 0 0'}}>
-                            {estrategia==='avalanche'
-                                ? 'Paga primero la deuda con la mayor tasa de interés. Minimiza el total pagado en intereses.'
-                                : 'Paga primero la deuda con el saldo más bajo. Genera victorias rápidas que mantienen la motivación.'}
-                        </p>
-                    </div>
-                </div>
-
-                {/* DERECHA: resultados */}
-                <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-                    {/* Comparativa */}
-                    {snowball && avalanche && (
-                        <>
-                        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.85rem'}}>
-                            {[
-                                {label:'⛄ Bola de Nieve',meses:snowball.meses,int:snowball.totalIntereses,color:'#ea580c'},
-                                {label:'🌊 Avalancha',meses:avalanche.meses,int:avalanche.totalIntereses,color:'#0891b2'},
-                            ].map(s=>(
-                                <div key={s.label} className="card" style={{padding:'1.1rem'}}>
-                                    <div className="font-sora" style={{fontSize:'.8rem',fontWeight:700,marginBottom:'.6rem',color:s.color}}>{s.label}</div>
-                                    <div style={{marginBottom:'.4rem'}}>
-                                        <div style={{fontSize:'.7rem',color:'#9ca3af',textTransform:'uppercase',letterSpacing:'.06em'}}>Meses hasta libertad</div>
-                                        <div className="font-sora" style={{fontSize:'1.4rem',fontWeight:800,color:'#0f172a'}}>{s.meses} <span style={{fontSize:'.75rem',color:'#6b7280'}}>meses</span></div>
-                                    </div>
-                                    <div>
-                                        <div style={{fontSize:'.7rem',color:'#9ca3af',textTransform:'uppercase',letterSpacing:'.06em'}}>Total en intereses</div>
-                                        <div className="font-sora" style={{fontSize:'1rem',fontWeight:800,color:s.color}}>{fmt(s.int)}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {ahorro > 100 && (
-                            <div style={{background:'#f0fdf4',border:'1.5px solid #86efac',borderRadius:14,padding:'1rem 1.25rem',display:'flex',alignItems:'center',gap:'.75rem'}}>
-                                <div style={{fontSize:'1.4rem'}}>💡</div>
-                                <div>
-                                    <div className="font-sora" style={{fontSize:'.88rem',fontWeight:700,color:'#15803d'}}>
-                                        La estrategia Avalancha ahorra {fmt(ahorro)} en intereses
-                                    </div>
-                                    <div style={{fontSize:'.78rem',color:'#166534',marginTop:'.15rem'}}>
-                                        {Math.abs(avalanche.meses - snowball.meses) > 0
-                                            ? `y se termina ${Math.abs(avalanche.meses-snowball.meses)} ${avalanche.meses<snowball.meses?'meses antes':'meses después'} que Bola de Nieve.`
-                                            : 'en el mismo tiempo que Bola de Nieve.'}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Gráfico comparativo */}
-                        <div className="card">
-                            <div className="stitle" style={{color:'#374151'}}>📊 Intereses Totales Pagados</div>
-                            <ResponsiveContainer width="100%" height={180}>
-                                <BarChart data={barData} margin={{top:5,right:10,left:0,bottom:5}}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
-                                    <XAxis dataKey="name" tick={{fontSize:12,fill:'#94a3b8'}} axisLine={false} tickLine={false}/>
-                                    <YAxis tickFormatter={v=>`${(v/1000000).toFixed(1)}M`} tick={{fontSize:11,fill:'#94a3b8'}} axisLine={false} tickLine={false} width={44}/>
-                                    <Tooltip formatter={v=>fmt(v)} labelStyle={{fontWeight:700}}/>
-                                    <Bar dataKey="intereses" name="Intereses" radius={[6,6,0,0]}>
-                                        {barData.map((e,i)=><React.Fragment key={i}><rect fill={e.fill}/></React.Fragment>)}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                        </>
-                    )}
-
-                    {/* Orden de ataque */}
-                    <div className="card">
-                        <div className="stitle" style={{color:'#374151'}}>🎯 Orden de Ataque — {estrategia==='avalanche'?'Avalancha':'Bola de Nieve'}</div>
-                        {orden.map((d,i)=>(
-                            <div key={d.id} style={{display:'flex',alignItems:'center',gap:.8+'rem',padding:'.75rem',background:i===0?'#fffbeb':'#fafafa',borderRadius:12,marginBottom:'.5rem',border:`1.5px solid ${i===0?'#fde68a':'#f1f5f9'}`}}>
-                                <div className="order-badge" style={{background:COLORES[i%COLORES.length]}}>{i+1}</div>
-                                <div style={{flex:1}}>
-                                    <div style={{fontSize:'.88rem',fontWeight:700,color:'#1e293b'}}>{d.nombre}</div>
-                                    <div style={{fontSize:'.75rem',color:'#94a3b8'}}>Saldo: {fmt(d.saldo)} · Tasa: {d.tasa}% EA · Mín: {fmt(d.minimo)}</div>
-                                </div>
-                                {i===0 && <span style={{background:'#d97706',color:'#fff',fontSize:'.68rem',fontWeight:700,padding:'.2rem .55rem',borderRadius:99}}>ATACAR PRIMERO</span>}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+            {deudas.map((d,i)=><div key={d.id} style={{display:'grid',gridTemplateColumns:'1.8fr 1.2fr .85fr 1.1fr auto',gap:'.4rem',marginBottom:'.45rem',alignItems:'center'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'.5rem'}}>
+                <div style={{width:8,height:8,borderRadius:'50%',background:COLORS[i%COLORS.length],flexShrink:0}}></div>
+                <TextInput value={d.nombre} onChange={v=>upd(d.id,'nombre',v)} style={{minWidth:0}}/>
+              </div>
+              <MoneyInput value={d.saldo} onChange={v=>upd(d.id,'saldo',v)}/>
+              <RateInput value={d.tasa} onChange={v=>upd(d.id,'tasa',v)}/>
+              <MoneyInput value={d.minimo} onChange={v=>upd(d.id,'minimo',v)}/>
+              <button className="del" onClick={()=>del(d.id)}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+            </div>)}
+            <button className="add-row" onClick={add}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Agregar deuda</button>
+          </div>
         </div>
-    );
-}
 
-const root = createRoot(document.getElementById('root'));
-root.render(<App/>);
+        {/* Presupuesto */}
+        <div className="card" style={{padding:'1.1rem 1.4rem'}}>
+          <div className="fs" style={{fontSize:'.88rem',fontWeight:700,color:'#0f172a',marginBottom:'1rem'}}>💵 Presupuesto mensual</div>
+          <div style={{background:'#fffbeb',border:'1px solid #fde68a',borderRadius:12,padding:'1rem',marginBottom:'1rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <div><div style={{fontSize:'.78rem',color:'#92400e',fontWeight:600}}>Cuotas mínimas</div>
+            <div className="fs" style={{fontSize:'1.1rem',fontWeight:800,color:'#d97706'}}>{COP(totalMins)}<span style={{fontSize:'.75rem',fontWeight:500,color:'#92400e'}}>/mes</span></div></div>
+          </div>
+          <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151',display:'block',marginBottom:'.4rem'}}>Abono extra mensual disponible</label>
+          <MoneyInput value={extra} onChange={setExtra}/>
+          <div style={{background:'#f0fdf4',border:'1px solid #86efac',borderRadius:10,padding:'.75rem 1rem',marginTop:'.75rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <span style={{fontSize:'.82rem',color:'#374151',fontWeight:600}}>Total mensual a deudas</span>
+            <span className="fs" style={{fontSize:'1rem',fontWeight:800,color:'#059669'}}>{COP(pool)}</span>
+          </div>
+        </div>
+
+        {/* Selector */}
+        <div className="card" style={{padding:'1.1rem 1.4rem'}}>
+          <div className="fs" style={{fontSize:'.88rem',fontWeight:700,color:'#0f172a',marginBottom:'.85rem'}}>⚙️ Estrategia activa</div>
+          <div style={{display:'flex',gap:'.5rem'}}>
+            <button className={'tab-btn '+(estr==='avalanche'?'on':'off')} onClick={()=>setEstr('avalanche')}>🌊 Avalancha</button>
+            <button className={'tab-btn '+(estr==='snowball'?'on':'off')} onClick={()=>setEstr('snowball')}>⛄ Bola de Nieve</button>
+          </div>
+          <p style={{fontSize:'.8rem',color:'#64748b',margin:'.75rem 0 0',lineHeight:1.55}}>
+            {estr==='avalanche'?'Paga primero la deuda con mayor tasa. Minimiza el total de intereses pagados a largo plazo.':'Paga primero la deuda de menor saldo. Genera victorias rápidas que mantienen la disciplina.'}
+          </p>
+        </div>
+      </div>
+
+      <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+        {snow&&aval&&<>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.85rem'}}>
+            {[{l:'⛄ Bola de Nieve',r:snow,c:'#ea580c',bg:'#fff7ed',b:'#fed7aa'},{l:'🌊 Avalancha',r:aval,c:'#0891b2',bg:'#ecfeff',b:'#a5f3fc'}].map(s=><div key={s.l} className="card" style={{padding:'1.1rem 1.25rem',background:s.bg,border:'1.5px solid '+s.b}}>
+              <div className="fs" style={{fontSize:'.82rem',fontWeight:700,color:s.c,marginBottom:'.75rem'}}>{s.l}</div>
+              <div style={{marginBottom:'.6rem'}}>
+                <div style={{fontSize:'.68rem',color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',fontWeight:700}}>Meses hasta 0 deuda</div>
+                <div className="fs" style={{fontSize:'1.5rem',fontWeight:800,color:'#0f172a'}}>{s.r.meses}<span style={{fontSize:'.78rem',color:'#6b7280',fontWeight:500}}> meses</span></div>
+              </div>
+              <div>
+                <div style={{fontSize:'.68rem',color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',fontWeight:700}}>Total en intereses</div>
+                <div className="fs" style={{fontSize:'.98rem',fontWeight:800,color:s.c}}>{COP(Math.round(s.r.totalIntereses))}</div>
+              </div>
+            </div>)}
+          </div>
+          {ahorro>1000&&<div style={{background:'#f0fdf4',border:'1.5px solid #86efac',borderRadius:14,padding:'1rem 1.25rem',display:'flex',gap:'.85rem',alignItems:'center'}}>
+            <div style={{fontSize:'1.5rem',lineHeight:1}}>💡</div>
+            <div>
+              <div className="fs" style={{fontSize:'.9rem',fontWeight:800,color:'#15803d'}}>Avalancha ahorra {COP(Math.round(ahorro))} en intereses</div>
+              <div style={{fontSize:'.78rem',color:'#166534',marginTop:'.15rem'}}>La estrategia Avalancha es más eficiente económicamente en este caso.</div>
+            </div>
+          </div>}
+          <div className="card" style={{padding:'1.1rem 1.4rem'}}>
+            <div className="fs" style={{fontSize:'.78rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.75rem'}}>Intereses totales por estrategia</div>
+            <ResponsiveContainer width="100%" height={160}>
+              <BarChart data={barData} margin={{top:0,right:5,left:0,bottom:0}}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
+                <XAxis dataKey="name" tick={{fontSize:11,fill:'#94a3b8'}} axisLine={false} tickLine={false}/>
+                <YAxis tickFormatter={v=>`${(v/1e6).toFixed(1)}M`} tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false} width={42}/>
+                <Tooltip formatter={v=>COP(v)} cursor={{fill:'rgba(0,0,0,.04)'}}/>
+                <Bar dataKey="val" name="Intereses" radius={[6,6,0,0]}><Cell fill="#ea580c"/><Cell fill="#0891b2"/></Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </>}
+        <div className="card" style={{padding:'1.1rem 1.4rem'}}>
+          <div className="fs" style={{fontSize:'.88rem',fontWeight:700,color:'#0f172a',marginBottom:'1rem'}}>🎯 Orden de ataque — {estr==='avalanche'?'Avalancha':'Bola de Nieve'}</div>
+          {orden.map((d,i)=><div key={d.id} style={{display:'flex',alignItems:'center',gap:'.75rem',padding:'.8rem 1rem',background:i===0?'#fffbeb':'#fafafa',borderRadius:12,marginBottom:'.5rem',border:'1.5px solid '+(i===0?'#fde68a':'#f1f5f9')}}>
+            <div style={{width:28,height:28,borderRadius:'50%',background:COLORS[i%COLORS.length],display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:'.78rem',fontWeight:800,flexShrink:0}}>{i+1}</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:'.88rem',fontWeight:700,color:'#1e293b',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{d.nombre}</div>
+              <div style={{fontSize:'.73rem',color:'#94a3b8',marginTop:'.1rem'}}>Saldo {COP(d.saldo)} · {N(d.tasa,1)}% EA · Mín {COP(d.minimo)}</div>
+            </div>
+            {i===0&&<span style={{background:'#d97706',color:'#fff',fontSize:'.68rem',fontWeight:700,padding:'.2rem .6rem',borderRadius:99,flexShrink:0}}>ATACAR YA</span>}
+          </div>)}
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+createRoot(document.getElementById('root')).render(<App/>);
 </script>
 <script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';</script>
-</body>
-</html>
+</body></html>
