@@ -1,264 +1,378 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Planificación para el Retiro — FinSuite Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-    <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
-    <script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","recharts":"https://esm.sh/recharts@2.12.0?deps=react@18.2.0","lucide-react":"https://esm.sh/lucide-react@0.292.0"}}</script>
-    <style>
-        body{font-family:'DM Sans',sans-serif;background:#f8fafc;margin:0;}
-        .font-sora{font-family:'Sora',sans-serif;}
-        ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
-        .suite-bar{background:#0f172a;height:44px;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:50;}
-        .suite-bar a{color:#94a3b8;text-decoration:none;font-size:.8rem;font-weight:600;padding:.3rem .65rem;border-radius:8px;display:flex;align-items:center;gap:.45rem;transition:all .2s;}
-        .suite-bar a:hover{background:rgba(255,255,255,.07);color:#f1f5f9;}
-        .suite-bar .sep{color:rgba(255,255,255,.2);}
-        .suite-bar .cur{color:#c4b5fd;font-size:.8rem;font-weight:700;}
-        .card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:1.4rem;}
-        .stitle{font-family:'Sora',sans-serif;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;}
-        .ni{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:.65rem .85rem;font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;}
-        .ni:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.1);}
-        .slider{width:100%;height:6px;border-radius:3px;background:#e2e8f0;-webkit-appearance:none;outline:none;cursor:pointer;}
-        .slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#7c3aed;cursor:pointer;box-shadow:0 2px 6px rgba(124,58,237,.4);}
-        .milestone{border-radius:10px;padding:.7rem 1rem;display:flex;align-items:center;gap:.75rem;}
-    </style>
-</head>
+<html lang="es"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Planificación para el Retiro — FinSuite Pro</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
+<script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","recharts":"https://esm.sh/recharts@2.12.0?deps=react@18.2.0"}}</script>
+<style>
+*{box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:#f1f5f9;margin:0;}
+.fs{font-family:'Sora',sans-serif;}
+.bar{background:#0f172a;height:46px;display:flex;align-items:center;padding:0 1.5rem;gap:.5rem;position:sticky;top:0;z-index:100;}
+.bar a{color:#94a3b8;text-decoration:none;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:.4rem;padding:.3rem .65rem;border-radius:8px;transition:.15s;}
+.bar a:hover{background:rgba(255,255,255,.08);color:#f1f5f9;}
+.bar .sep{color:#334155;}.bar .cur{color:#c4b5fd;font-size:.8rem;font-weight:700;}
+.badge{background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.25rem .7rem;border-radius:8px;color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.05em;margin-left:auto;}
+.card{background:#fff;border-radius:18px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.ni{border:1.5px solid #e2e8f0;border-radius:10px;padding:.65rem .85rem;font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:.15s;background:#fff;width:100%;}
+.ni:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.1);}
+.slider{width:100%;height:6px;border-radius:3px;background:#e2e8f0;-webkit-appearance:none;outline:none;cursor:pointer;accent-color:#7c3aed;}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#7c3aed;cursor:pointer;box-shadow:0 2px 8px rgba(124,58,237,.4);}
+.rpt-btn{display:flex;align-items:center;gap:.45rem;padding:.55rem 1.1rem;border-radius:10px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
+.rpt-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
+.rpt-btn:disabled{opacity:.6;cursor:not-allowed;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+</style></head>
 <body>
-<div class="suite-bar">
-    <a href="../../index.html">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        Inicio
-    </a>
-    <span class="sep">›</span>
-    <span class="cur">Planificación para el Retiro</span>
-    <div style="margin-left:auto;background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.28rem .65rem;border-radius:7px;">
-        <span style="color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.05em;">FinSuite Pro</span>
-    </div>
+<div class="bar">
+  <a href="../../index.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Inicio</a>
+  <span class="sep">&#8250;</span><span class="cur">Planificación para el Retiro</span>
+  <span class="badge">FinSuite Pro</span>
 </div>
 <div id="root"></div>
 <script type="text/babel" data-type="module">
-import React, { useState, useMemo } from 'react';
-import { createRoot } from 'react-dom/client';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import React,{useState,useMemo} from 'react';
+import {createRoot} from 'react-dom/client';
+import {AreaChart,Area,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer} from 'recharts';
 
-const fmt = v => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);
-const fmtN = (v,d=1) => new Intl.NumberFormat('es-CO',{minimumFractionDigits:0,maximumFractionDigits:d}).format(v||0);
-const fmtM = v => v>=1e9?`${fmtN(v/1e9,2)}B`:v>=1e6?`${fmtN(v/1e6,2)}M`:v>=1e3?`${fmtN(v/1e3,1)}K`:fmt(v);
+const COP=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);
+const N=(v,d=1)=>new Intl.NumberFormat('es-CO',{minimumFractionDigits:0,maximumFractionDigits:d}).format(v||0);
+const fmtM=v=>v>=1e9?N(v/1e9,2)+'B':v>=1e6?N(v/1e6,2)+'M':v>=1e3?N(v/1e3,1)+'K':COP(v);
 
-function NumInput({label, value, onChange, note, min=0}){
-    const display = value===0?'': new Intl.NumberFormat('es-CO').format(value);
-    return (
-        <div>
-            <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151',display:'block',marginBottom:'.3rem'}}>{label}</label>
-            <input className="ni" value={display} onChange={e=>{const s=e.target.value.replace(/[^\d]/g,'');onChange(s===''?0:parseInt(s,10));}} placeholder="0"/>
-            {note && <p style={{fontSize:'.72rem',color:'#9ca3af',marginTop:'.25rem'}}>{note}</p>}
-        </div>
-    );
+function MoneyInput({label,value,onChange,note}){
+  const [f,setF]=useState(false);const [r,setR]=useState('');
+  return <div>
+    {label&&<label style={{fontSize:'.82rem',fontWeight:600,color:'#374151',display:'block',marginBottom:'.3rem'}}>{label}</label>}
+    <input className="ni" value={f?r:(value===0?'':new Intl.NumberFormat('es-CO').format(value))}
+      onChange={e=>{const d=e.target.value.replace(/[^\d]/g,'');setR(d);onChange(d===''?0:parseInt(d,10));}}
+      onFocus={()=>{setF(true);setR(value===0?'':String(value));}} onBlur={()=>setF(false)}
+      placeholder="0" inputMode="numeric"/>
+    {note&&<p style={{fontSize:'.72rem',color:'#94a3b8',margin:'.2rem 0 0'}}>{note}</p>}
+  </div>;
 }
 
+// ── Generadores ───────────────────────────────────────────────────────────────
+
+function generarPDF(d){
+  const {jsPDF}=window.jspdf;const doc=new jsPDF('p','mm','a4');const M=14;const W=doc.internal.pageSize.getWidth();const H=doc.internal.pageSize.getHeight();
+
+  const ftrs=()=>{
+    const pg=doc.getNumberOfPages();
+    for(let i=1;i<=pg;i++){
+      doc.setPage(i);doc.setFillColor(248,250,252);doc.rect(0,H-10,W,10,'F');
+      doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.line(0,H-10,W,H-10);
+      doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(148,163,184);
+      doc.text('FinSuite Pro v1.2 — Planificación para el Retiro',M,H-3.5);
+      doc.text('Pág. '+i+' de '+pg,W-M,H-3.5,{align:'right'});
+    }
+  };
+
+  // Header
+  doc.setFillColor(76,29,149);doc.rect(0,0,W,36,'F');
+  doc.setFillColor(124,58,237);doc.rect(0,36,W,3,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(241,245,249);
+  doc.text('FinSuite Pro',M,16);
+  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(196,181,253);
+  doc.text('Planificación para el Retiro',M,27);
+  doc.text('Generado: '+new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}),W-M,27,{align:'right'});
+  let y=48;
+
+  // Parámetros
+  doc.autoTable({
+    startY:y,head:[['Parámetro de Entrada','Valor']],
+    body:[
+      ['Edad actual',d.edadActual+' años'],
+      ['Edad de retiro',d.edadRetiro+' años'],
+      ['Horizonte de ahorro',d.anios+' años'],
+      ['Ahorro actual acumulado',COP(d.ahorroActual)],
+      ['Aporte mensual',COP(d.aporteMensual)],
+      ['Tasa de rendimiento anual',d.tasaAnual+'% EA'],
+      ['Meta de fondo para retiro',COP(d.meta)],
+    ],
+    theme:'grid',margin:{left:M,right:M},
+    headStyles:{fillColor:[76,29,149],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
+    bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
+    alternateRowStyles:{fillColor:[245,243,255]},
+    columnStyles:{1:{halign:'right',fontStyle:'bold'}},
+    didDrawPage:()=>ftrs(),
+  });
+  y=doc.lastAutoTable.finalY+10;
+
+  // Resultados
+  const pct=d.meta>0?Math.min(100,(d.fv/d.meta)*100):100;
+  const ok=d.fv>=d.meta;
+  doc.setFillColor(ok?220:254,ok?252:243,ok?231:199);
+  doc.roundedRect(M,y,W-M*2,22,3,3,'F');
+  doc.setDrawColor(ok?22:161,ok?163:98,ok?74:7);doc.setLineWidth(.4);doc.roundedRect(M,y,W-M*2,22,3,3,'S');
+  doc.setFont('helvetica','bold');doc.setFontSize(13);doc.setTextColor(ok?21:161,ok?128:98,ok?61:7);
+  doc.text('Fondo proyectado: '+fmtM(d.fv),M+6,y+9);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  doc.text((ok?'✓ META ALCANZADA':'× Meta no alcanzada')+' · '+N(pct,1)+'% de '+COP(d.meta),M+6,y+17);
+  y+=30;
+
+  doc.autoTable({
+    startY:y,head:[['Indicador','Valor']],
+    body:[
+      ['Fondo proyectado al retiro',fmtM(d.fv)],
+      ['Total aportado',COP(d.totalAportado)],
+      ['Intereses ganados (rendimientos)',COP(Math.max(0,d.totalIntereses))],
+      ['Multiplicador del capital',N(d.mult,2)+'x'],
+      ['% de la meta alcanzado',N(pct,1)+'%'],
+    ],
+    theme:'grid',margin:{left:M,right:M},
+    headStyles:{fillColor:[124,58,237],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
+    bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
+    alternateRowStyles:{fillColor:[245,243,255]},
+    columnStyles:{1:{halign:'right',fontStyle:'bold',textColor:[124,58,237]}},
+    didDrawPage:()=>ftrs(),
+  });
+  y=doc.lastAutoTable.finalY+10;
+
+  // Tabla proyección (máx 30 filas)
+  doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(76,29,149);
+  doc.text('PROYECCIÓN AÑO A AÑO',M,y);
+  doc.setDrawColor(76,29,149);doc.setLineWidth(.3);doc.line(M,y+1.5,W-M,y+1.5);
+  y+=9;
+
+  const rows=d.chart.filter((_,i)=>i%Math.max(1,Math.floor(d.chart.length/30))===0||i===d.chart.length-1);
+  doc.autoTable({
+    startY:y,head:[['Edad','Fondo Total','Total Aportado','Intereses Acum.']],
+    body:rows.map(r=>[r.edad+' años',COP(r.fondo),COP(r.aportado),COP(Math.max(0,r.fondo-r.aportado))]),
+    theme:'striped',margin:{left:M,right:M},
+    headStyles:{fillColor:[76,29,149],textColor:[255,255,255],fontSize:8.5,fontStyle:'bold'},
+    bodyStyles:{fontSize:8,textColor:[30,41,59]},
+    alternateRowStyles:{fillColor:[245,243,255]},
+    columnStyles:{0:{halign:'center'},1:{halign:'right'},2:{halign:'right'},3:{halign:'right'}},
+    didDrawPage:()=>ftrs(),
+  });
+  y=doc.lastAutoTable.finalY+10;
+
+  // Hitos
+  doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(76,29,149);
+  doc.text('HITOS DE LA META',M,y>H-60?20:y);if(y>H-60){doc.addPage();y=20;}
+  doc.setDrawColor(76,29,149);doc.setLineWidth(.3);doc.line(M,y+1.5,W-M,y+1.5);y+=9;
+  doc.autoTable({
+    startY:y,head:[['Hito','Monto objetivo','Edad estimada','Estado']],
+    body:d.milestones.map(m=>[m.pct+'% de la meta',COP(d.meta*m.pct/100),m.edad?'A los '+m.edad+' años':'No alcanzado',m.edad?'✅ Alcanzado':'⏳ Pendiente']),
+    theme:'grid',margin:{left:M,right:M},
+    headStyles:{fillColor:[124,58,237],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
+    bodyStyles:{fontSize:8.5},
+    columnStyles:{1:{halign:'right'},2:{halign:'center'},3:{halign:'center'}},
+    didDrawPage:()=>ftrs(),
+  });
+
+  ftrs();doc.save('planificacion-retiro.pdf');
+}
+
+function generarExcel(d){
+  const XLSX=window.XLSX;const wb=XLSX.utils.book_new();const n=v=>Number(v)||0;
+
+  const wsP=XLSX.utils.aoa_to_sheet([
+    ['PLANIFICACIÓN PARA EL RETIRO — FinSuite Pro v1.2'],
+    ['Fecha',new Date().toLocaleDateString('es-CO')],[''],
+    ['PARÁMETROS DE ENTRADA',''],
+    ['Edad actual',d.edadActual],['Edad de retiro',d.edadRetiro],['Horizonte (años)',d.anios],
+    ['Ahorro actual',n(d.ahorroActual)],['Aporte mensual',n(d.aporteMensual)],
+    ['Tasa anual (%)',d.tasaAnual],['Meta de retiro',n(d.meta)],[''],
+    ['RESULTADOS',''],
+    ['Fondo proyectado',n(d.fv)],['Total aportado',n(d.totalAportado)],
+    ['Intereses ganados',n(d.totalIntereses)],['Multiplicador',n(d.mult)],
+    ['% meta alcanzado',Math.round(Math.min(100,d.fv/d.meta*100)*10)/10],
+  ]);
+  wsP['!cols']=[{wch:35},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,wsP,'Parámetros');
+
+  const wsC=XLSX.utils.aoa_to_sheet([
+    ['Edad','Fondo Total (COP)','Total Aportado (COP)','Intereses Acumulados (COP)','Aporte Mensual (COP)'],
+    ...d.chart.map(r=>[r.edad,n(r.fondo),n(r.aportado),Math.max(0,r.fondo-r.aportado),n(d.aporteMensual)]),
+  ]);
+  wsC['!cols']=[{wch:10},{wch:22},{wch:22},{wch:25},{wch:22}];
+  XLSX.utils.book_append_sheet(wb,wsC,'Proyección_Anual');
+
+  const wsH=XLSX.utils.aoa_to_sheet([
+    ['Hito','Monto Objetivo (COP)','Edad Estimada','Estado'],
+    ...d.milestones.map(m=>[m.pct+'% de la meta',n(d.meta*m.pct/100),m.edad||'No alcanzado',m.edad?'Alcanzado':'Pendiente']),
+  ]);
+  wsH['!cols']=[{wch:20},{wch:22},{wch:18},{wch:15}];
+  XLSX.utils.book_append_sheet(wb,wsH,'Hitos');
+
+  XLSX.writeFile(wb,'planificacion-retiro.xlsx');
+}
+
+// ── App ────────────────────────────────────────────────────────────────────────
 function App(){
-    const [edadActual, setEdadActual]     = useState(30);
-    const [edadRetiro, setEdadRetiro]     = useState(65);
-    const [ahorroActual, setAhorroActual] = useState(20000000);
-    const [aporteMensual, setAporteMensual] = useState(600000);
-    const [tasaAnual, setTasaAnual]       = useState(8);
-    const [metaRetiro, setMetaRetiro]     = useState(500000000);
+  const [edadActual,setEdad]=useState(30);
+  const [edadRetiro,setRetiro]=useState(65);
+  const [ahorroActual,setAhorro]=useState(20000000);
+  const [aporteMensual,setAporte]=useState(600000);
+  const [tasaAnual,setTasa]=useState(8);
+  const [meta,setMeta]=useState(500000000);
+  const [gen,setGen]=useState('');
 
-    const anios = Math.max(0, edadRetiro - edadActual);
-    const r     = tasaAnual / 100 / 12;
-    const n     = anios * 12;
+  const anios=Math.max(0,edadRetiro-edadActual);
+  const r=tasaAnual/100/12;const n_=anios*12;
 
-    const fv = useMemo(()=>{
-        if(anios <= 0) return ahorroActual;
-        const fvPV  = ahorroActual * Math.pow(1 + r, n);
-        const fvPMT = r > 0 ? aporteMensual * ((Math.pow(1+r,n)-1)/r) : aporteMensual * n;
-        return fvPV + fvPMT;
-    },[ahorroActual, aporteMensual, r, n, anios]);
+  const fv=useMemo(()=>{
+    if(anios<=0) return ahorroActual;
+    return ahorroActual*Math.pow(1+r,n_)+(r>0?aporteMensual*((Math.pow(1+r,n_)-1)/r):aporteMensual*n_);
+  },[ahorroActual,aporteMensual,r,n_,anios]);
 
-    const chartData = useMemo(()=>{
-        let balance = ahorroActual;
-        const data = [{año: edadActual, fondo: balance, ahorros: ahorroActual, interes: 0}];
-        for(let y=1; y<=anios; y++){
-            let fondoAnterior = balance;
-            for(let m=0; m<12; m++){
-                const int = balance * r;
-                balance += int + aporteMensual;
-            }
-            data.push({
-                año: edadActual + y,
-                fondo: Math.round(balance),
-                ahorros: Math.round(ahorroActual + aporteMensual * 12 * y),
-                interes: Math.round(balance - (ahorroActual + aporteMensual*12*y)),
-            });
-        }
-        return data;
-    },[ahorroActual, aporteMensual, r, anios, edadActual]);
+  const chart=useMemo(()=>{
+    let bal=ahorroActual;
+    const data=[{edad:edadActual,fondo:bal,aportado:ahorroActual}];
+    for(let y=1;y<=anios;y++){
+      for(let m=0;m<12;m++) bal+=bal*r+aporteMensual;
+      data.push({edad:edadActual+y,fondo:Math.round(bal),aportado:Math.round(ahorroActual+aporteMensual*12*y)});
+    }
+    return data;
+  },[ahorroActual,aporteMensual,r,anios,edadActual]);
 
-    const metaAlcanzada = fv >= metaRetiro;
-    const porcentajeMeta = metaRetiro > 0 ? Math.min(100, (fv/metaRetiro)*100) : 100;
-    const multiplicador  = ahorroActual > 0 ? fv / ahorroActual : 0;
-    const totalAportado  = ahorroActual + aporteMensual * 12 * anios;
-    const totalIntereses = fv - totalAportado;
+  const pct=meta>0?Math.min(100,(fv/meta)*100):100;
+  const alcanza=fv>=meta;
+  const totalAportado=ahorroActual+aporteMensual*12*anios;
+  const totalIntereses=Math.max(0,fv-totalAportado);
+  const mult=ahorroActual>0?fv/ahorroActual:0;
 
-    const milestones = [
-        {pct:25, label:'25% de la meta'},
-        {pct:50, label:'50% de la meta'},
-        {pct:75, label:'75% de la meta'},
-        {pct:100, label:'Meta alcanzada 🎉'},
-    ].map(m => {
-        // find the year when fondo >= metaRetiro * m.pct / 100
-        const target = metaRetiro * m.pct / 100;
-        const dp = chartData.find(d => d.fondo >= target);
-        return {...m, edad: dp ? dp.año : null};
-    });
+  const milestones=[25,50,75,100].map(p=>{
+    const target=meta*p/100;
+    const dp=chart.find(d=>d.fondo>=target);
+    return{pct:p,edad:dp?dp.edad:null};
+  });
 
-    return (
-        <div style={{maxWidth:1100,margin:'0 auto',padding:'1.5rem'}}>
-            <div style={{marginBottom:'1.5rem',display:'flex',alignItems:'center',gap:'.75rem'}}>
-                <div style={{background:'#f5f3ff',padding:'.6rem',borderRadius:12}}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5 1.5-7.5 1.5-11 0-.2-.6-1.5-2-3-2H2C2 5 .8 6.3 1 8c.5 3 2.3 5.5 4.5 6.5l-.5 2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1l-.5-2c2.2-1 4-3.5 4.5-6.5.2-1.7-1-3-1-3h-1z"/></svg>
-                </div>
-                <div>
-                    <h1 className="font-sora" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0}}>Planificación para el Retiro</h1>
-                    <p style={{color:'#64748b',fontSize:'.82rem',margin:0}}>Proyecta tu fondo de retiro con interés compuesto y aportes mensuales sistemáticos.</p>
-                </div>
+  const dPDF=()=>{setGen('pdf');setTimeout(()=>{generarPDF({edadActual,edadRetiro,ahorroActual,aporteMensual,tasaAnual,meta,anios,fv,totalAportado,totalIntereses,mult,chart,milestones});setGen('');},50);};
+  const dXLS=()=>generarExcel({edadActual,edadRetiro,ahorroActual,aporteMensual,tasaAnual,meta,anios,fv,totalAportado,totalIntereses,mult,chart,milestones});
+
+  const Slider=({label,value,onChange,min,max,step=1,unit='años',sfx=''})=><div>
+    <div style={{display:'flex',justifyContent:'space-between',marginBottom:'.35rem'}}>
+      <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151'}}>{label}</label>
+      <span className="fs" style={{fontSize:'.9rem',fontWeight:700,color:'#7c3aed'}}>{value}{unit}{sfx}</span>
+    </div>
+    <input type="range" className="slider" min={min} max={max} step={step} value={value} onChange={e=>onChange(step===1?parseInt(e.target.value):parseFloat(e.target.value))}/>
+  </div>;
+
+  const CT=({active,payload,label})=>{
+    if(!active||!payload?.length) return null;
+    return <div style={{background:'#fff',border:'1px solid #e2e8f0',borderRadius:10,padding:'.75rem 1rem',boxShadow:'0 4px 16px rgba(0,0,0,.1)'}}>
+      <div className="fs" style={{fontSize:'.8rem',fontWeight:700,color:'#374151',marginBottom:'.4rem'}}>Edad: {label} años</div>
+      {payload.map((p,i)=><div key={i} style={{fontSize:'.78rem',color:p.color,fontWeight:600}}>{p.name}: {COP(p.value)}</div>)}
+    </div>;
+  };
+
+  return <div style={{maxWidth:1200,margin:'0 auto',padding:'1.5rem'}}>
+    <div style={{marginBottom:'1.5rem',display:'flex',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
+      <div style={{background:'#f5f3ff',padding:'.75rem',borderRadius:14,border:'1px solid #ddd6fe'}}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5 1.5-7.5 1.5-11 0-.2-.6-1.5-2-3-2H2C2 5 .8 6.3 1 8c.5 3 2.3 5.5 4.5 6.5l-.5 2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1l-.5-2c2.2-1 4-3.5 4.5-6.5.2-1.7-1-3-1-3h-1z"/></svg>
+      </div>
+      <div style={{flex:1,minWidth:0}}>
+        <h1 className="fs" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0}}>Planificación para el Retiro</h1>
+        <p style={{color:'#64748b',fontSize:'.84rem',margin:0}}>Proyecta tu fondo pensional con interés compuesto y aportes periódicos.</p>
+      </div>
+      <div style={{display:'flex',gap:'.5rem',flexShrink:0}}>
+        <button className="rpt-btn" style={{background:'linear-gradient(135deg,#dc2626,#b91c1c)',color:'#fff'}} onClick={dPDF} disabled={!!gen}>
+          {gen==='pdf'?'Generando...':<><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Informe PDF</>}
+        </button>
+        <button className="rpt-btn" style={{background:'linear-gradient(135deg,#059669,#047857)',color:'#fff'}} onClick={dXLS}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          Exportar Excel
+        </button>
+      </div>
+    </div>
+
+    <div style={{display:'grid',gridTemplateColumns:'340px 1fr',gap:'1.5rem',alignItems:'start'}}>
+      <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+        <div className="card" style={{padding:'1.25rem 1.4rem'}}>
+          <div className="fs" style={{fontSize:'.82rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:'1rem'}}>👤 Perfil</div>
+          <div style={{display:'flex',flexDirection:'column',gap:'1.1rem'}}>
+            <Slider label="Edad actual" value={edadActual} onChange={setEdad} min={18} max={70}/>
+            <Slider label="Edad de retiro" value={edadRetiro} onChange={v=>setRetiro(Math.max(edadActual+1,v))} min={edadActual+1} max={85}/>
+            <div style={{background:'#f5f3ff',borderRadius:10,padding:'.7rem 1rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <span style={{fontSize:'.82rem',color:'#6d28d9',fontWeight:600}}>Horizonte de ahorro</span>
+              <span className="fs" style={{fontSize:'1.1rem',fontWeight:800,color:'#7c3aed'}}>{anios} años</span>
             </div>
-
-            <div style={{display:'grid',gridTemplateColumns:'340px 1fr',gap:'1.5rem'}}>
-                {/* INPUTS */}
-                <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-                    <div className="card">
-                        <div className="stitle" style={{color:'#7c3aed'}}>👤 Datos personales</div>
-                        <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-                            <div>
-                                <div style={{display:'flex',justifyContent:'space-between',marginBottom:'.3rem'}}>
-                                    <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151'}}>Edad actual</label>
-                                    <span className="font-sora" style={{fontSize:'.9rem',fontWeight:700,color:'#7c3aed'}}>{edadActual} años</span>
-                                </div>
-                                <input type="range" className="slider" min="18" max="70" value={edadActual} onChange={e=>setEdadActual(parseInt(e.target.value))}/>
-                            </div>
-                            <div>
-                                <div style={{display:'flex',justifyContent:'space-between',marginBottom:'.3rem'}}>
-                                    <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151'}}>Edad de retiro</label>
-                                    <span className="font-sora" style={{fontSize:'.9rem',fontWeight:700,color:'#7c3aed'}}>{edadRetiro} años</span>
-                                </div>
-                                <input type="range" className="slider" min={edadActual+1} max="85" value={edadRetiro} onChange={e=>setEdadRetiro(parseInt(e.target.value))}/>
-                            </div>
-                            <div style={{background:'#f5f3ff',borderRadius:10,padding:'.75rem',textAlign:'center'}}>
-                                <span style={{fontSize:'.82rem',color:'#7c3aed'}}>Tiempo de ahorro:</span>
-                                <span className="font-sora" style={{fontSize:'1.1rem',fontWeight:800,color:'#6d28d9',marginLeft:'.5rem'}}>{anios} años</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="card">
-                        <div className="stitle" style={{color:'#7c3aed'}}>💰 Ahorros y aportes</div>
-                        <div style={{display:'flex',flexDirection:'column',gap:.9+'rem'}}>
-                            <NumInput label="Ahorro actual acumulado" value={ahorroActual} onChange={setAhorroActual} note="Capital inicial que ya tienes ahorrado"/>
-                            <NumInput label="Aporte mensual" value={aporteMensual} onChange={setAporteMensual} note="Cuánto puedes aportar cada mes"/>
-                        </div>
-                    </div>
-
-                    <div className="card">
-                        <div className="stitle" style={{color:'#7c3aed'}}>📈 Parámetros de inversión</div>
-                        <div style={{marginBottom:'1rem'}}>
-                            <div style={{display:'flex',justifyContent:'space-between',marginBottom:'.3rem'}}>
-                                <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151'}}>Tasa de rendimiento anual</label>
-                                <span className="font-sora" style={{fontSize:'.9rem',fontWeight:700,color:'#7c3aed'}}>{tasaAnual}% EA</span>
-                            </div>
-                            <input type="range" className="slider" min="1" max="25" step="0.5" value={tasaAnual} onChange={e=>setTasaAnual(parseFloat(e.target.value))}/>
-                            <div style={{display:'flex',justifyContent:'space-between',marginTop:'.25rem'}}>
-                                <span style={{fontSize:'.7rem',color:'#94a3b8'}}>Conservador (4-6%)</span>
-                                <span style={{fontSize:'.7rem',color:'#94a3b8'}}>Agresivo (12-15%)</span>
-                            </div>
-                        </div>
-                        <NumInput label="Meta de fondo para retiro" value={metaRetiro} onChange={setMetaRetiro} note="¿Cuánto quieres tener al jubilarte?"/>
-                    </div>
-                </div>
-
-                {/* RESULTADOS */}
-                <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-                    {/* Gran número */}
-                    <div style={{background:'linear-gradient(135deg,#4c1d95,#7c3aed)',borderRadius:18,padding:'1.75rem',color:'#fff',textAlign:'center'}}>
-                        <div style={{fontSize:'.82rem',fontWeight:600,color:'rgba(255,255,255,.7)',textTransform:'uppercase',letterSpacing:'.1em',marginBottom:'.5rem'}}>Fondo proyectado al retiro</div>
-                        <div className="font-sora" style={{fontSize:'clamp(1.8rem,4vw,2.6rem)',fontWeight:800,letterSpacing:'-.03em',marginBottom:'.25rem'}}>{fmtM(fv)}</div>
-                        <div style={{fontSize:'.9rem',color:'rgba(255,255,255,.7)'}}>A los {edadRetiro} años · {anios} años de ahorro</div>
-                        <div style={{marginTop:'1.25rem',background:'rgba(255,255,255,.1)',borderRadius:999,height:'10px',overflow:'hidden'}}>
-                            <div style={{height:'100%',width:`${porcentajeMeta}%`,background:'linear-gradient(90deg,#a78bfa,#c4b5fd)',borderRadius:999,transition:'width .5s'}}></div>
-                        </div>
-                        <div style={{fontSize:'.82rem',color:'rgba(255,255,255,.7)',marginTop:'.4rem'}}>{fmtN(porcentajeMeta)}% de tu meta · {metaAlcanzada?'✅ Meta alcanzada':'Sigue ahorrando'}</div>
-                    </div>
-
-                    {/* KPIs */}
-                    <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'.85rem'}}>
-                        {[
-                            {label:'Total Aportado',val:fmt(totalAportado),color:'#7c3aed',bg:'#f5f3ff'},
-                            {label:'Intereses Ganados',val:fmt(Math.max(0,totalIntereses)),color:'#059669',bg:'#f0fdf4'},
-                            {label:'Multiplicador',val:`×${fmtN(multiplicador,1)}`,color:'#0891b2',bg:'#ecfeff'},
-                        ].map(k=>(
-                            <div key={k.label} className="card" style={{padding:'1rem',textAlign:'center',background:k.bg}}>
-                                <div style={{fontSize:'.7rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.35rem'}}>{k.label}</div>
-                                <div className="font-sora" style={{fontSize:'1.05rem',fontWeight:800,color:k.color}}>{k.val}</div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Gráfico */}
-                    <div className="card">
-                        <div className="stitle" style={{color:'#374151'}}>📈 Crecimiento del fondo año a año</div>
-                        <ResponsiveContainer width="100%" height={220}>
-                            <AreaChart data={chartData} margin={{top:5,right:10,left:0,bottom:5}}>
-                                <defs>
-                                    <linearGradient id="gFondo" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.3}/>
-                                        <stop offset="95%" stopColor="#7c3aed" stopOpacity={0.02}/>
-                                    </linearGradient>
-                                    <linearGradient id="gAhorros" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.2}/>
-                                        <stop offset="95%" stopColor="#94a3b8" stopOpacity={0.02}/>
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
-                                <XAxis dataKey="año" tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false} interval={Math.max(1,Math.floor(anios/8))}/>
-                                <YAxis tickFormatter={v=>fmtM(v)} tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false} width={55}/>
-                                <Tooltip formatter={v=>fmt(v)} labelFormatter={v=>`Edad: ${v} años`}/>
-                                <Area type="monotone" dataKey="ahorros" name="Aportado" stroke="#94a3b8" fill="url(#gAhorros)" strokeWidth={1.5} strokeDasharray="4 2"/>
-                                <Area type="monotone" dataKey="fondo" name="Fondo Total" stroke="#7c3aed" fill="url(#gFondo)" strokeWidth={2.5}/>
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
-
-                    {/* Hitos */}
-                    <div className="card">
-                        <div className="stitle" style={{color:'#374151'}}>🏆 Hitos de la Meta</div>
-                        {milestones.map((m,i)=>(
-                            <div key={i} className="milestone" style={{background: m.edad ? '#f0fdf4':'#f8fafc',marginBottom:'.5rem',border:`1.5px solid ${m.edad?'#86efac':'#e2e8f0'}`}}>
-                                <div style={{width:36,height:36,borderRadius:10,background:m.edad?'#dcfce7':'#f1f5f9',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                                    <span style={{fontSize:'1rem'}}>{m.edad?'✅':'⏳'}</span>
-                                </div>
-                                <div style={{flex:1}}>
-                                    <div style={{fontSize:'.85rem',fontWeight:700,color:'#1e293b'}}>{m.label}</div>
-                                    <div style={{fontSize:'.75rem',color:'#94a3b8'}}>{fmt(metaRetiro*m.pct/100)}</div>
-                                </div>
-                                {m.edad
-                                    ? <span className="font-sora" style={{fontSize:'.82rem',fontWeight:700,color:'#15803d'}}>A los {m.edad} años</span>
-                                    : <span style={{fontSize:'.78rem',color:'#9ca3af'}}>No alcanzado</span>
-                                }
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-    );
-}
+        <div className="card" style={{padding:'1.25rem 1.4rem'}}>
+          <div className="fs" style={{fontSize:'.82rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:'1rem'}}>💰 Capital</div>
+          <div style={{display:'flex',flexDirection:'column',gap:'.9rem'}}>
+            <MoneyInput label="Ahorro actual acumulado" value={ahorroActual} onChange={setAhorro} note="Capital ya ahorrado o invertido hoy"/>
+            <MoneyInput label="Aporte mensual" value={aporteMensual} onChange={setAporte} note="Cuánto puedes aportar cada mes"/>
+          </div>
+        </div>
+        <div className="card" style={{padding:'1.25rem 1.4rem'}}>
+          <div className="fs" style={{fontSize:'.82rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:'1rem'}}>📈 Inversión</div>
+          <div style={{display:'flex',flexDirection:'column',gap:'1.1rem'}}>
+            <Slider label="Rendimiento anual esperado" value={tasaAnual} onChange={setTasa} min={1} max={25} step={0.5} unit="%" sfx=" EA"/>
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:'.7rem',color:'#94a3b8'}}><span>🟢 Conservador (4–6%)</span><span>🔴 Agresivo (12–20%)</span></div>
+            <MoneyInput label="Meta de fondo para el retiro" value={meta} onChange={setMeta} note="¿Cuánto quieres tener al jubilarte?"/>
+          </div>
+        </div>
+      </div>
 
-const root = createRoot(document.getElementById('root'));
-root.render(<App/>);
+      <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+        <div style={{background:'linear-gradient(135deg,#4c1d95,#7c3aed)',borderRadius:18,padding:'1.75rem',color:'#fff',position:'relative',overflow:'hidden'}}>
+          <div style={{position:'absolute',inset:0,backgroundImage:'radial-gradient(circle at 80% 20%,rgba(196,181,253,.15) 0%,transparent 50%)',pointerEvents:'none'}}></div>
+          <div style={{position:'relative'}}>
+            <div style={{fontSize:'.8rem',fontWeight:600,color:'rgba(255,255,255,.65)',textTransform:'uppercase',letterSpacing:'.1em',marginBottom:'.4rem'}}>Fondo proyectado al retiro</div>
+            <div className="fs" style={{fontSize:'clamp(2rem,5vw,3rem)',fontWeight:800,letterSpacing:'-.04em',lineHeight:1,marginBottom:'.3rem'}}>{fmtM(fv)}</div>
+            <div style={{fontSize:'.88rem',color:'rgba(255,255,255,.7)',marginBottom:'1.25rem'}}>A los {edadRetiro} años · {anios} años de crecimiento</div>
+            <div style={{background:'rgba(255,255,255,.1)',borderRadius:999,height:10,overflow:'hidden',marginBottom:'.4rem'}}>
+              <div style={{height:'100%',width:pct+'%',background:'linear-gradient(90deg,#a78bfa,#e9d5ff)',borderRadius:999,transition:'width .5s'}}></div>
+            </div>
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:'.78rem',color:'rgba(255,255,255,.65)'}}>
+              <span>{N(pct,1)}% de la meta ({fmtM(meta)})</span>
+              <span>{alcanza?'✅ Meta alcanzada':'Sigue ahorrando'}</span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'.85rem'}}>
+          {[{l:'Total aportado',v:COP(totalAportado),c:'#7c3aed',bg:'#f5f3ff',b:'#ddd6fe'},
+            {l:'Intereses ganados',v:COP(totalIntereses),c:'#059669',bg:'#f0fdf4',b:'#86efac'},
+            {l:'Multiplicador',v:'×'+N(mult,1),c:'#0891b2',bg:'#ecfeff',b:'#a5f3fc'},
+          ].map(k=><div key={k.l} style={{background:k.bg,border:'1.5px solid '+k.b,borderRadius:14,padding:'1rem 1.1rem'}}>
+            <div style={{fontSize:'.7rem',fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>{k.l}</div>
+            <div className="fs" style={{fontSize:'1.05rem',fontWeight:800,color:k.c}}>{k.v}</div>
+          </div>)}
+        </div>
+
+        <div className="card" style={{padding:'1.25rem 1.4rem'}}>
+          <div className="fs" style={{fontSize:'.82rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.85rem'}}>Crecimiento del fondo año a año</div>
+          <ResponsiveContainer width="100%" height={220}>
+            <AreaChart data={chart} margin={{top:5,right:5,left:0,bottom:5}}>
+              <defs>
+                <linearGradient id="gF" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#7c3aed" stopOpacity={0.25}/><stop offset="95%" stopColor="#7c3aed" stopOpacity={0.02}/></linearGradient>
+                <linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#94a3b8" stopOpacity={0.15}/><stop offset="95%" stopColor="#94a3b8" stopOpacity={0.02}/></linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
+              <XAxis dataKey="edad" tickFormatter={v=>v+'a'} tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false} interval={Math.max(1,Math.floor(anios/8))}/>
+              <YAxis tickFormatter={v=>fmtM(v)} tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false} width={52}/>
+              <Tooltip content={<CT/>}/>
+              <Area type="monotone" dataKey="aportado" name="Aportado" stroke="#94a3b8" strokeDasharray="4 2" strokeWidth={1.5} fill="url(#gA)"/>
+              <Area type="monotone" dataKey="fondo" name="Fondo total" stroke="#7c3aed" strokeWidth={2.5} fill="url(#gF)"/>
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="card" style={{padding:'1.25rem 1.4rem'}}>
+          <div className="fs" style={{fontSize:'.82rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.85rem'}}>🏆 Hitos de la meta</div>
+          {milestones.map(m=><div key={m.pct} style={{display:'flex',alignItems:'center',gap:'.75rem',padding:'.75rem 1rem',background:m.edad?'#f0fdf4':'#f8fafc',borderRadius:12,marginBottom:'.5rem',border:'1.5px solid '+(m.edad?'#86efac':'#e2e8f0')}}>
+            <div style={{width:36,height:36,borderRadius:10,background:m.edad?'#dcfce7':'#f1f5f9',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.1rem',flexShrink:0}}>{m.edad?'✅':'⏳'}</div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:'.85rem',fontWeight:700,color:'#1e293b'}}>{m.pct}% — {fmtM(meta*m.pct/100)}</div>
+              <div style={{fontSize:'.72rem',color:'#94a3b8'}}>{COP(meta*m.pct/100)}</div>
+            </div>
+            {m.edad?<span className="fs" style={{fontSize:'.82rem',fontWeight:700,color:'#15803d',flexShrink:0}}>A los {m.edad} años</span>:<span style={{fontSize:'.75rem',color:'#94a3b8',flexShrink:0}}>No alcanzado</span>}
+          </div>)}
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+createRoot(document.getElementById('root')).render(<App/>);
 </script>
 <script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';</script>
-</body>
-</html>
+</body></html>
