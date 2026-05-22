@@ -156,11 +156,11 @@ function generarPDF(d){
   if(d.snow&&d.aval){
     y=pdfSec(doc,'COMPARATIVA DE ESTRATEGIAS',y,[30,64,175]);
     doc.autoTable({
-      startY:y,head:[['Métrica','⛄ Bola de Nieve','🌊 Avalancha','Diferencia']],
+      startY:y,head:[['Métrica','Bola de Nieve','Avalancha','Diferencia']],
       body:[
         ['Meses hasta liquidar deudas',d.snow.meses+' meses',d.aval.meses+' meses',Math.abs(d.snow.meses-d.aval.meses)+' meses'],
         ['Total intereses pagados',COP(Math.round(d.snow.totalIntereses)),COP(Math.round(d.aval.totalIntereses)),COP(Math.round(Math.abs(d.snow.totalIntereses-d.aval.totalIntereses)))],
-        ['Estrategia óptima (menos intereses)','','','✅ '+d.mejorStr],
+        ['Estrategia óptima (menos intereses)','','','Optima: '+d.mejorStr],
       ],
       theme:'grid',margin:{left:M,right:M},
       headStyles:{fillColor:[30,64,175],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
@@ -176,7 +176,7 @@ function generarPDF(d){
   y=pdfSec(doc,'ORDEN DE ATAQUE — '+d.estrategia.toUpperCase(),y,[79,70,229]);
   doc.autoTable({
     startY:y,head:[['#','Deuda','Saldo','Tasa EA','Cuota Mín.','Acción']],
-    body:d.orden.map((dd,i)=>[i+1,dd.nombre,COP(dd.saldo),N(dd.tasa,1)+'%',COP(dd.minimo),i===0?'⚡ ATACAR YA':'Esperar']),
+    body:d.orden.map((dd,i)=>[i+1,dd.nombre,COP(dd.saldo),N(dd.tasa,1)+'%',COP(dd.minimo),i===0?'ATACAR YA':'Esperar']),
     theme:'grid',margin:{left:M,right:M},
     headStyles:{fillColor:[79,70,229],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
     bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
