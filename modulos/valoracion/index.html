@@ -94,7 +94,7 @@ function generarPDF(d){
   const ok=d.npv>0;
   doc.setFillColor(ok?6:127,ok?78:29,ok?59:29);doc.roundedRect(M,y,W-M*2,22,3,3,'F');
   doc.setFont('helvetica','bold');doc.setFontSize(13);doc.setTextColor(255,255,255);
-  doc.text((ok?'✓ PROYECTO VIABLE':'✗ PROYECTO NO VIABLE'),M+6,y+10);
+  doc.text((ok?'PROYECTO VIABLE':'PROYECTO NO VIABLE'),M+6,y+10);
   doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(ok?134:252,ok?239:165,ok?172:165);
   doc.text(ok?'El VPN positivo indica que el proyecto genera valor real por encima de la tasa mínima requerida.':'El VPN negativo indica que el proyecto no cubre el costo de oportunidad del capital.',M+6,y+18);
   y+=30;
@@ -141,7 +141,7 @@ function generarPDF(d){
       ['0 (Inversión)',COP(-d.inv),'1.0000',COP(-d.inv),COP(-d.inv),'Salida'],
       ...d.breakdown.map(b=>[
         'Año '+b.año,COP(b.flujo),b.factor.toFixed(4),COP(b.vp),COP(b.cumulativo),
-        b.cumulativo>=0?'✅ Recuperado':'Pendiente',
+        b.cumulativo>=0?'Recuperado':'Pendiente',
       ]),
       ['TOTALES',COP(d.totalFlujos),'—',COP(d.totalVP),COP(d.npv),'VPN final'],
     ],
