@@ -1,42 +1,50 @@
 <!DOCTYPE html>
-<html lang="es"><head>
+<html lang="es">
+<head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Gestión de Deudas — FinSuite Pro</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
 <script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","recharts":"https://esm.sh/recharts@2.12.0?deps=react@18.2.0"}}</script>
 <style>
-*{box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:#f1f5f9;margin:0;}
+*{box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:#f4f6fb;margin:0;}
 .fs{font-family:'Sora',sans-serif;}
-.bar{background:#0f172a;height:46px;display:flex;align-items:center;padding:0 1.5rem;gap:.5rem;position:sticky;top:0;z-index:100;}
-.bar a{color:#94a3b8;text-decoration:none;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:.4rem;padding:.3rem .65rem;border-radius:8px;transition:.15s;}
-.bar a:hover{background:rgba(255,255,255,.08);color:#f1f5f9;}
-.bar .sep{color:#334155;}.bar .cur{color:#fbbf24;font-size:.8rem;font-weight:700;}
-.badge{background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.25rem .7rem;border-radius:8px;color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.05em;margin-left:auto;}
-.card{background:#fff;border-radius:18px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.04);}
-.ni{border:1.5px solid #e2e8f0;border-radius:9px;padding:.55rem .75rem;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none;transition:.15s;background:#fff;width:100%;}
+.topbar{background:#080d1a;height:54px;display:flex;align-items:center;padding:0 1.5rem;gap:.6rem;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.05);}
+.logo-mark{width:30px;height:30px;background:linear-gradient(135deg,#2563eb,#6366f1);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.logo-txt{font-size:.92rem;font-weight:800;color:#f1f5f9;font-family:'Sora',sans-serif;}
+.back-link{display:flex;align-items:center;gap:.35rem;color:#475569;text-decoration:none;font-size:.78rem;font-weight:600;padding:.28rem .55rem;border-radius:7px;transition:.15s;}
+.back-link:hover{color:#fbbf24;background:rgba(217,119,6,.1);}
+.sep{width:1px;height:18px;background:rgba(255,255,255,.07);}
+.badge{background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.22rem .65rem;border-radius:7px;color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.05em;margin-left:auto;}
+.card{background:#fff;border-radius:18px;border:1px solid #e8edf5;box-shadow:0 2px 8px rgba(15,23,42,.05);}
+.ni{border:1.5px solid #e2e8f0;border-radius:10px;padding:.6rem .85rem;font-size:.87rem;font-family:'DM Sans',sans-serif;outline:none;transition:.18s;background:#fff;width:100%;}
 .ni:focus{border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.1);}
-.del{background:#fff;border:1.5px solid #fecaca;border-radius:8px;padding:.38rem .5rem;cursor:pointer;color:#f87171;display:flex;align-items:center;flex-shrink:0;transition:.15s;}
+.del{background:#fff;border:1.5px solid #fecaca;border-radius:8px;padding:.38rem .5rem;cursor:pointer;color:#f87171;display:flex;align-items:center;transition:.15s;}
 .del:hover{background:#fef2f2;border-color:#f87171;color:#dc2626;}
-.add-row{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;padding:.55rem;border:1.5px dashed #d1d5db;border-radius:9px;background:transparent;color:#94a3b8;font-size:.82rem;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;margin-top:.5rem;}
+.add-row{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;padding:.55rem;border:1.5px dashed #d1d5db;border-radius:10px;background:transparent;color:#94a3b8;font-size:.82rem;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;margin-top:.5rem;}
 .add-row:hover{border-color:#d97706;color:#d97706;background:#fffbeb;}
-.tab-btn{padding:.55rem 1.1rem;border-radius:10px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s;}
-.tab-btn.on{background:#d97706;color:#fff;box-shadow:0 2px 8px rgba(217,119,6,.3);}
+.tab-btn{padding:.55rem 1.1rem;border-radius:10px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.18s;}
+.tab-btn.on{background:#d97706;color:#fff;box-shadow:0 4px 12px rgba(217,119,6,.3);}
 .tab-btn.off{background:#f1f5f9;color:#6b7280;}
 .tab-btn.off:hover{background:#fef9c3;color:#92400e;}
-.rpt-btn{display:flex;align-items:center;gap:.45rem;padding:.55rem 1.1rem;border-radius:10px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
+.rpt-btn{display:flex;align-items:center;gap:.45rem;padding:.55rem 1.1rem;border-radius:10px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.18s;}
 .rpt-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
 .rpt-btn:disabled{opacity:.6;cursor:not-allowed;}
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
-</style></head>
+</style>
+</head>
 <body>
-<div class="bar">
-  <a href="../../dashboard.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Mis Módulos</a>
-  <span class="sep">&#8250;</span><span class="cur">Gestión de Deudas</span>
+<div class="topbar">
+  <div class="logo-mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+  <span class="logo-txt">FinSuite Pro</span>
+  <div class="sep"></div>
+  <a class="back-link" href="../../dashboard.html"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Mis Módulos</a>
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  <span style="color:#fbbf24;font-size:.78rem;font-weight:700;">Gestión de Deudas</span>
   <span class="badge">FinSuite Pro</span>
 </div>
 <div id="root"></div>
@@ -47,7 +55,146 @@ import {BarChart,Bar,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,Cell}
 
 const COP=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);
 const N=(v,d=1)=>new Intl.NumberFormat('es-CO',{minimumFractionDigits:0,maximumFractionDigits:d}).format(v||0);
+const COLORS=['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#8b5cf6','#ec4899','#14b8a6'];
 
+// ── Simulation engine ─────────────────────────────────────────────────────────
+function simularCompleto(deudasOrig,pool,estr){
+  if(!deudasOrig.length||pool<=0) return null;
+  const sorted=[...deudasOrig].sort((a,b)=>estr==='snowball'?a.saldo-b.saldo:b.tasa-a.tasa);
+  const st=sorted.map(d=>({...d,saldoAct:d.saldo,intTotal:0,pagTotal:0,mesLiq:null,numPagos:0}));
+  let mes=0;
+  while(st.some(s=>s.saldoAct>0.5)&&mes<600){
+    mes++;
+    let rem=pool;
+    // pay minimums
+    for(const d of st){
+      if(d.saldoAct<=0.5) continue;
+      const int=d.saldoAct*d.tasa/100/12;
+      const due=d.saldoAct+int;
+      const pago=Math.min(due,Math.min(d.minimo,rem));
+      d.saldoAct=Math.max(0,due-pago);
+      d.intTotal+=int;d.pagTotal+=pago;d.numPagos++;rem-=pago;
+      if(d.saldoAct<=0.5&&!d.mesLiq) d.mesLiq=mes;
+    }
+    // extra to first active
+    for(const d of st){
+      if(d.saldoAct>0.5&&rem>0){
+        const pago=Math.min(d.saldoAct,rem);
+        d.saldoAct-=pago;d.pagTotal+=pago;rem-=pago;
+        if(d.saldoAct<=0.5&&!d.mesLiq) d.mesLiq=mes;
+        break;
+      }
+    }
+  }
+  return st.map(d=>({id:d.id,nombre:d.nombre,tasa:d.tasa,minimo:d.minimo,saldoInicial:d.saldo,mesLiq:d.mesLiq||mes,intTotal:Math.round(d.intTotal),pagTotal:Math.round(d.pagTotal),numPagos:d.numPagos}));
+}
+
+function simularResumen(deudasOrig,pool){
+  if(!deudasOrig.length||pool<=0) return{meses:0,totalIntereses:0};
+  const st=deudasOrig.map(d=>({...d,saldoAct:d.saldo,intTotal:0}));
+  let mes=0;
+  while(st.some(s=>s.saldoAct>0.5)&&mes<600){
+    mes++;let rem=pool;
+    for(const d of st){if(d.saldoAct<=0.5)continue;const int=d.saldoAct*d.tasa/100/12;const due=d.saldoAct+int;const pago=Math.min(due,Math.min(d.minimo,rem));d.saldoAct=Math.max(0,due-pago);d.intTotal+=int;rem-=pago;}
+    for(const d of st){if(d.saldoAct>0.5&&rem>0){const p=Math.min(d.saldoAct,rem);d.saldoAct-=p;rem-=p;break;}}
+  }
+  return{meses:mes,totalIntereses:Math.round(st.reduce((a,d)=>a+d.intTotal,0))};
+}
+
+// Only minimums scenario (no extra)
+function simularMinimos(deudasOrig){
+  if(!deudasOrig.length) return{meses:0,totalIntereses:0};
+  const pool=deudasOrig.reduce((a,b)=>a+b.minimo,0);
+  const st=deudasOrig.map(d=>({...d,saldoAct:d.saldo,intTotal:0}));
+  let mes=0;
+  while(st.some(s=>s.saldoAct>0.5)&&mes<600){
+    mes++;let rem=pool;
+    for(const d of st){if(d.saldoAct<=0.5)continue;const int=d.saldoAct*d.tasa/100/12;const due=d.saldoAct+int;const pago=Math.min(due,Math.min(d.minimo,rem));d.saldoAct=Math.max(0,due-pago);d.intTotal+=int;rem-=pago;}
+  }
+  return{meses:mes,totalIntereses:Math.round(st.reduce((a,d)=>a+d.intTotal,0))};
+}
+
+// ── PDF helper ────────────────────────────────────────────────────────────────
+function pdfClientBlock(doc,client,user){
+  const W=doc.internal.pageSize.getWidth();const M=14;const y0=43;const bh=36;
+  doc.setFillColor(248,250,252);doc.roundedRect(M,y0,W-M*2,bh,3,3,'F');doc.setDrawColor(220,228,240);doc.setLineWidth(.4);doc.roundedRect(M,y0,W-M*2,bh,3,3,'S');
+  doc.setFillColor(217,119,6);doc.roundedRect(M,y0,3,bh,1.5,1.5,'F');
+  doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(148,163,184);doc.text('CLIENTE',M+8,y0+7);
+  doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(15,23,42);doc.text((client?.nombre||'Sin cliente'),M+8,y0+15);
+  const sub2=[];if(client?.empresa)sub2.push(client.empresa);if(client?.tipo)sub2.push(client.tipo);
+  if(sub2.length){doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(100,116,139);doc.text(sub2.join(' · '),M+8,y0+22);}
+  if(client?.tipoDoc&&client?.numeroDoc){const lbl=client.tipoDoc==='Cédula de Ciudadanía'?'CC':client.tipoDoc==='NIT'?'NIT':client.tipoDoc;doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(71,85,105);doc.text(lbl+': '+client.numeroDoc,M+8,y0+29);}
+  const midX=W/2;doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.line(midX,y0+6,midX,y0+bh-6);
+  const rx=midX+8;let ry=y0+9;const rItems=[];
+  if(client?.email)rItems.push('Email: '+client.email);
+  if(client?.celular||client?.telefono)rItems.push('Tel: '+(client.celular||client.telefono));
+  if(client?.ciudad)rItems.push('Ciudad: '+client.ciudad);
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);
+  rItems.forEach(item=>{if(ry<y0+bh-5){doc.text(item,rx,ry);ry+=5.8;}});
+  doc.setFont('helvetica','italic');doc.setFontSize(7);doc.setTextColor(148,163,184);doc.text('Asesor: '+(user?.nombre||'No especificado'),W-M-5,y0+bh-7,{align:'right'});
+  return y0+bh+10;
+}
+
+function generarPDF(d){
+  const {jsPDF}=window.jspdf;const doc=new jsPDF('p','mm','a4');const M=14;const W=doc.internal.pageSize.getWidth();const H=doc.internal.pageSize.getHeight();
+  const _cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+  const _usr=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
+  const ftrs=()=>{const pg=doc.getNumberOfPages();for(let i=1;i<=pg;i++){doc.setPage(i);doc.setFillColor(248,250,252);doc.rect(0,H-10,W,10,'F');doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.line(0,H-10,W,H-10);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(148,163,184);doc.text('FinSuite Pro v1.2 — Estrategia de Gestion de Deudas',M,H-3.5);doc.text('Pag. '+i+' de '+pg,W-M,H-3.5,{align:'right'});}};
+  doc.setFillColor(15,23,42);doc.rect(0,0,W,36,'F');doc.setFillColor(217,119,6);doc.rect(0,36,W,3,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(241,245,249);doc.text('FinSuite Pro',M,16);
+  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(251,191,36);doc.text('Estrategia de Gestion de Deudas',M,27);
+  doc.text('Generado: '+new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}),W-M,27,{align:'right'});
+  let y=pdfClientBlock(doc,_cl,_usr);
+  // Resumen deudas
+  doc.autoTable({startY:y,head:[['Deuda','Saldo Actual','Tasa EA','Cuota Minima']],body:[...d.deudas.map(dd=>[dd.nombre,COP(dd.saldo),N(dd.tasa,1)+'%',COP(dd.minimo)]),['TOTALES',COP(d.deudas.reduce((a,b)=>a+b.saldo,0)),'—',COP(d.totalMins)]],theme:'grid',margin:{left:M,right:M},headStyles:{fillColor:[217,119,6],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},bodyStyles:{fontSize:8.5},alternateRowStyles:{fillColor:[255,251,235]},columnStyles:{1:{halign:'right'},2:{halign:'center'},3:{halign:'right'}},didDrawPage:()=>ftrs()});
+  y=doc.lastAutoTable.finalY+10;
+  // Presupuesto
+  doc.autoTable({startY:y,head:[['Presupuesto Mensual','Monto']],body:[['Cuotas minimas',COP(d.totalMins)],['Abono extra',COP(d.extra)],['Total mensual',COP(d.pool)]],theme:'grid',margin:{left:M,right:M},headStyles:{fillColor:[15,118,110],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},bodyStyles:{fontSize:8.5},columnStyles:{1:{halign:'right',fontStyle:'bold'}},didDrawPage:()=>ftrs()});
+  y=doc.lastAutoTable.finalY+10;
+  // Comparativa
+  if(d.snowResult&&d.avalResult){
+    doc.autoTable({startY:y,head:[['Metrica','Bola de Nieve','Avalancha','Solo Minimos']],body:[['Meses hasta liberarse',d.snowResult.meses+' meses',d.avalResult.meses+' meses',d.soloMins.meses+' meses'],['Total intereses pagados',COP(d.snowResult.totalIntereses),COP(d.avalResult.totalIntereses),COP(d.soloMins.totalIntereses)],['Ahorro vs solo minimos',COP(d.soloMins.totalIntereses-d.snowResult.totalIntereses),COP(d.soloMins.totalIntereses-d.avalResult.totalIntereses),'Referencia'],['Meses ahorrados',d.soloMins.meses-d.snowResult.meses+' meses',d.soloMins.meses-d.avalResult.meses+' meses','—']],theme:'grid',margin:{left:M,right:M},headStyles:{fillColor:[30,64,175],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},bodyStyles:{fontSize:8.5},alternateRowStyles:{fillColor:[239,246,255]},columnStyles:{1:{halign:'right'},2:{halign:'right'},3:{halign:'right'}},didDrawPage:()=>ftrs()});
+    y=doc.lastAutoTable.finalY+10;
+  }
+  // Plan detallado
+  if(d.planDetallado){
+    doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(79,70,229);if(y>H-60){doc.addPage();y=20;}
+    doc.text('PLAN DE AMORTIZACION DETALLADO — '+d.estrategia.toUpperCase(),M,y);doc.setDrawColor(79,70,229);doc.setLineWidth(.3);doc.line(M,y+1.5,W-M,y+1.5);y+=9;
+    doc.autoTable({startY:y,head:[['Prioridad','Deuda','Saldo Inicial','Meses de Ataque','Intereses Pagados','Total Pagado']],body:d.planDetallado.map((dd,i)=>[i+1,dd.nombre,COP(dd.saldoInicial),dd.mesLiq+' meses',COP(dd.intTotal),COP(dd.pagTotal)]),theme:'striped',margin:{left:M,right:M},headStyles:{fillColor:[79,70,229],textColor:[255,255,255],fontSize:8.5,fontStyle:'bold'},bodyStyles:{fontSize:8.5},alternateRowStyles:{fillColor:[245,243,255]},columnStyles:{0:{halign:'center'},2:{halign:'right'},3:{halign:'center'},4:{halign:'right'},5:{halign:'right'}},didDrawPage:()=>ftrs()});
+    y=doc.lastAutoTable.finalY+10;
+  }
+  // Alivios
+  if(d.alivios){
+    doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(5,150,105);if(y>H-60){doc.addPage();y=20;}
+    doc.text('ALIVIO FINANCIERO PROGRESIVO',M,y);doc.setDrawColor(5,150,105);doc.setLineWidth(.3);doc.line(M,y+1.5,W-M,y+1.5);y+=9;
+    doc.autoTable({startY:y,head:[['Evento','Mes','Liberacion Mensual','Acumulado Liberado']],body:d.alivios.map(a=>[a.label,a.mes+' meses',COP(a.liberado),COP(a.acum)]),theme:'grid',margin:{left:M,right:M},headStyles:{fillColor:[5,150,105],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},bodyStyles:{fontSize:8.5},alternateRowStyles:{fillColor:[240,253,244]},columnStyles:{1:{halign:'center'},2:{halign:'right'},3:{halign:'right'}},didDrawPage:()=>ftrs()});
+  }
+  ftrs();
+  const _fn=(_cl?.nombre?_cl.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'')+'estrategia-gestion-deudas';
+  doc.save(_fn+'.pdf');
+}
+
+function generarExcel(d){
+  const XLSX=window.XLSX;const wb=XLSX.utils.book_new();const n=v=>Number(v)||0;
+  const _cl_xls=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+  const _usr_xls=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
+  const wsRes=XLSX.utils.aoa_to_sheet([['ESTRATEGIA GESTION DE DEUDAS — FinSuite Pro v1.2'],['Fecha',new Date().toLocaleDateString('es-CO')],[''],['DATOS DEL CLIENTE',''],['Nombre',_cl_xls?.nombre||'No especificado'],[(_cl_xls?.tipoDoc||'Documento'),_cl_xls?.numeroDoc||'—'],['Empresa',_cl_xls?.empresa||'—'],['Email',_cl_xls?.email||'—'],['Asesor',_usr_xls?.nombre||'—'],[''],['PRESUPUESTO MENSUAL',''],['Cuotas minimas',n(d.totalMins)],['Abono extra',n(d.extra)],['Total mensual',n(d.pool)],[''],['COMPARATIVA ESTRATEGIAS',''],['','Bola de Nieve','Avalancha','Solo Minimos'],['Meses',d.snowResult?.meses||0,d.avalResult?.meses||0,d.soloMins?.meses||0],['Intereses pagados',n(d.snowResult?.totalIntereses),n(d.avalResult?.totalIntereses),n(d.soloMins?.totalIntereses)],['Ahorro vs solo minimos',n(d.soloMins?.totalIntereses-d.snowResult?.totalIntereses),n(d.soloMins?.totalIntereses-d.avalResult?.totalIntereses),'—']]);
+  wsRes['!cols']=[{wch:30},{wch:20},{wch:20},{wch:20}];XLSX.utils.book_append_sheet(wb,wsRes,'Resumen');
+  const wsD=XLSX.utils.aoa_to_sheet([['Deuda','Saldo','Tasa EA (%)','Cuota Minima'],...d.deudas.map(dd=>[dd.nombre,n(dd.saldo),n(dd.tasa),n(dd.minimo)])]);
+  wsD['!cols']=[{wch:35},{wch:20},{wch:15},{wch:22}];XLSX.utils.book_append_sheet(wb,wsD,'Deudas');
+  if(d.planDetallado){
+    const wsPlan=XLSX.utils.aoa_to_sheet([['PLAN DE AMORTIZACION — '+d.estrategia.toUpperCase()],['Prioridad','Deuda','Saldo Inicial','Meses de Ataque','Intereses Pagados','Total Pagado'],...d.planDetallado.map((dd,i)=>[i+1,dd.nombre,n(dd.saldoInicial),dd.mesLiq,n(dd.intTotal),n(dd.pagTotal)])]);
+    wsPlan['!cols']=[{wch:12},{wch:35},{wch:20},{wch:18},{wch:22},{wch:22}];XLSX.utils.book_append_sheet(wb,wsPlan,'Plan_Amortizacion');
+  }
+  if(d.alivios){
+    const wsAl=XLSX.utils.aoa_to_sheet([['ALIVIO FINANCIERO PROGRESIVO'],['Evento','Mes','Liberacion Mensual','Acumulado Liberado'],...d.alivios.map(a=>[a.label,a.mes,n(a.liberado),n(a.acum)])]);
+    wsAl['!cols']=[{wch:40},{wch:10},{wch:22},{wch:22}];XLSX.utils.book_append_sheet(wb,wsAl,'Alivio_Financiero');
+  }
+  const _fn=(_cl_xls?.nombre?_cl_xls.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'')+'estrategia-gestion-deudas';
+  XLSX.writeFile(wb,_fn+'.xlsx');
+}
+
+// ── Input components (OUTSIDE App) ───────────────────────────────────────────
 function MoneyInput({value,onChange,style={}}){
   const [f,setF]=useState(false);const [r,setR]=useState('');
   return <input className="ni" style={{textAlign:'right',...style}}
@@ -58,6 +205,7 @@ function MoneyInput({value,onChange,style={}}){
 }
 function RateInput({value,onChange}){
   const [v,setV]=useState(String(value));
+  useEffect(()=>setV(String(value)),[value]);
   return <input className="ni" style={{textAlign:'right'}} value={v}
     onChange={e=>{const s=e.target.value.replace(/[^\d.]/g,'');setV(s);onChange(parseFloat(s)||0);}}
     onBlur={()=>setV(String(value))} placeholder="0" inputMode="decimal"/>;
@@ -66,238 +214,31 @@ function TextInput({value,onChange,style={}}){
   return <input className="ni" style={style} value={value} onChange={e=>onChange(e.target.value)} placeholder="Nombre de la deuda..."/>;
 }
 
-function simular(deudas,pool){
-  if(!deudas.length||pool<=0) return null;
-  let ds=deudas.map(d=>({...d,saldo:d.saldo}));
-  let mes=0,totalInt=0;
-  while(ds.some(d=>d.saldo>1)&&mes<600){
-    mes++;let extra=pool;
-    for(let d of ds){
-      if(d.saldo<=0) continue;
-      const int=d.saldo*d.tasa/100/12;
-      const pagMin=Math.min(d.saldo+int,d.minimo);
-      const pagReal=Math.min(pagMin,extra+int);
-      totalInt+=int;
-      d.saldo=Math.max(0,d.saldo+int-Math.min(pagReal,d.saldo+int));
-      extra-=Math.max(0,pagReal-int);
-      if(extra<0)extra=0;
-    }
-    for(let d of ds){if(d.saldo>0&&extra>0){const p=Math.min(d.saldo,extra);d.saldo-=p;extra-=p;}}
-  }
-  return{meses:mes,totalIntereses:totalInt};
-}
-
-// ── Generadores ───────────────────────────────────────────────────────────────
-
-
-function pdfClientBlock(doc,client,user){
-  const W=doc.internal.pageSize.getWidth();const M=14;
-  const y0=42;const h=30;
-  doc.setFillColor(248,250,252);doc.roundedRect(M,y0,W-M*2,h,3,3,'F');
-  doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.roundedRect(M,y0,W-M*2,h,3,3,'S');
-  // Label
-  doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(148,163,184);
-  doc.text('CLIENTE',M+5,y0+5.5);
-  // Name
-  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(15,23,42);
-  const nombre=client?.nombre||'Sin cliente';
-  doc.text(nombre,M+5,y0+12.5);
-  // Company / type
-  const sub=[];if(client?.empresa)sub.push(client.empresa);if(client?.tipo)sub.push(client.tipo);
-  if(sub.length){doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);doc.text(sub.join(' · '),M+5,y0+18.5);}
-  // ID
-  if(client?.tipoDoc&&client?.numeroDoc){
-    const lbl=client.tipoDoc==='Cédula de Ciudadanía'?'CC':client.tipoDoc==='NIT'?'NIT':client.tipoDoc;
-    doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(71,85,105);
-    doc.text(lbl+': '+client.numeroDoc,M+5,y0+25);
-  }
-  // Right column
-  const rx=W/2+2;let ry=y0+6;
-  const rItems=[];
-  if(client?.email)rItems.push('Email: '+client.email);
-  if(client?.celular||client?.telefono)rItems.push('Tel: '+(client.celular||client.telefono));
-  if(client?.ciudad)rItems.push('Ciudad: '+client.ciudad);
-  if(client?.direccion)rItems.push('Dir: '+client.direccion);
-  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);
-  rItems.forEach(item=>{
-    if(ry<y0+h-4){doc.text(item,rx,ry);ry+=5.2;}
-  });
-  // Asesor + date
-  doc.setFont('helvetica','italic');doc.setFontSize(7);doc.setTextColor(148,163,184);
-  doc.text('Asesor: '+(user?.nombre||'No especificado'),W-M,y0+h-5,{align:'right'});
-  return y0+h+8;
-}
-function pdfHdr(doc,titulo){
-  const W=doc.internal.pageSize.getWidth();
-  doc.setFillColor(15,23,42);doc.rect(0,0,W,36,'F');
-  doc.setFillColor(217,119,6);doc.rect(0,36,W,3,'F');
-  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(241,245,249);
-  doc.text('FinSuite Pro',14,16);
-  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(148,163,184);
-  doc.text(titulo,14,27);
-  doc.text('Generado: '+new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}),W-14,27,{align:'right'});
-}
-function pdfFtrs(doc){
-  const pg=doc.getNumberOfPages();const W=doc.internal.pageSize.getWidth();const H=doc.internal.pageSize.getHeight();
-  for(let i=1;i<=pg;i++){
-    doc.setPage(i);
-    doc.setFillColor(248,250,252);doc.rect(0,H-10,W,10,'F');
-    doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.line(0,H-10,W,H-10);
-    doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(148,163,184);
-    doc.text('FinSuite Pro v1.2 — Estrategia de Gestión de Deudas',14,H-3.5);
-    doc.text('Pág. '+i+' de '+pg,W-14,H-3.5,{align:'right'});
-  }
-}
-function pdfSec(doc,title,y,rgb){
-  if(y>doc.internal.pageSize.getHeight()-50){doc.addPage();y=20;}
-  doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(...rgb);
-  doc.text(title,14,y);
-  doc.setDrawColor(...rgb);doc.setLineWidth(.3);doc.line(14,y+1.5,doc.internal.pageSize.getWidth()-14,y+1.5);
-  return y+9;
-}
-
-function generarPDF(d){
-  const {jsPDF}=window.jspdf;const doc=new jsPDF('p','mm','a4');const M=14;
-  pdfHdr(doc,'Estrategia de Gestión de Deudas');
-  const _cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
-  const _usr=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
-  let y=pdfClientBlock(doc,_cl,_usr);
-
-  // Resumen de deudas
-  y=pdfSec(doc,'RESUMEN DE DEUDAS',y,[217,119,6]);
-  doc.autoTable({
-    startY:y,
-    head:[['Deuda','Saldo','Tasa EA','Cuota Mínima']],
-    body:[...d.deudas.map(dd=>[dd.nombre,COP(dd.saldo),N(dd.tasa,1)+'%',COP(dd.minimo)]),
-      ['TOTALES',COP(d.deudas.reduce((a,b)=>a+b.saldo,0)),'—',COP(d.deudas.reduce((a,b)=>a+b.minimo,0))]],
-    theme:'grid',margin:{left:M,right:M},
-    headStyles:{fillColor:[217,119,6],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
-    bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
-    alternateRowStyles:{fillColor:[255,251,235]},
-    columnStyles:{1:{halign:'right'},2:{halign:'center'},3:{halign:'right'}},
-    didDrawPage:()=>pdfFtrs(doc),
-  });
-  y=doc.lastAutoTable.finalY+10;
-
-  // Presupuesto
-  y=pdfSec(doc,'PRESUPUESTO MENSUAL DE PAGO',y,[15,118,110]);
-  doc.autoTable({
-    startY:y,head:[['Concepto','Monto']],
-    body:[['Suma de cuotas mínimas',COP(d.totalMins)],['Abono extra disponible',COP(d.extra)],['Total mensual a deudas',COP(d.pool)]],
-    theme:'grid',margin:{left:M,right:M},
-    headStyles:{fillColor:[15,118,110],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
-    bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
-    columnStyles:{1:{halign:'right',fontStyle:'bold'}},
-    didDrawPage:()=>pdfFtrs(doc),
-  });
-  y=doc.lastAutoTable.finalY+10;
-
-  // Comparativa
-  if(d.snow&&d.aval){
-    y=pdfSec(doc,'COMPARATIVA DE ESTRATEGIAS',y,[30,64,175]);
-    doc.autoTable({
-      startY:y,head:[['Métrica','Bola de Nieve','Avalancha','Diferencia']],
-      body:[
-        ['Meses hasta liquidar deudas',d.snow.meses+' meses',d.aval.meses+' meses',Math.abs(d.snow.meses-d.aval.meses)+' meses'],
-        ['Total intereses pagados',COP(Math.round(d.snow.totalIntereses)),COP(Math.round(d.aval.totalIntereses)),COP(Math.round(Math.abs(d.snow.totalIntereses-d.aval.totalIntereses)))],
-        ['Estrategia óptima (menos intereses)','','','Optima: '+d.mejorStr],
-      ],
-      theme:'grid',margin:{left:M,right:M},
-      headStyles:{fillColor:[30,64,175],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
-      bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
-      alternateRowStyles:{fillColor:[239,246,255]},
-      columnStyles:{1:{halign:'right'},2:{halign:'right'},3:{halign:'right',fontStyle:'bold'}},
-      didDrawPage:()=>pdfFtrs(doc),
-    });
-    y=doc.lastAutoTable.finalY+10;
-  }
-
-  // Orden de ataque
-  y=pdfSec(doc,'ORDEN DE ATAQUE — '+d.estrategia.toUpperCase(),y,[79,70,229]);
-  doc.autoTable({
-    startY:y,head:[['#','Deuda','Saldo','Tasa EA','Cuota Mín.','Acción']],
-    body:d.orden.map((dd,i)=>[i+1,dd.nombre,COP(dd.saldo),N(dd.tasa,1)+'%',COP(dd.minimo),i===0?'ATACAR YA':'Esperar']),
-    theme:'grid',margin:{left:M,right:M},
-    headStyles:{fillColor:[79,70,229],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
-    bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
-    alternateRowStyles:{fillColor:[245,243,255]},
-    columnStyles:{0:{halign:'center'},2:{halign:'right'},3:{halign:'center'},4:{halign:'right'},5:{halign:'center'}},
-    didDrawPage:()=>pdfFtrs(doc),
-  });
-
-  pdfFtrs(doc);
-  const _fpdf=(_cl?.nombre?_cl.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'')+'estrategia-gestion-deudas';
-doc.save(_fpdf+'.pdf');
-}
-
-function generarExcel(d){const _cl_xls=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');const _usr_xls=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
-  const XLSX=window.XLSX;const wb=XLSX.utils.book_new();const n=v=>Number(v)||0;
-
-  const wsRes=XLSX.utils.aoa_to_sheet([
-    ['ESTRATEGIA DE GESTIÓN DE DEUDAS — FinSuite Pro v1.2'],
-    ['Fecha',new Date().toLocaleDateString('es-CO')],[''],
-    ['DATOS DEL CLIENTE',''],
-    ['Nombre',_cl_xls?.nombre||'No especificado'],
-    [(_cl_xls?.tipoDoc||'Documento'),_cl_xls?.numeroDoc||'—'],
-    ['Empresa',_cl_xls?.empresa||'—'],
-    ['Email',_cl_xls?.email||'—'],
-    ['Teléfono',_cl_xls?.celular||_cl_xls?.telefono||'—'],
-    ['Ciudad',_cl_xls?.ciudad||'—'],
-    ['Asesor',_usr_xls?.nombre||'—'],[''],
-    ['RESUMEN GENERAL',''],
-    ['Total deuda pendiente',n(d.deudas.reduce((a,b)=>a+b.saldo,0))],
-    ['Cuotas mínimas mensuales',n(d.totalMins)],
-    ['Abono extra disponible',n(d.extra)],
-    ['Total mensual a deudas',n(d.pool)],[''],
-    ['COMPARATIVA ESTRATEGIAS',''],
-    ['','Bola de Nieve','Avalancha'],
-    ['Meses hasta libertad',d.snow?.meses||'N/A',d.aval?.meses||'N/A'],
-    ['Total intereses',n(d.snow?.totalIntereses),n(d.aval?.totalIntereses)],
-    ['Ahorro con Avalancha',Math.abs(n(d.snow?.totalIntereses)-n(d.aval?.totalIntereses)),''],
-    ['Estrategia óptima',d.mejorStr,''],
-  ]);
-  wsRes['!cols']=[{wch:35},{wch:20},{wch:20}];
-  XLSX.utils.book_append_sheet(wb,wsRes,'Resumen');
-
-  const wsD=XLSX.utils.aoa_to_sheet([
-    ['Deuda','Saldo (COP)','Tasa EA (%)','Cuota Mínima (COP)','Tipo'],
-    ...d.deudas.map(dd=>[dd.nombre,n(dd.saldo),n(dd.tasa),n(dd.minimo),'Deuda']),
-    ['TOTAL',d.deudas.reduce((a,b)=>a+b.saldo,0),'',d.deudas.reduce((a,b)=>a+b.minimo,0),''],
-  ]);
-  wsD['!cols']=[{wch:35},{wch:20},{wch:15},{wch:22},{wch:15}];
-  XLSX.utils.book_append_sheet(wb,wsD,'Deudas');
-
-  const wsPlan=XLSX.utils.aoa_to_sheet([
-    ['ORDEN DE ATAQUE — '+d.estrategia.toUpperCase()],
-    ['Prioridad','Deuda','Saldo','Tasa EA','Cuota Mín.','Acción'],
-    ...d.orden.map((dd,i)=>[i+1,dd.nombre,n(dd.saldo),n(dd.tasa),n(dd.minimo),i===0?'ATACAR PRIMERO':'Esperar turno']),
-  ]);
-  wsPlan['!cols']=[{wch:12},{wch:35},{wch:20},{wch:15},{wch:22},{wch:20}];
-  XLSX.utils.book_append_sheet(wb,wsPlan,'Plan_de_Pago');
-
-  const _fn_xls=(_cl_xls?.nombre?_cl_xls.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'')+'estrategia-gestion-deudas';
-XLSX.writeFile(wb,_fn_xls+'.xlsx');
-}
-
 // ── App ───────────────────────────────────────────────────────────────────────
 let uid=5;const nid=()=>++uid;
-const COLORS=['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#8b5cf6','#ec4899'];
 
 function App(){
-  const DEF_D=[{id:1,nombre:'Tarjeta Visa',saldo:5000000,tasa:28,minimo:150000},{id:2,nombre:'Crédito de consumo',saldo:12000000,tasa:18,minimo:380000},{id:3,nombre:'Tarjeta Mastercard',saldo:2500000,tasa:32,minimo:75000}];
-  const [deudas,setDeudas]=useState(DEF_D);
+  const [deudas,setDeudas]=useState([
+    {id:1,nombre:'Tarjeta Visa',saldo:5000000,tasa:28,minimo:150000},
+    {id:2,nombre:'Credito de consumo',saldo:12000000,tasa:18,minimo:380000},
+    {id:3,nombre:'Tarjeta Mastercard',saldo:2500000,tasa:32,minimo:75000},
+  ]);
   const [extra,setExtra]=useState(500000);
   const [estr,setEstr]=useState('avalanche');
   const [gen,setGen]=useState('');
+  const [tab,setTab]=useState('estrategia');
   const [client,setClient]=useState(null);
   const [saved,setSaved]=useState(false);
   const ready=useRef(false);
 
   useEffect(()=>{
+    const auth=sessionStorage.getItem('finsuite_auth');
+    if(!auth){window.location.href='../../index.html';return;}
+    if(!sessionStorage.getItem('finsuite_current_client')){window.location.href='../../clientes.html';return;}
     const cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
     setClient(cl);
-    if(cl){const raw=localStorage.getItem('finsuite_'+cl.id+'_deudas');if(raw){try{const d=JSON.parse(raw);setDeudas(d.deudas||DEF_D);setExtra(d.extra||500000);setEstr(d.estr||'avalanche');}catch(e){}}}
-    setTimeout(()=>{ready.current=true;},100);
+    if(cl){const raw=localStorage.getItem('finsuite_'+cl.id+'_deudas');if(raw){try{const d=JSON.parse(raw);setDeudas(d.deudas||deudas);setExtra(d.extra||500000);setEstr(d.estr||'avalanche');}catch(e){}}}
+    setTimeout(()=>{ready.current=true;},200);
   },[]);
 
   useEffect(()=>{
@@ -308,7 +249,7 @@ function App(){
       localStorage.setItem('finsuite_'+cl.id+'_deudas',JSON.stringify({deudas,extra,estr}));
       try{const cls=JSON.parse(localStorage.getItem('finsuite_clients')||'[]');const idx=cls.findIndex(x=>x.id===cl.id);if(idx>=0){cls[idx].updatedAt=new Date().toISOString();localStorage.setItem('finsuite_clients',JSON.stringify(cls));}}catch(e){}
       setSaved(true);setTimeout(()=>setSaved(false),2000);
-    },600);
+    },700);
     return ()=>clearTimeout(t);
   },[deudas,extra,estr]);
 
@@ -316,120 +257,142 @@ function App(){
   const del=id=>setDeudas(a=>a.filter(d=>d.id!==id));
   const add=()=>setDeudas(a=>[...a,{id:nid(),nombre:'Nueva deuda',saldo:0,tasa:20,minimo:0}]);
 
-  const totalMins=deudas.reduce((a,b)=>a+b.minimo,0);
+  const totalMins=useMemo(()=>deudas.reduce((a,b)=>a+b.minimo,0),[deudas]);
   const pool=totalMins+extra;
-  const snow=useMemo(()=>simular([...deudas].sort((a,b)=>a.saldo-b.saldo),pool),[deudas,pool]);
-  const aval=useMemo(()=>simular([...deudas].sort((a,b)=>b.tasa-a.tasa),pool),[deudas,pool]);
+  const totalDeuda=useMemo(()=>deudas.reduce((a,b)=>a+b.saldo,0),[deudas]);
+
+  const snowResult=useMemo(()=>simularResumen([...deudas].sort((a,b)=>a.saldo-b.saldo),pool),[deudas,pool]);
+  const avalResult=useMemo(()=>simularResumen([...deudas].sort((a,b)=>b.tasa-a.tasa),pool),[deudas,pool]);
+  const soloMins=useMemo(()=>simularMinimos(deudas),[deudas]);
+
+  const planDetallado=useMemo(()=>simularCompleto(deudas,pool,estr),[deudas,pool,estr]);
+
   const orden=useMemo(()=>{const a=[...deudas];return estr==='snowball'?a.sort((a,b)=>a.saldo-b.saldo):a.sort((a,b)=>b.tasa-a.tasa);},[deudas,estr]);
 
-  const ahorro=snow&&aval?Math.abs(snow.totalIntereses-aval.totalIntereses):0;
-  const mejorStr=snow&&aval&&aval.totalIntereses<snow.totalIntereses?'Avalancha':'Bola de Nieve';
-  const barData=snow&&aval?[{name:'Bola de Nieve',val:Math.round(snow.totalIntereses)},{name:'Avalancha',val:Math.round(aval.totalIntereses)}]:[];
+  // Financial relief timeline
+  const alivios=useMemo(()=>{
+    if(!planDetallado) return [];
+    const sorted=[...planDetallado].sort((a,b)=>a.mesLiq-b.mesLiq);
+    let acum=0;
+    return sorted.map(d=>{
+      acum+=d.minimo;
+      return{label:'Liquida: '+d.nombre,mes:d.mesLiq,liberado:d.minimo,acum};
+    });
+  },[planDetallado]);
 
-  const dPDF=()=>{setGen('pdf');setTimeout(()=>{generarPDF({deudas,totalMins,extra,pool,snow,aval,orden,mejorStr,estrategia:estr});setGen('');},50);};
-  const dXLS=()=>generarExcel({deudas,totalMins,extra,pool,snow,aval,orden,mejorStr,estrategia:estr});
+  // vs solo minimos savings
+  const ahorroInt=useMemo(()=>{
+    const cur=estr==='snowball'?snowResult:avalResult;
+    return{intereses:Math.max(0,soloMins.totalIntereses-cur.totalIntereses),meses:Math.max(0,soloMins.meses-cur.meses)};
+  },[estr,snowResult,avalResult,soloMins]);
 
-  return <div style={{maxWidth:1200,margin:'0 auto',padding:'1.5rem'}}>
+  const barData=[{name:'Bola de Nieve',val:snowResult.totalIntereses},{name:'Avalancha',val:avalResult.totalIntereses}];
+  const mejorStr=avalResult.totalIntereses<snowResult.totalIntereses?'Avalancha':'Bola de Nieve';
+
+  const handlePDF=()=>{setGen('pdf');setTimeout(()=>{generarPDF({deudas,totalMins,extra,pool,snowResult,avalResult,soloMins,planDetallado,alivios,estrategia:estr});setGen('');},80);};
+  const handleXLS=()=>generarExcel({deudas,totalMins,extra,pool,snowResult,avalResult,soloMins,planDetallado,alivios,estrategia:estr});
+
+  return <div style={{maxWidth:1200,margin:'0 auto',padding:'1.75rem 1.5rem'}}>
     {/* Header */}
-    <div style={{marginBottom:'1.5rem',display:'flex',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
-      <div style={{background:'#fffbeb',padding:'.75rem',borderRadius:14,border:'1px solid #fde68a'}}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    <div style={{display:'flex',alignItems:'center',gap:'1rem',marginBottom:'1.5rem',flexWrap:'wrap'}}>
+      <div style={{background:'#fffbeb',padding:'.8rem',borderRadius:15,border:'1px solid #fde68a'}}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
       </div>
       <div style={{flex:1,minWidth:0}}>
-        <h1 className="fs" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0}}>Estrategia de Gestión de Deudas</h1>
-        <p style={{color:'#64748b',fontSize:'.84rem',margin:0}}>{client?<><strong style={{color:'#d97706'}}>{client.nombre}</strong> — Gestión de deudas</>:'Compara Bola de Nieve vs. Avalancha.'}</p>
+        <h1 className="fs" style={{fontSize:'1.3rem',fontWeight:900,color:'#0f172a',margin:0,letterSpacing:'-.03em'}}>Estrategia de Gestión de Deudas</h1>
+        <p style={{color:'#64748b',fontSize:'.84rem',margin:'.15rem 0 0'}}>{client?<><strong style={{color:'#d97706'}}>{client.nombre}</strong> — Plan de liquidación de deudas</>:'Compara estrategias y planifica tu libertad financiera.'}</p>
       </div>
       <div style={{display:'flex',alignItems:'center',gap:'.5rem',flexShrink:0}}>
-          {saved&&<span style={{fontSize:'.75rem',color:'#059669',display:'flex',alignItems:'center',gap:'.3rem'}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Guardado</span>}
-        <button className="rpt-btn" style={{background:'linear-gradient(135deg,#dc2626,#b91c1c)',color:'#fff'}} onClick={dPDF} disabled={!!gen}>
-          {gen==='pdf'?'Generando...':<><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Informe PDF</>}
+        {saved&&<span style={{fontSize:'.75rem',color:'#059669',display:'flex',alignItems:'center',gap:'.3rem',fontWeight:600}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Guardado</span>}
+        <button className="rpt-btn" style={{background:'linear-gradient(135deg,#dc2626,#b91c1c)',color:'#fff'}} onClick={handlePDF} disabled={!!gen}>
+          {gen==='pdf'?'Generando...':<><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</>}
         </button>
-        <button className="rpt-btn" style={{background:'linear-gradient(135deg,#059669,#047857)',color:'#fff'}} onClick={dXLS}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-          Exportar Excel
+        <button className="rpt-btn" style={{background:'linear-gradient(135deg,#059669,#047857)',color:'#fff'}} onClick={handleXLS}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>Excel
         </button>
       </div>
     </div>
 
+    {/* Tabs */}
+    <div style={{display:'flex',gap:'.5rem',marginBottom:'1.5rem',background:'#fff',borderRadius:13,padding:'.35rem',border:'1.5px solid #e8edf5',boxShadow:'0 1px 4px rgba(15,23,42,.04)',width:'fit-content'}}>
+      {[{k:'estrategia',l:'Comparativa de Estrategias'},{k:'plan',l:'Plan de Amortizacion'},{k:'alivio',l:'Alivio Financiero'}].map(t=><button key={t.k} style={{padding:'.5rem 1.1rem',borderRadius:9,border:'none',fontSize:'.82rem',fontWeight:700,cursor:'pointer',fontFamily:'DM Sans,sans-serif',transition:'.18s',background:tab===t.k?'#d97706':'transparent',color:tab===t.k?'#fff':'#6b7280',boxShadow:tab===t.k?'0 2px 8px rgba(217,119,6,.3)':'none'}} onClick={()=>setTab(t.k)}>{t.l}</button>)}
+    </div>
+
     <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1.5rem',alignItems:'start'}}>
+      {/* LEFT: inputs always visible */}
       <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-        {/* Tabla deudas */}
         <div className="card">
           <div style={{padding:'1.1rem 1.4rem',borderBottom:'1px solid #f1f5f9',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-            <div className="fs" style={{fontSize:'.88rem',fontWeight:700,color:'#0f172a'}}>💳 Mis deudas actuales</div>
-            <div style={{fontSize:'.75rem',color:'#94a3b8'}}>Total: <strong style={{color:'#d97706'}}>{COP(deudas.reduce((a,b)=>a+b.saldo,0))}</strong></div>
+            <div className="fs" style={{fontSize:'.88rem',fontWeight:800,color:'#0f172a'}}>Mis deudas actuales</div>
+            <div style={{fontSize:'.78rem',fontWeight:600,color:'#d97706'}}>{COP(totalDeuda)} total</div>
           </div>
           <div style={{padding:'1.1rem 1.4rem'}}>
             <div style={{display:'grid',gridTemplateColumns:'1.8fr 1.2fr .85fr 1.1fr auto',gap:'.4rem',marginBottom:'.5rem'}}>
-              {['Deuda','Saldo','Tasa EA','Cuota mín.',''].map(h=><div key={h} style={{fontSize:'.68rem',fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'.07em'}}>{h}</div>)}
+              {['Deuda','Saldo','Tasa EA','Cuota min.',''].map(h=><div key={h} style={{fontSize:'.68rem',fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'.07em'}}>{h}</div>)}
             </div>
             {deudas.map((d,i)=><div key={d.id} style={{display:'grid',gridTemplateColumns:'1.8fr 1.2fr .85fr 1.1fr auto',gap:'.4rem',marginBottom:'.45rem',alignItems:'center'}}>
-              <div style={{display:'flex',alignItems:'center',gap:'.5rem'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'.45rem'}}>
                 <div style={{width:8,height:8,borderRadius:'50%',background:COLORS[i%COLORS.length],flexShrink:0}}></div>
                 <TextInput value={d.nombre} onChange={v=>upd(d.id,'nombre',v)} style={{minWidth:0}}/>
               </div>
               <MoneyInput value={d.saldo} onChange={v=>upd(d.id,'saldo',v)}/>
               <RateInput value={d.tasa} onChange={v=>upd(d.id,'tasa',v)}/>
               <MoneyInput value={d.minimo} onChange={v=>upd(d.id,'minimo',v)}/>
-              <button className="del" onClick={()=>del(d.id)}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+              <button className="del" onClick={()=>del(d.id)}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
             </div>)}
-            <button className="add-row" onClick={add}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Agregar deuda</button>
+            <button className="add-row" onClick={add}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Agregar deuda</button>
           </div>
         </div>
 
-        {/* Presupuesto */}
-        <div className="card" style={{padding:'1.1rem 1.4rem'}}>
-          <div className="fs" style={{fontSize:'.88rem',fontWeight:700,color:'#0f172a',marginBottom:'1rem'}}>💵 Presupuesto mensual</div>
-          <div style={{background:'#fffbeb',border:'1px solid #fde68a',borderRadius:12,padding:'1rem',marginBottom:'1rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-            <div><div style={{fontSize:'.78rem',color:'#92400e',fontWeight:600}}>Cuotas mínimas</div>
-            <div className="fs" style={{fontSize:'1.1rem',fontWeight:800,color:'#d97706'}}>{COP(totalMins)}<span style={{fontSize:'.75rem',fontWeight:500,color:'#92400e'}}>/mes</span></div></div>
+        <div className="card" style={{padding:'1.2rem 1.4rem'}}>
+          <div className="fs" style={{fontSize:'.82rem',fontWeight:800,color:'#0f172a',marginBottom:'.9rem'}}>Presupuesto mensual de pago</div>
+          <div style={{background:'#fffbeb',border:'1px solid #fde68a',borderRadius:12,padding:'.9rem 1rem',marginBottom:'.85rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <div><div style={{fontSize:'.75rem',color:'#92400e',fontWeight:600,marginBottom:'.15rem'}}>Suma cuotas minimas</div>
+            <div className="fs" style={{fontSize:'1.1rem',fontWeight:900,color:'#d97706'}}>{COP(totalMins)}/mes</div></div>
           </div>
-          <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151',display:'block',marginBottom:'.4rem'}}>Abono extra mensual disponible</label>
+          <label style={{fontSize:'.8rem',fontWeight:700,color:'#374151',display:'block',marginBottom:'.4rem'}}>Abono extra disponible mensualmente</label>
           <MoneyInput value={extra} onChange={setExtra}/>
-          <div style={{background:'#f0fdf4',border:'1px solid #86efac',borderRadius:10,padding:'.75rem 1rem',marginTop:'.75rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <div style={{background:'#f0fdf4',border:'1px solid #86efac',borderRadius:11,padding:'.8rem 1rem',marginTop:'.75rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
             <span style={{fontSize:'.82rem',color:'#374151',fontWeight:600}}>Total mensual a deudas</span>
-            <span className="fs" style={{fontSize:'1rem',fontWeight:800,color:'#059669'}}>{COP(pool)}</span>
+            <span className="fs" style={{fontSize:'1.05rem',fontWeight:900,color:'#059669'}}>{COP(pool)}</span>
           </div>
         </div>
 
-        {/* Selector */}
-        <div className="card" style={{padding:'1.1rem 1.4rem'}}>
-          <div className="fs" style={{fontSize:'.88rem',fontWeight:700,color:'#0f172a',marginBottom:'.85rem'}}>⚙️ Estrategia activa</div>
+        <div className="card" style={{padding:'1.2rem 1.4rem'}}>
+          <div className="fs" style={{fontSize:'.82rem',fontWeight:800,color:'#0f172a',marginBottom:'.85rem'}}>Estrategia activa</div>
           <div style={{display:'flex',gap:'.5rem'}}>
-            <button className={'tab-btn '+(estr==='avalanche'?'on':'off')} onClick={()=>setEstr('avalanche')}>🌊 Avalancha</button>
-            <button className={'tab-btn '+(estr==='snowball'?'on':'off')} onClick={()=>setEstr('snowball')}>⛄ Bola de Nieve</button>
+            <button className={'tab-btn '+(estr==='avalanche'?'on':'off')} onClick={()=>setEstr('avalanche')}>Avalancha</button>
+            <button className={'tab-btn '+(estr==='snowball'?'on':'off')} onClick={()=>setEstr('snowball')}>Bola de Nieve</button>
           </div>
-          <p style={{fontSize:'.8rem',color:'#64748b',margin:'.75rem 0 0',lineHeight:1.55}}>
-            {estr==='avalanche'?'Paga primero la deuda con mayor tasa. Minimiza el total de intereses pagados a largo plazo.':'Paga primero la deuda de menor saldo. Genera victorias rápidas que mantienen la disciplina.'}
+          <p style={{fontSize:'.8rem',color:'#64748b',margin:'.7rem 0 0',lineHeight:1.55}}>
+            {estr==='avalanche'?'Paga primero la deuda de mayor tasa. Minimiza el total de intereses pagados.':'Paga primero la deuda de menor saldo. Genera victorias rapidas para mantener la disciplina.'}
           </p>
         </div>
       </div>
 
+      {/* RIGHT: tab content */}
       <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-        {snow&&aval&&<>
+
+        {/* Tab: Estrategia */}
+        {tab==='estrategia'&&<>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.85rem'}}>
-            {[{l:'⛄ Bola de Nieve',r:snow,c:'#ea580c',bg:'#fff7ed',b:'#fed7aa'},{l:'🌊 Avalancha',r:aval,c:'#0891b2',bg:'#ecfeff',b:'#a5f3fc'}].map(s=><div key={s.l} className="card" style={{padding:'1.1rem 1.25rem',background:s.bg,border:'1.5px solid '+s.b}}>
-              <div className="fs" style={{fontSize:'.82rem',fontWeight:700,color:s.c,marginBottom:'.75rem'}}>{s.l}</div>
-              <div style={{marginBottom:'.6rem'}}>
-                <div style={{fontSize:'.68rem',color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',fontWeight:700}}>Meses hasta 0 deuda</div>
-                <div className="fs" style={{fontSize:'1.5rem',fontWeight:800,color:'#0f172a'}}>{s.r.meses}<span style={{fontSize:'.78rem',color:'#6b7280',fontWeight:500}}> meses</span></div>
-              </div>
-              <div>
-                <div style={{fontSize:'.68rem',color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',fontWeight:700}}>Total en intereses</div>
-                <div className="fs" style={{fontSize:'.98rem',fontWeight:800,color:s.c}}>{COP(Math.round(s.r.totalIntereses))}</div>
-              </div>
+            {[{l:'Bola de Nieve',r:snowResult,c:'#ea580c',bg:'#fff7ed',b:'#fed7aa'},{l:'Avalancha',r:avalResult,c:'#0891b2',bg:'#ecfeff',b:'#a5f3fc'}].map(s=><div key={s.l} style={{background:s.bg,border:'1.5px solid '+s.b,borderRadius:16,padding:'1.1rem 1.25rem'}}>
+              <div className="fs" style={{fontSize:'.82rem',fontWeight:800,color:s.c,marginBottom:'.75rem'}}>{s.l}</div>
+              <div style={{marginBottom:'.55rem'}}><div style={{fontSize:'.68rem',color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',fontWeight:700,marginBottom:'.2rem'}}>Meses hasta libertad</div><div className="fs" style={{fontSize:'1.4rem',fontWeight:900,color:'#0f172a'}}>{s.r.meses}<span style={{fontSize:'.75rem',color:'#6b7280',fontWeight:500}}> meses</span></div></div>
+              <div><div style={{fontSize:'.68rem',color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',fontWeight:700,marginBottom:'.2rem'}}>Total intereses</div><div className="fs" style={{fontSize:'.98rem',fontWeight:900,color:s.c}}>{COP(s.r.totalIntereses)}</div></div>
             </div>)}
           </div>
-          {ahorro>1000&&<div style={{background:'#f0fdf4',border:'1.5px solid #86efac',borderRadius:14,padding:'1rem 1.25rem',display:'flex',gap:'.85rem',alignItems:'center'}}>
-            <div style={{fontSize:'1.5rem',lineHeight:1}}>💡</div>
-            <div>
-              <div className="fs" style={{fontSize:'.9rem',fontWeight:800,color:'#15803d'}}>Avalancha ahorra {COP(Math.round(ahorro))} en intereses</div>
-              <div style={{fontSize:'.78rem',color:'#166534',marginTop:'.15rem'}}>La estrategia Avalancha es más eficiente económicamente en este caso.</div>
+          {/* vs solo minimos */}
+          <div style={{background:'linear-gradient(135deg,#064e3b,#065f46)',borderRadius:16,padding:'1.1rem 1.3rem',color:'#fff'}}>
+            <div className="fs" style={{fontSize:'.82rem',fontWeight:800,color:'#6ee7b7',marginBottom:'.6rem'}}>Ahorro vs pagar solo minimos</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.75rem'}}>
+              <div><div style={{fontSize:'.68rem',color:'rgba(255,255,255,.55)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.2rem'}}>Intereses que te ahorras</div><div className="fs" style={{fontSize:'1.1rem',fontWeight:900,color:'#34d399'}}>{COP(ahorroInt.intereses)}</div></div>
+              <div><div style={{fontSize:'.68rem',color:'rgba(255,255,255,.55)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.2rem'}}>Meses que te ahorras</div><div className="fs" style={{fontSize:'1.1rem',fontWeight:900,color:'#34d399'}}>{ahorroInt.meses} meses</div></div>
             </div>
-          </div>}
+          </div>
           <div className="card" style={{padding:'1.1rem 1.4rem'}}>
-            <div className="fs" style={{fontSize:'.78rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.75rem'}}>Intereses totales por estrategia</div>
-            <ResponsiveContainer width="100%" height={160}>
+            <div className="fs" style={{fontSize:'.78rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.75rem'}}>Intereses por estrategia</div>
+            <ResponsiveContainer width="100%" height={150}>
               <BarChart data={barData} margin={{top:0,right:5,left:0,bottom:0}}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
                 <XAxis dataKey="name" tick={{fontSize:11,fill:'#94a3b8'}} axisLine={false} tickLine={false}/>
@@ -439,18 +402,85 @@ function App(){
               </BarChart>
             </ResponsiveContainer>
           </div>
+          <div className="card" style={{padding:'1.1rem 1.4rem'}}>
+            <div className="fs" style={{fontSize:'.82rem',fontWeight:800,color:'#0f172a',marginBottom:'.9rem'}}>Orden de ataque — {estr==='avalanche'?'Avalancha':'Bola de Nieve'}</div>
+            {orden.map((d,i)=><div key={d.id} style={{display:'flex',alignItems:'center',gap:'.75rem',padding:'.75rem .9rem',background:i===0?'#fffbeb':'#fafafa',borderRadius:12,marginBottom:'.4rem',border:'1.5px solid '+(i===0?'#fde68a':'#f1f5f9')}}>
+              <div style={{width:28,height:28,borderRadius:'50%',background:COLORS[i%COLORS.length],display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:'.78rem',fontWeight:800,flexShrink:0}}>{i+1}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:'.88rem',fontWeight:700,color:'#1e293b',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{d.nombre}</div>
+                <div style={{fontSize:'.72rem',color:'#94a3b8',marginTop:'.1rem'}}>Saldo {COP(d.saldo)} · {N(d.tasa,1)}% EA · Min {COP(d.minimo)}</div>
+              </div>
+              {i===0&&<span style={{background:'#d97706',color:'#fff',fontSize:'.68rem',fontWeight:700,padding:'.2rem .6rem',borderRadius:99,flexShrink:0}}>ATACAR</span>}
+            </div>)}
+          </div>
         </>}
-        <div className="card" style={{padding:'1.1rem 1.4rem'}}>
-          <div className="fs" style={{fontSize:'.88rem',fontWeight:700,color:'#0f172a',marginBottom:'1rem'}}>🎯 Orden de ataque — {estr==='avalanche'?'Avalancha':'Bola de Nieve'}</div>
-          {orden.map((d,i)=><div key={d.id} style={{display:'flex',alignItems:'center',gap:'.75rem',padding:'.8rem 1rem',background:i===0?'#fffbeb':'#fafafa',borderRadius:12,marginBottom:'.5rem',border:'1.5px solid '+(i===0?'#fde68a':'#f1f5f9')}}>
-            <div style={{width:28,height:28,borderRadius:'50%',background:COLORS[i%COLORS.length],display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:'.78rem',fontWeight:800,flexShrink:0}}>{i+1}</div>
-            <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:'.88rem',fontWeight:700,color:'#1e293b',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{d.nombre}</div>
-              <div style={{fontSize:'.73rem',color:'#94a3b8',marginTop:'.1rem'}}>Saldo {COP(d.saldo)} · {N(d.tasa,1)}% EA · Mín {COP(d.minimo)}</div>
+
+        {/* Tab: Plan de Amortizacion */}
+        {tab==='plan'&&planDetallado&&<>
+          <div style={{background:'linear-gradient(135deg,#4c1d95,#6d28d9)',borderRadius:16,padding:'1.1rem 1.4rem',color:'#fff',marginBottom:'.25rem'}}>
+            <div className="fs" style={{fontSize:'.82rem',fontWeight:800,color:'#c4b5fd',marginBottom:'.4rem'}}>Plan de Amortizacion — {estr==='avalanche'?'Avalancha':'Bola de Nieve'}</div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'.75rem'}}>
+              <div><div style={{fontSize:'.65rem',color:'rgba(255,255,255,.55)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.15rem'}}>Total meses</div><div className="fs" style={{fontSize:'1.2rem',fontWeight:900}}>{(estr==='avalanche'?avalResult:snowResult).meses}</div></div>
+              <div><div style={{fontSize:'.65rem',color:'rgba(255,255,255,.55)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.15rem'}}>Total intereses</div><div className="fs" style={{fontSize:'1rem',fontWeight:900,color:'#fca5a5'}}>{COP((estr==='avalanche'?avalResult:snowResult).totalIntereses)}</div></div>
+              <div><div style={{fontSize:'.65rem',color:'rgba(255,255,255,.55)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.15rem'}}>Ahorro vs minimos</div><div className="fs" style={{fontSize:'1rem',fontWeight:900,color:'#86efac'}}>{COP(ahorroInt.intereses)}</div></div>
             </div>
-            {i===0&&<span style={{background:'#d97706',color:'#fff',fontSize:'.68rem',fontWeight:700,padding:'.2rem .6rem',borderRadius:99,flexShrink:0}}>ATACAR YA</span>}
+          </div>
+          {planDetallado.map((dd,i)=>{
+            const col=COLORS[i%COLORS.length];
+            const pagoAtaque=Math.round(pool-deudas.filter((d,j)=>j>i).reduce((a,b)=>a+b.minimo,0));
+            return <div key={dd.id} style={{background:'#fff',borderRadius:16,border:'1.5px solid #e8edf5',overflow:'hidden',boxShadow:'0 2px 6px rgba(15,23,42,.05)'}}>
+              <div style={{background:col,padding:'.6rem 1rem',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                <div style={{display:'flex',alignItems:'center',gap:'.55rem'}}>
+                  <div style={{width:26,height:26,borderRadius:'50%',background:'rgba(255,255,255,.2)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:'.8rem',fontWeight:900}}>#{i+1}</div>
+                  <span className="fs" style={{color:'#fff',fontWeight:800,fontSize:'.88rem'}}>{dd.nombre}</span>
+                </div>
+                {i===0&&<span style={{background:'rgba(255,255,255,.2)',color:'#fff',fontSize:'.7rem',fontWeight:700,padding:'.2rem .65rem',borderRadius:99}}>ATACAR PRIMERO</span>}
+              </div>
+              <div style={{padding:'1rem 1.2rem'}}>
+                <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'.6rem .9rem'}}>
+                  {[{l:'Saldo inicial',v:COP(dd.saldoInicial)},{l:'Tasa EA',v:N(dd.tasa,1)+'%'},{l:'Pago mensual al atacar',v:COP(pagoAtaque)},{l:'Meses hasta liquidar',v:dd.mesLiq+' meses'},{l:'Total intereses pagados',v:COP(dd.intTotal)},{l:'Total pagado',v:COP(dd.pagTotal)},].map((f,j)=><div key={j} style={{background:j%2===0?'#fafafa':'#f8fafc',borderRadius:9,padding:'.5rem .75rem'}}>
+                    <div style={{fontSize:'.68rem',fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.2rem'}}>{f.l}</div>
+                    <div className="fs" style={{fontSize:'.92rem',fontWeight:900,color:j===4?'#dc2626':j===5?col:'#0f172a'}}>{f.v}</div>
+                  </div>)}
+                </div>
+                {i<planDetallado.length-1&&<div style={{marginTop:'.75rem',padding:'.5rem .75rem',background:'#f0fdf4',borderRadius:9,border:'1px solid #bbf7d0',fontSize:'.75rem',color:'#15803d',fontWeight:600,display:'flex',alignItems:'center',gap:'.4rem'}}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+                  Al liquidar esta deuda: {COP(dd.minimo)}/mes pasan al siguiente objetivo
+                </div>}
+              </div>
+            </div>;
+          })}
+        </>}
+
+        {/* Tab: Alivio Financiero */}
+        {tab==='alivio'&&<>
+          <div style={{background:'linear-gradient(135deg,#064e3b,#065f46)',borderRadius:16,padding:'1.4rem',color:'#fff'}}>
+            <div className="fs" style={{fontSize:'.9rem',fontWeight:800,color:'#6ee7b7',marginBottom:'.4rem'}}>Alivio Financiero Progresivo</div>
+            <p style={{fontSize:'.82rem',color:'rgba(255,255,255,.65)',margin:'.2rem 0 1rem',lineHeight:1.55}}>A medida que liquidas cada deuda, su cuota minima queda libre. Asi va creciendo tu flujo de caja disponible mes a mes.</p>
+            <div style={{fontSize:'.8rem',color:'rgba(255,255,255,.7)',fontWeight:600}}>Al terminar de pagar todas las deudas:</div>
+            <div className="fs" style={{fontSize:'2rem',fontWeight:900,color:'#34d399',letterSpacing:'-.04em',marginTop:'.2rem'}}>{COP(totalMins)}<span style={{fontSize:'.9rem',fontWeight:600,color:'rgba(255,255,255,.5)'}}>/mes liberados</span></div>
+          </div>
+          {alivios.map((a,i)=><div key={i} style={{background:'#fff',borderRadius:16,border:'1.5px solid #e8edf5',padding:'1rem 1.2rem',display:'flex',alignItems:'center',gap:'1rem',boxShadow:'0 2px 6px rgba(15,23,42,.05)'}}>
+            <div style={{width:44,height:44,borderRadius:12,background:'linear-gradient(135deg,#ecfdf5,#d1fae5)',border:'1.5px solid #86efac',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <span className="fs" style={{fontSize:'.75rem',fontWeight:900,color:'#059669'}}>M{a.mes}</span>
+            </div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:'.88rem',fontWeight:700,color:'#0f172a',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{a.label}</div>
+              <div style={{fontSize:'.75rem',color:'#64748b',marginTop:'.15rem'}}>Acumulado liberado: <strong style={{color:'#059669'}}>{COP(a.acum)}/mes</strong></div>
+            </div>
+            <div style={{textAlign:'right',flexShrink:0}}>
+              <div style={{fontSize:'.68rem',color:'#94a3b8',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.15rem'}}>Libera</div>
+              <div className="fs" style={{fontSize:'1rem',fontWeight:900,color:'#059669'}}>+{COP(a.liberado)}</div>
+            </div>
           </div>)}
-        </div>
+          <div style={{background:'#f0f9ff',borderRadius:14,border:'1.5px solid #bae6fd',padding:'1.1rem 1.2rem'}}>
+            <div className="fs" style={{fontSize:'.8rem',fontWeight:800,color:'#0369a1',marginBottom:'.65rem'}}>Que podrias hacer con {COP(totalMins)}/mes</div>
+            {[{icono:'📈',titulo:'Invertirlo a 8% EA durante 10 anos',v:Math.round(totalMins*((Math.pow(1+0.08/12,120)-1)/(0.08/12)))},{icono:'🏦',titulo:'Fondo de emergencia (3 meses) en',v:null,sfx:Math.round(3*totalMins/totalMins)+' meses'},{icono:'🎯',titulo:'Ahorro adicional al ano',v:totalMins*12}].map((r,i)=><div key={i} style={{display:'flex',alignItems:'center',gap:'.75rem',marginBottom:'.5rem'}}>
+              <span style={{fontSize:'1.1rem',flexShrink:0}}>{r.icono}</span>
+              <div style={{flex:1}}><span style={{fontSize:'.8rem',color:'#374151'}}>{r.titulo}: </span><strong style={{color:'#0369a1',fontSize:'.85rem'}}>{r.v?COP(r.v):r.sfx}</strong></div>
+            </div>)}
+          </div>
+        </>}
       </div>
     </div>
   </div>;
@@ -458,4 +488,5 @@ function App(){
 createRoot(document.getElementById('root')).render(<App/>);
 </script>
 <script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';if(!sessionStorage.getItem('finsuite_current_client'))window.location.href='../../clientes.html';</script>
-</body></html>
+</body>
+</html>
