@@ -5,65 +5,94 @@
 <title>Módulos — FinSuite Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
+:root{--nav:#080d1a;--blue:#2563eb;--indigo:#6366f1;--page:#f4f6fb;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:#f0f4f8;min-height:100vh;}
+body{font-family:'DM Sans',sans-serif;background:var(--page);min-height:100vh;}
 .fs{font-family:'Sora',sans-serif;}
-.topbar{background:linear-gradient(135deg,#0c1426,#111827);height:58px;display:flex;align-items:center;padding:0 2rem;gap:1rem;position:sticky;top:0;z-index:100;box-shadow:0 1px 0 rgba(255,255,255,.06),0 4px 20px rgba(0,0,0,.4);}
-.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,#3b82f6,#6366f1);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(99,102,241,.4);}
-.logo-name{font-size:1rem;font-weight:800;color:#f8fafc;font-family:'Sora',sans-serif;}
-.sep{width:1px;height:20px;background:rgba(255,255,255,.08);}
-.back-link{display:flex;align-items:center;gap:.4rem;color:#64748b;text-decoration:none;font-size:.8rem;font-weight:600;padding:.3rem .65rem;border-radius:7px;transition:.15s;}
-.back-link:hover{color:#e2e8f0;background:rgba(255,255,255,.06);}
-.crumb-cur{color:#67e8f9;font-size:.8rem;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.u-chip{display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:99px;padding:.25rem .7rem .25rem .3rem;}
-.u-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:#fff;}
-.btn-logout{display:flex;align-items:center;gap:.35rem;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.32rem .8rem;color:#64748b;font-size:.78rem;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
+
+/* Topbar */
+.topbar{background:var(--nav);height:56px;display:flex;align-items:center;padding:0 1.75rem;gap:.75rem;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.05);}
+.logo-mark{width:32px;height:32px;background:linear-gradient(135deg,#2563eb,#6366f1);border-radius:9px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(99,102,241,.35);flex-shrink:0;}
+.logo-txt{font-size:.95rem;font-weight:800;color:#f1f5f9;letter-spacing:-.01em;font-family:'Sora',sans-serif;}
+.sep{width:1px;height:20px;background:rgba(255,255,255,.07);flex-shrink:0;}
+.bc-link{display:flex;align-items:center;gap:.35rem;color:#475569;text-decoration:none;font-size:.78rem;font-weight:600;padding:.28rem .55rem;border-radius:7px;transition:.15s;white-space:nowrap;}
+.bc-link:hover{color:#93c5fd;background:rgba(99,102,241,.1);}
+.bc-arrow{color:#334155;}
+.bc-cur{font-size:.78rem;font-weight:700;color:#67e8f9;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.spacer{flex:1;}
+.u-chip{display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:99px;padding:.25rem .7rem .25rem .3rem;cursor:default;}
+.uav{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#fff;font-family:'Sora',sans-serif;}
+.btn-logout{display:flex;align-items:center;gap:.35rem;background:transparent;border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:.3rem .8rem;color:#64748b;font-size:.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s;}
 .btn-logout:hover{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25);color:#fca5a5;}
 
-/* Client profile card */
-.profile-area{background:linear-gradient(135deg,#0f172a 0%,#1a2744 55%,#0f172a 100%);padding:2.5rem 2rem 0;position:relative;overflow:hidden;}
-.profile-area::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.18) 0%,transparent 65%);}
-.profile-area::after{content:'';position:absolute;bottom:0;left:0;right:0;height:48px;background:linear-gradient(to bottom,transparent,#f0f4f8);}
-.profile-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:1.5rem;backdrop-filter:blur(8px);display:flex;align-items:center;gap:1.5rem;position:relative;z-index:1;max-width:900px;}
-.c-avatar{width:72px;height:72px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;color:#fff;font-family:'Sora',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.3);flex-shrink:0;}
-.c-info{flex:1;min-width:0;}
-.c-name{font-size:1.4rem;font-weight:900;color:#f1f5f9;letter-spacing:-.03em;font-family:'Sora',sans-serif;}
-.c-company{font-size:.88rem;color:#94a3b8;margin-top:.15rem;}
-.c-meta-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem .75rem;margin-top:.75rem;}
-.c-meta-item{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:#64748b;}
-.c-meta-item strong{color:#94a3b8;}
-.c-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:700;padding:.22rem .65rem;border-radius:99px;text-transform:uppercase;letter-spacing:.06em;margin-top:.6rem;}
-.c-id{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.3rem .75rem;font-size:.78rem;font-weight:700;color:#94a3b8;font-family:monospace;display:inline-block;margin-top:.5rem;}
-.c-notes{font-size:.78rem;color:#475569;background:rgba(255,255,255,.04);border-radius:10px;padding:.5rem .75rem;margin-top:.75rem;border:1px solid rgba(255,255,255,.06);font-style:italic;}
+/* Client hero */
+.chero{background:linear-gradient(140deg,#060c1a 0%,#0f1d38 50%,#060c1a 100%);padding:2.5rem 1.75rem 4rem;position:relative;overflow:hidden;}
+.chero::before{content:'';position:absolute;top:-120px;right:-80px;width:450px;height:450px;background:radial-gradient(circle,rgba(99,102,241,.14) 0%,transparent 60%);pointer-events:none;}
+.chero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:56px;background:linear-gradient(to bottom,transparent,var(--page));pointer-events:none;}
+.chero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1;}
 
-/* Module grid */
-.mod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.1rem;padding:0 2rem 3rem;max-width:1280px;margin:0 auto;}
-.mod-card{background:#fff;border-radius:20px;border:1px solid #e8edf3;box-shadow:0 2px 8px rgba(15,23,42,.05);text-decoration:none;transition:.22s cubic-bezier(.4,0,.2,1);overflow:hidden;display:flex;flex-direction:column;}
-.mod-card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(15,23,42,.13);border-color:transparent;}
-.mod-card-body{padding:1.35rem 1.35rem 1rem;flex:1;}
-.mod-card-icon{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;margin-bottom:.9rem;flex-shrink:0;}
-.mod-card-label{font-size:.9rem;font-weight:800;color:#0f172a;line-height:1.3;font-family:'Sora',sans-serif;margin-bottom:.35rem;}
-.mod-card-desc{font-size:.75rem;color:#64748b;line-height:1.55;}
-.mod-card-foot{border-top:1px solid #f1f5f9;padding:.7rem 1.35rem;display:flex;align-items:center;justify-content:space-between;background:#fafbfc;}
-.data-indicator{display:flex;align-items:center;gap:.35rem;font-size:.7rem;font-weight:600;}
-.data-dot{width:7px;height:7px;border-radius:50%;}
-.arrow-icon{color:#cbd5e1;}
+/* Client profile card */
+.profile-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:1.75rem 2rem;display:flex;align-items:flex-start;gap:1.75rem;backdrop-filter:blur(12px);}
+.c-av{width:68px;height:68px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;color:#fff;font-family:'Sora',sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.3);flex-shrink:0;}
+.c-left{flex:1;min-width:0;}
+.c-name{font-size:1.45rem;font-weight:900;color:#f1f5f9;letter-spacing:-.035em;font-family:'Sora',sans-serif;line-height:1.15;}
+.c-company{font-size:.88rem;color:#64748b;margin-top:.2rem;}
+.c-tags{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.65rem;}
+.c-type-pill{display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;padding:.22rem .7rem;border-radius:99px;text-transform:uppercase;letter-spacing:.06em;}
+.c-id-chip{display:inline-flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:.25rem .7rem;font-size:.73rem;font-weight:700;color:#94a3b8;font-family:monospace,sans-serif;}
+.c-meta{display:grid;grid-template-columns:1fr 1fr;gap:.35rem .5rem;margin-top:.85rem;}
+.c-meta-r{display:flex;align-items:center;gap:.4rem;font-size:.76rem;color:#64748b;min-width:0;}
+.c-meta-r span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.c-right{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;flex-shrink:0;}
+.c-reg{text-align:right;}
+.c-reg-l{font-size:.65rem;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem;}
+.c-reg-d{font-size:.82rem;color:#64748b;font-weight:600;}
+.btn-edit-cl{display:inline-flex;align-items:center;gap:.35rem;font-size:.75rem;color:#818cf8;text-decoration:none;font-weight:600;background:rgba(99,102,241,.12);padding:.32rem .7rem;border-radius:8px;border:1px solid rgba(99,102,241,.2);transition:.15s;}
+.btn-edit-cl:hover{background:rgba(99,102,241,.2);}
+.c-notes{font-size:.75rem;color:#334155;background:rgba(255,255,255,.04);border-radius:10px;padding:.5rem .75rem;border:1px solid rgba(255,255,255,.07);font-style:italic;margin-top:.5rem;max-width:260px;line-height:1.5;}
+
+/* Section heading */
+.sec-hdr{max-width:1100px;margin:0 auto 1.1rem;padding:2rem 1.75rem 0;}
+.sec-eyebrow{font-size:.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.35rem;}
+.sec-title{font-size:1.15rem;font-weight:800;color:#0f172a;letter-spacing:-.025em;font-family:'Sora',sans-serif;}
+
+/* Modules grid */
+.mods-wrap{max-width:1100px;margin:0 auto;padding:0 1.75rem 4rem;}
+.mods-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;}
+.mc{background:#fff;border-radius:20px;border:1px solid #e8edf5;box-shadow:0 2px 8px rgba(15,23,42,.05);overflow:hidden;text-decoration:none;transition:.22s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.mc:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(15,23,42,.12);border-color:rgba(99,102,241,.2);}
+.mc-top{padding:1.35rem 1.35rem .9rem;flex:1;}
+.mc-icon{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;margin-bottom:.9rem;}
+.mc-label{font-size:.88rem;font-weight:800;color:#0f172a;font-family:'Sora',sans-serif;line-height:1.35;margin-bottom:.35rem;}
+.mc-desc{font-size:.73rem;color:#64748b;line-height:1.55;}
+.mc-foot{border-top:1px solid #f1f5f9;padding:.7rem 1.35rem;display:flex;align-items:center;justify-content:space-between;background:#fafbfd;}
+.mc-status{display:flex;align-items:center;gap:.35rem;font-size:.7rem;font-weight:600;}
+.mc-dot{width:7px;height:7px;border-radius:50%;}
+
+/* Hipotecario special */
+.mc.special{background:linear-gradient(135deg,#0f172a,#1e293b);border-color:transparent;}
+.mc.special .mc-label{color:#f1f5f9;}
+.mc.special .mc-desc{color:#475569;}
+.mc.special .mc-foot{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08);}
+.mc.special .mc-status{color:#94a3b8;}
+
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
 </style>
 </head>
 <body>
+
 <!-- Topbar -->
 <div class="topbar">
-  <div class="logo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-  <span class="logo-name">FinSuite Pro</span>
+  <div class="logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+  <span class="logo-txt fs">FinSuite Pro</span>
   <div class="sep"></div>
-  <a href="clientes.html" class="back-link">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  <a class="bc-link" href="clientes.html">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
     Clientes
   </a>
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-  <span class="crumb-cur" id="crumb">—</span>
-  <div style="flex:1"></div>
+  <svg class="bc-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  <span class="bc-cur" id="bcCur">—</span>
+  <div class="spacer"></div>
   <div class="u-chip" id="uChip"></div>
   <button class="btn-logout" id="logoutBtn">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -71,104 +100,108 @@ body{font-family:'DM Sans',sans-serif;background:#f0f4f8;min-height:100vh;}
   </button>
 </div>
 
-<!-- Profile area -->
-<div class="profile-area">
-  <div style="max-width:1280px;margin:0 auto;position:relative;padding-bottom:2rem;">
-    <p style="font-size:.7rem;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.14em;margin-bottom:.75rem;">Cliente activo</p>
-    <div class="profile-card" id="profileCard"></div>
+<!-- Client hero -->
+<div class="chero">
+  <div class="chero-inner">
+    <div class="profile-card" id="profileCard">
+      <div style="color:#475569;font-size:.88rem;padding:.5rem 0;">Cargando perfil del cliente...</div>
+    </div>
   </div>
 </div>
 
-<!-- Section title -->
-<div style="max-width:1280px;margin:0 auto;padding:2rem 2rem .75rem;">
-  <p style="font-size:.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.12em;">Módulos de análisis</p>
-  <h2 class="fs" style="font-size:1.15rem;font-weight:800;color:#0f172a;margin:.2rem 0 0;letter-spacing:-.02em;">Selecciona un módulo para continuar</h2>
+<!-- Section heading -->
+<div class="sec-hdr">
+  <div class="sec-eyebrow">Módulos de análisis disponibles</div>
+  <div class="sec-title">Selecciona un módulo para continuar</div>
 </div>
 
 <!-- Modules grid -->
-<div class="mod-grid" id="modGrid"></div>
+<div class="mods-wrap">
+  <div class="mods-grid" id="modsGrid"></div>
+</div>
 
 <script>
-const AVCOLORS=['#4f46e5','#0891b2','#059669','#d97706','#dc2626','#7c3aed','#db2777','#0d9488','#ea580c','#2563eb'];
-const colorFor=id=>AVCOLORS[(id||'a').charCodeAt(0)%AVCOLORS.length];
-const initials=n=>(n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]?.toUpperCase()||'').join('');
-const hasData=(id,k)=>!!localStorage.getItem('finsuite_'+id+'_'+k);
-const fmtDate=s=>{try{return new Date(s).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'});}catch{return'';}};
+const AVK=['#4f46e5','#0891b2','#059669','#d97706','#dc2626','#7c3aed','#db2777','#0d9488','#ea580c','#2563eb'];
+const cFor=id=>AVK[(id||'a').charCodeAt(0)%AVK.length];
+const inis=n=>(n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]?.toUpperCase()||'').join('');
+const fmtD=s=>{try{return new Date(s).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'});}catch{return'';}};
+const hasD=(id,k)=>!!localStorage.getItem('finsuite_'+id+'_'+k);
+const T_STYLE={'Persona Natural':{bg:'rgba(29,78,216,.15)',t:'#93c5fd'},'Empresa':{bg:'rgba(5,150,105,.15)',t:'#6ee7b7'},'PyME':{bg:'rgba(180,83,9,.15)',t:'#fcd34d'},'Startup':{bg:'rgba(124,58,237,.15)',t:'#d8b4fe'},'Corporativo':{bg:'rgba(8,145,178,.15)',t:'#7dd3fc'},'Inversionista':{bg:'rgba(190,18,60,.15)',t:'#fda4af'}};
 
 const auth=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
-const client=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+const cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
 if(!auth){window.location.href='index.html';}
-if(!client){window.location.href='clientes.html';}
+if(!cl){window.location.href='clientes.html';}
 
-// Topbar user chip
+// Topbar
 const uChip=document.getElementById('uChip');
-if(auth) uChip.innerHTML=`<div class="u-av" style="background:${colorFor(auth.usuario)}">${initials(auth.nombre)}</div><div><div style="font-size:.78rem;font-weight:700;color:#e2e8f0">${auth.nombre}</div><div style="font-size:.65rem;color:#475569">${auth.rol}</div></div>`;
+if(auth) uChip.innerHTML=`<div class="uav" style="background:${cFor(auth.usuario)}">${inis(auth.nombre)}</div><div><div style="font-size:.78rem;font-weight:700;color:#e2e8f0">${auth.nombre}</div><div style="font-size:.65rem;color:#475569">${auth.rol}</div></div>`;
 document.getElementById('logoutBtn').onclick=()=>{sessionStorage.clear();window.location.href='index.html';};
-
-// Crumb
-document.getElementById('crumb').textContent=client?.nombre||'—';
+document.getElementById('bcCur').textContent=cl?.nombre||'—';
 
 // Profile card
-const pc=document.getElementById('profileCard');
-const col=colorFor(client?.id||'a');
-const docLabel=(client?.tipoDoc&&client?.numeroDoc)?`${client.tipoDoc==='Cédula de Ciudadanía'?'CC':client.tipoDoc==='NIT'?'NIT':client.tipoDoc} ${client.numeroDoc}`:'';
-const typeCfg={'Persona Natural':{bg:'rgba(29,78,216,.15)',t:'#93c5fd'},'Empresa':{bg:'rgba(21,128,61,.15)',t:'#86efac'},'PyME':{bg:'rgba(180,83,9,.15)',t:'#fcd34d'},'Startup':{bg:'rgba(126,34,206,.15)',t:'#d8b4fe'},'Corporativo':{bg:'rgba(7,89,133,.15)',t:'#7dd3fc'},'Inversionista':{bg:'rgba(190,18,60,.15)',t:'#fda4af'}};
-const tc=typeCfg[client?.tipo||'']||{bg:'rgba(100,116,139,.15)',t:'#94a3b8'};
-const metaItems=[];
-if(client?.email) metaItems.push({icon:'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',v:client.email});
-if(client?.celular||client?.telefono) metaItems.push({icon:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72 12.05 12.05 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.08 6.08l1.88-1.88a2 2 0 0 1 2.11-.45 12.05 12.05 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',v:client.celular||client.telefono});
-if(client?.ciudad) metaItems.push({icon:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',v:client.ciudad});
-if(client?.direccion) metaItems.push({icon:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',v:client.direccion});
+if(cl){
+  const col=cFor(cl.id);
+  const ts=T_STYLE[cl.tipo||'']||{bg:'rgba(100,116,139,.15)',t:'#94a3b8'};
+  const docLabel=cl.tipoDoc&&cl.numeroDoc?`${cl.tipoDoc==='Cédula de Ciudadanía'?'CC':cl.tipoDoc==='NIT'?'NIT':cl.tipoDoc} ${cl.numeroDoc}`:'';
+  const metaItems=[
+    cl.email?{ic:'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',v:cl.email}:null,
+    (cl.celular||cl.telefono)?{ic:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72 12.05 12.05 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.08 6.08l1.88-1.88a2 2 0 0 1 2.11-.45 12.05 12.05 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',v:cl.celular||cl.telefono}:null,
+    cl.ciudad?{ic:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',v:cl.ciudad}:null,
+    cl.direccion?{ic:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',v:cl.direccion}:null,
+  ].filter(Boolean);
 
-pc.innerHTML=`
-  <div class="c-avatar" style="background:${col}">${initials(client?.nombre)}</div>
-  <div class="c-info" style="flex:1;min-width:0;">
-    <div class="c-name">${client?.nombre||'—'}</div>
-    ${client?.empresa?`<div class="c-company">${client.empresa}</div>`:''}
-    <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-top:.5rem;">
-      ${client?.tipo?`<span class="c-badge" style="background:${tc.bg};color:${tc.t}">${client.tipo}</span>`:''}
-      ${docLabel?`<span class="c-id">${docLabel}</span>`:''}
+  document.getElementById('profileCard').innerHTML=`
+    <div class="c-av" style="background:${col}">${inis(cl.nombre)}</div>
+    <div class="c-left">
+      <div class="c-name">${cl.nombre}</div>
+      ${cl.empresa?`<div class="c-company">${cl.empresa}</div>`:''}
+      <div class="c-tags">
+        ${cl.tipo?`<span class="c-type-pill" style="background:${ts.bg};color:${ts.t}">${cl.tipo}</span>`:''}
+        ${docLabel?`<span class="c-id-chip"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>${docLabel}</span>`:''}
+      </div>
+      ${metaItems.length?`<div class="c-meta">${metaItems.map(m=>`<div class="c-meta-r"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${m.ic}</svg><span>${m.v}</span></div>`).join('')}</div>`:''}
+      ${cl.notas?`<div class="c-notes">"${cl.notas}"</div>`:''}
     </div>
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.3rem .75rem;margin-top:.65rem;">
-      ${metaItems.map(m=>`<div class="c-meta-item"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${m.icon}</svg><span>${m.v}</span></div>`).join('')}
-    </div>
-    ${client?.notas?`<div class="c-notes">"${client.notas}"</div>`:''}
-  </div>
-  <div style="flex-shrink:0;text-align:right;">
-    <div style="font-size:.68rem;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;">Registrado</div>
-    <div style="font-size:.82rem;color:#64748b;font-weight:600;">${fmtDate(client?.createdAt||'')}</div>
-    <a href="clientes.html" style="display:inline-flex;align-items:center;gap:.3rem;margin-top:.6rem;font-size:.75rem;color:#6366f1;text-decoration:none;font-weight:600;background:rgba(99,102,241,.1);padding:.3rem .65rem;border-radius:7px;">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      Editar
-    </a>
-  </div>`;
+    <div class="c-right">
+      <div class="c-reg">
+        <div class="c-reg-l">Registrado</div>
+        <div class="c-reg-d">${fmtD(cl.createdAt||'')}</div>
+      </div>
+      <a class="btn-edit-cl" href="clientes.html">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Editar cliente
+      </a>
+    </div>`;
+}
 
 // Modules
 const MODS=[
-  {key:'hipotecario',label:'Reestructuración Hipotecaria',desc:'Créditos UVR/Pesos, amortización FRECH y reestructuración',href:'modulos/hipotecario/index.html',accent:'#38bdf8',bg:'linear-gradient(135deg,#0f172a,#1e293b)',icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,ibg:'rgba(56,189,248,.1)'},
-  {key:'finanzas',label:'Análisis Financiero Personal',desc:'Flujo de caja, patrimonio neto y diagnóstico financiero',href:'modulos/finanzas-personales/index.html',accent:'#059669',bg:'linear-gradient(135deg,#064e3b,#065f46)',icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,ibg:'rgba(5,150,105,.1)'},
-  {key:'deudas',label:'Gestión de Deudas',desc:'Snowball vs Avalanche y estrategia óptima de liquidación',href:'modulos/gestion-deudas/index.html',accent:'#d97706',bg:'linear-gradient(135deg,#78350f,#92400e)',icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,ibg:'rgba(217,119,6,.1)'},
-  {key:'retiro',label:'Planificación para el Retiro',desc:'Proyección pensional con interés compuesto y metas',href:'modulos/retiro/index.html',accent:'#7c3aed',bg:'linear-gradient(135deg,#4c1d95,#5b21b6)',icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,ibg:'rgba(124,58,237,.1)'},
-  {key:'valoracion',label:'Valoración de Proyectos',desc:'VPN, TIR y período de recuperación de inversiones',href:'modulos/valoracion/index.html',accent:'#0891b2',bg:'linear-gradient(135deg,#075985,#0c4a6e)',icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#67e8f9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,ibg:'rgba(8,145,178,.1)'},
+  {key:'hipotecario',label:'Reestructuración Hipotecaria',desc:'Créditos UVR y Pesos, amortización, subsidios FRECH y reestructuración',href:'modulos/hipotecario/index.html',accent:'#38bdf8',iconBg:'rgba(56,189,248,.12)',special:true,icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`},
+  {key:'finanzas',label:'Análisis Financiero Personal',desc:'Flujo de caja, ingresos, gastos, patrimonio y diagnóstico financiero',href:'modulos/finanzas-personales/index.html',accent:'#10b981',iconBg:'#ecfdf5',special:false,icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`},
+  {key:'deudas',label:'Gestión de Deudas',desc:'Estrategia Snowball vs. Avalanche, orden de ataque y proyección de pago',href:'modulos/gestion-deudas/index.html',accent:'#f59e0b',iconBg:'#fffbeb',special:false,icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`},
+  {key:'retiro',label:'Planificación para el Retiro',desc:'Proyección pensional, interés compuesto, metas e hitos de ahorro',href:'modulos/retiro/index.html',accent:'#8b5cf6',iconBg:'#f5f3ff',special:false,icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`},
+  {key:'valoracion',label:'Valoración de Proyectos',desc:'VPN, TIR, payback y análisis de sensibilidad de inversiones',href:'modulos/valoracion/index.html',accent:'#06b6d4',iconBg:'#ecfeff',special:false,icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`},
 ];
 
-const grid=document.getElementById('modGrid');
+const grid=document.getElementById('modsGrid');
 MODS.forEach(m=>{
-  const hasMod=(m.key!=='hipotecario')&&hasData(client?.id||'',m.key);
+  const hasMod=m.key!=='hipotecario'&&hasD(cl?.id||'',m.key);
   const a=document.createElement('a');
-  a.href=m.href;a.className='mod-card';
+  a.href=m.href;
+  a.className='mc'+(m.special?' special':'');
   a.innerHTML=`
-    <div class="mod-card-body">
-      <div class="mod-card-icon" style="background:${m.ibg}">${m.icon}</div>
-      <div class="mod-card-label">${m.label}</div>
-      <div class="mod-card-desc">${m.desc}</div>
+    <div class="mc-top">
+      <div class="mc-icon" style="background:${m.iconBg}">${m.icon}</div>
+      <div class="mc-label">${m.label}</div>
+      <div class="mc-desc">${m.desc}</div>
     </div>
-    <div class="mod-card-foot">
-      <div class="data-indicator" style="color:${hasMod?m.accent:'#94a3b8'}">
-        <div class="data-dot" style="background:${hasMod?m.accent:'#d1d5db'};${hasMod?'box-shadow:0 0 5px '+m.accent:''}"></div>
+    <div class="mc-foot">
+      <div class="mc-status" style="color:${hasMod?m.accent:'#94a3b8'}">
+        <div class="mc-dot" style="background:${hasMod?m.accent:'#d1d5db'};${hasMod?'box-shadow:0 0 6px '+m.accent:''}"></div>
         ${hasMod?'Datos guardados':'Sin datos'}
       </div>
-      <svg class="arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>`;
   grid.appendChild(a);
 });

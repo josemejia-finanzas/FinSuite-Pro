@@ -4,77 +4,163 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>FinSuite Pro — Acceso</title>
 <script src="usuarios.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);display:flex;align-items:center;justify-content:center;}
-.bg-dots{position:fixed;inset:0;background-image:radial-gradient(rgba(99,179,237,.07) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;}
-.card{background:rgba(255,255,255,.04);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.5);}
-.logo{display:flex;align-items:center;gap:.75rem;margin-bottom:2rem;}
-.logo-icon{width:44px;height:44px;background:linear-gradient(135deg,#2563eb,#4f46e5);border-radius:12px;display:flex;align-items:center;justify-content:center;}
-.logo-text{font-size:1.4rem;font-weight:800;color:#f1f5f9;letter-spacing:-.02em;}
-.logo-sub{font-size:.75rem;color:#64748b;font-weight:500;}
-.tagline{font-size:.95rem;color:#94a3b8;margin-bottom:2rem;line-height:1.6;}
-.field{margin-bottom:1.1rem;}
-.field label{display:block;font-size:.8rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem;}
-.field input{width:100%;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:.75rem 1rem;color:#f1f5f9;font-size:.95rem;outline:none;transition:.2s;font-family:inherit;}
-.field input::placeholder{color:#475569;}
-.field input:focus{border-color:#3b82f6;background:rgba(59,130,246,.08);box-shadow:0 0 0 4px rgba(59,130,246,.12);}
-.btn{width:100%;padding:.85rem;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;border:none;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit;margin-top:.5rem;}
-.btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:.75rem 1rem;border-radius:10px;font-size:.85rem;margin-top:.75rem;display:none;}
-.footer{text-align:center;margin-top:1.5rem;font-size:.75rem;color:#334155;}
+:root{--blue:#2563eb;--indigo:#6366f1;--dark:#080d1a;--card:#0e1528;--border:rgba(255,255,255,.07);}
+body{font-family:'DM Sans',sans-serif;min-height:100vh;background:var(--dark);display:flex;overflow:hidden;}
+.fs{font-family:'Sora',sans-serif;}
+
+/* Background */
+.bg-left{flex:1;position:relative;background:linear-gradient(140deg,#040812 0%,#0a1628 40%,#0d1f3c 100%);display:flex;align-items:center;justify-content:center;padding:3rem;}
+.bg-left::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 30% 40%,rgba(37,99,235,.2) 0%,transparent 70%),radial-gradient(ellipse 50% 60% at 80% 70%,rgba(99,102,241,.12) 0%,transparent 65%);pointer-events:none;}
+.grid-overlay{position:absolute;inset:0;background-image:linear-gradient(rgba(37,99,235,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;}
+.float-card{position:absolute;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:16px;backdrop-filter:blur(8px);}
+.float-card-1{width:180px;height:100px;top:12%;left:8%;transform:rotate(-6deg);padding:1rem;}
+.float-card-2{width:160px;height:88px;bottom:18%;right:12%;transform:rotate(5deg);padding:.9rem;}
+.float-card-3{width:130px;height:72px;top:55%;left:5%;transform:rotate(-3deg);padding:.75rem;}
+.fc-label{font-size:.6rem;font-weight:700;color:#4f83cc;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.35rem;}
+.fc-value{font-size:1.1rem;font-weight:800;color:#f1f5f9;font-family:'Sora',sans-serif;letter-spacing:-.02em;}
+.fc-sub{font-size:.65rem;color:#334155;margin-top:.15rem;display:flex;align-items:center;gap:.3rem;}
+.fc-dot{width:5px;height:5px;border-radius:50%;}
+
+/* Brand */
+.brand-area{position:relative;z-index:1;text-align:center;max-width:380px;}
+.brand-logo{width:60px;height:60px;background:linear-gradient(135deg,var(--blue),var(--indigo));border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;box-shadow:0 16px 48px rgba(37,99,235,.4);}
+.brand-name{font-size:2rem;font-weight:900;color:#f1f5f9;letter-spacing:-.04em;line-height:1;}
+.brand-tag{display:inline-block;background:linear-gradient(135deg,rgba(37,99,235,.2),rgba(99,102,241,.2));border:1px solid rgba(99,102,241,.3);color:#93c5fd;font-size:.72rem;font-weight:700;padding:.3rem .8rem;border-radius:99px;letter-spacing:.08em;text-transform:uppercase;margin-top:.75rem;}
+.brand-desc{font-size:.95rem;color:#475569;margin-top:1.25rem;line-height:1.7;max-width:300px;margin-left:auto;margin-right:auto;}
+.feature-list{display:flex;flex-direction:column;gap:.6rem;margin-top:2rem;text-align:left;}
+.feat-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:12px;}
+.feat-icon{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.feat-text{font-size:.82rem;color:#94a3b8;font-weight:500;}
+.feat-text strong{color:#cbd5e1;font-weight:700;}
+
+/* Right panel - login */
+.right-panel{width:460px;flex-shrink:0;background:#f8faff;display:flex;align-items:center;justify-content:center;padding:2.5rem;position:relative;}
+.right-panel::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,rgba(37,99,235,.2) 30%,rgba(99,102,241,.2) 70%,transparent);}
+.login-box{width:100%;max-width:360px;}
+.login-header{margin-bottom:2rem;}
+.login-title{font-size:1.4rem;font-weight:900;color:#0f172a;letter-spacing:-.03em;font-family:'Sora',sans-serif;}
+.login-sub{font-size:.88rem;color:#64748b;margin-top:.35rem;line-height:1.55;}
+.field{margin-bottom:1.15rem;}
+.field-label{display:block;font-size:.75rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;}
+.field-wrap{position:relative;}
+.field-icon{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:#94a3b8;pointer-events:none;}
+.field-input{width:100%;background:#fff;border:2px solid #e8edf5;border-radius:13px;padding:.8rem 1rem .8rem 2.7rem;font-size:.92rem;font-family:'DM Sans',sans-serif;color:#0f172a;outline:none;transition:.2s;box-shadow:0 1px 3px rgba(15,23,42,.04);}
+.field-input::placeholder{color:#9ca3af;}
+.field-input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.1),0 1px 3px rgba(15,23,42,.04);}
+.field-input:focus+.field-icon,.field-icon:has(~.field-input:focus){color:var(--blue);}
+.btn-login{width:100%;padding:.9rem;background:linear-gradient(135deg,#1d4ed8,var(--blue),var(--indigo));color:#fff;border:none;border-radius:13px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;box-shadow:0 4px 16px rgba(37,99,235,.35);margin-top:.5rem;position:relative;overflow:hidden;}
+.btn-login::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);border-radius:inherit;}
+.btn-login:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,99,235,.45);}
+.btn-login:active{transform:translateY(0);}
+.btn-login:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.error-box{background:#fff1f2;border:1.5px solid #fecdd3;border-radius:11px;padding:.7rem 1rem;font-size:.83rem;color:#be123c;margin-top:.9rem;display:none;align-items:center;gap:.5rem;}
+.divider{display:flex;align-items:center;gap:.75rem;margin:1.5rem 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#e8edf5;}
+.divider span{font-size:.72rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;}
+.secure-note{display:flex;align-items:center;justify-content:center;gap:.5rem;font-size:.75rem;color:#94a3b8;margin-top:1.5rem;}
+.footer-note{text-align:center;font-size:.72rem;color:#cbd5e1;margin-top:1rem;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.login-box{animation:fadeUp .4s ease both;}
 </style>
 </head>
 <body>
-<div class="bg-dots"></div>
-<div class="card">
-  <div class="logo">
-    <div class="logo-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+<!-- Left panel: brand -->
+<div class="bg-left">
+  <div class="grid-overlay"></div>
+  <!-- Floating data cards -->
+  <div class="float-card float-card-1">
+    <div class="fc-label">Patrimonio Neto</div>
+    <div class="fc-value">$247.5M</div>
+    <div class="fc-sub"><div class="fc-dot" style="background:#22c55e"></div><span style="color:#4ade80;font-size:.6rem;font-weight:600;">+18.4% YTD</span></div>
+  </div>
+  <div class="float-card float-card-2">
+    <div class="fc-label">Fondo de Retiro</div>
+    <div class="fc-value">$1.7B</div>
+    <div class="fc-sub"><div class="fc-dot" style="background:#6366f1"></div><span style="color:#818cf8;font-size:.6rem;font-weight:600;">Meta alcanzada</span></div>
+  </div>
+  <div class="float-card float-card-3">
+    <div class="fc-label">VPN Proyecto</div>
+    <div class="fc-value">$67.2M</div>
+    <div class="fc-sub"><div class="fc-dot" style="background:#f59e0b"></div><span style="color:#fbbf24;font-size:.6rem;font-weight:600;">TIR 33.6%</span></div>
+  </div>
+  <!-- Brand center -->
+  <div class="brand-area">
+    <div class="brand-logo">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     </div>
-    <div>
-      <div class="logo-text">FinSuite Pro</div>
-      <div class="logo-sub">Suite de Asesoría Financiera</div>
+    <div class="brand-name fs">FinSuite Pro</div>
+    <div class="brand-tag">Suite de Asesoría Financiera</div>
+    <p class="brand-desc">Plataforma profesional de análisis y planificación financiera para asesores e inversionistas.</p>
+    <div class="feature-list">
+      <div class="feat-item"><div class="feat-icon" style="background:rgba(5,150,105,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="feat-text"><strong>5 módulos</strong> especializados de análisis</span></div>
+      <div class="feat-item"><div class="feat-icon" style="background:rgba(99,102,241,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="feat-text"><strong>Multi-cliente</strong> con datos aislados</span></div>
+      <div class="feat-item"><div class="feat-icon" style="background:rgba(220,38,38,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span class="feat-text"><strong>Informes PDF/Excel</strong> personalizados</span></div>
     </div>
   </div>
-  <p class="tagline">Bienvenido. Ingresa tus credenciales para acceder a la plataforma.</p>
-  <div class="field">
-    <label>Usuario</label>
-    <input type="text" id="usr" placeholder="Ingresa tu usuario" autocomplete="username" autofocus/>
-  </div>
-  <div class="field">
-    <label>Contraseña</label>
-    <input type="password" id="pwd" placeholder="••••••••" autocomplete="current-password"/>
-  </div>
-  <button class="btn" id="loginBtn" disabled>Iniciar sesión</button>
-  <div class="error" id="err">Usuario o contraseña incorrectos.</div>
-  <div class="footer">FinSuite Pro v1.2 &mdash; Todos los derechos reservados</div>
 </div>
-<script>
-const $ = id => document.getElementById(id);
-$('loginBtn').disabled = false;
 
+<!-- Right panel: login form -->
+<div class="right-panel">
+  <div class="login-box">
+    <div class="login-header">
+      <h1 class="login-title">Bienvenido de nuevo</h1>
+      <p class="login-sub">Ingresa tus credenciales para acceder a tu panel de asesoría financiera.</p>
+    </div>
+    <div class="field">
+      <label class="field-label" for="usr">Usuario</label>
+      <div class="field-wrap">
+        <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <input class="field-input" type="text" id="usr" placeholder="Tu nombre de usuario" autocomplete="username" autofocus/>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label" for="pwd">Contraseña</label>
+      <div class="field-wrap">
+        <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <input class="field-input" type="password" id="pwd" placeholder="••••••••••" autocomplete="current-password"/>
+      </div>
+    </div>
+    <button class="btn-login" id="loginBtn">
+      <span id="btnText">Iniciar sesión</span>
+    </button>
+    <div class="error-box" id="err">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Credenciales incorrectas. Verifica tu usuario y contraseña.
+    </div>
+    <div class="divider"><span>acceso seguro</span></div>
+    <div class="secure-note">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Conexión encriptada · Datos almacenados localmente
+    </div>
+    <p class="footer-note">FinSuite Pro v1.2 · Todos los derechos reservados</p>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
 function doLogin(){
-  const u=$('usr').value.trim(), p=$('pwd').value;
-  const found = (typeof USUARIOS !== 'undefined') && USUARIOS.find(x=>x.usuario===u&&x.password===p);
+  const u=$('usr').value.trim(),p=$('pwd').value;
+  const found=(typeof USUARIOS!=='undefined')&&USUARIOS.find(x=>x.usuario===u&&x.password===p);
+  $('err').style.display='none';
   if(found){
-    sessionStorage.setItem('finsuite_auth', JSON.stringify(found));
-    $('err').style.display='none';
-    $('loginBtn').textContent='Accediendo...';
-    setTimeout(()=>{ window.location.href='clientes.html'; }, 300);
-  } else {
-    $('err').style.display='block';
-    $('pwd').value='';
-    $('pwd').focus();
+    sessionStorage.setItem('finsuite_auth',JSON.stringify(found));
+    $('btnText').textContent='Accediendo...';
+    $('loginBtn').disabled=true;
+    setTimeout(()=>window.location.href='clientes.html',350);
+  }else{
+    $('err').style.display='flex';
+    $('pwd').value='';$('pwd').focus();
+    $('loginBtn').style.animation='none';
+    setTimeout(()=>$('loginBtn').style.animation='',100);
   }
 }
-
-$('loginBtn').addEventListener('click', doLogin);
-[$('usr'),$('pwd')].forEach(el=>el.addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); }));
-
-// If already logged in, go to clients
-if(sessionStorage.getItem('finsuite_auth')) window.location.href='clientes.html';
+$('loginBtn').addEventListener('click',doLogin);
+[$('usr'),$('pwd')].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}));
+if(sessionStorage.getItem('finsuite_auth'))window.location.href='clientes.html';
 </script>
 </body>
 </html>
