@@ -94,21 +94,63 @@ function SectionCard({title,color,bg,icon,rows,onAdd,onDel,onNom,onVal,total_lab
 // ── Generadores de Informe ─────────────────────────────────────────────────────
 
 
+
 function pdfClientBlock(doc,client,user){
   const W=doc.internal.pageSize.getWidth();const M=14;
-  const y0=42;const h=30;
-  doc.setFillColor(248,250,252);doc.roundedRect(M,y0,W-M*2,h,3,3,'F');
-  doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.roundedRect(M,y0,W-M*2,h,3,3,'S');
-  // Label
+  const y0=43;const bh=36;
+  // Background
+  doc.setFillColor(248,250,252);doc.roundedRect(M,y0,W-M*2,bh,3,3,'F');
+  doc.setDrawColor(220,228,240);doc.setLineWidth(.4);doc.roundedRect(M,y0,W-M*2,bh,3,3,'S');
+  // Accent left bar
+  doc.setFillColor(37,99,235);doc.roundedRect(M,y0,3,bh,1.5,1.5,'F');
+  // CLIENTE label
   doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(148,163,184);
-  doc.text('CLIENTE',M+5,y0+5.5);
+  doc.text('CLIENTE',M+8,y0+7);
   // Name
-  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(15,23,42);
-  const nombre=client?.nombre||'Sin cliente';
-  doc.text(nombre,M+5,y0+12.5);
-  // Company / type
-  const sub=[];if(client?.empresa)sub.push(client.empresa);if(client?.tipo)sub.push(client.tipo);
-  if(sub.length){doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);doc.text(sub.join(' · '),M+5,y0+18.5);}
+  doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(15,23,42);
+  const nombre=(client?.nombre||'Sin cliente');
+  const maxW=(W-M*2)/2-16;
+  const nameTxt=doc.splitTextToSize(nombre,maxW)[0]||nombre;
+  doc.text(nameTxt,M+8,y0+15);
+  // Company + type
+  const sub2=[];
+  if(client?.empresa)sub2.push(client.empresa);
+  if(client?.tipo)sub2.push(client.tipo);
+  if(sub2.length){
+    doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(100,116,139);
+    doc.text(sub2.join(' · '),M+8,y0+22);
+  }
+  // ID
+  if(client?.tipoDoc&&client?.numeroDoc){
+    const lbl=client.tipoDoc==='Cédula de Ciudadanía'?'CC':client.tipoDoc==='NIT'?'NIT':client.tipoDoc;
+    doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(71,85,105);
+    doc.text(lbl+': '+client.numeroDoc,M+8,y0+29);
+  }
+  // Divider
+  const midX=W/2;
+  doc.setDrawColor(226,232,240);doc.setLineWidth(.3);
+  doc.line(midX,y0+6,midX,y0+bh-6);
+  // Right column
+  const rx=midX+8;let ry=y0+9;
+  const rItems=[];
+  if(client?.email)rItems.push('Email: '+client.email);
+  if(client?.celular||client?.telefono)rItems.push('Tel: '+(client.celular||client.telefono));
+  if(client?.ciudad)rItems.push('Ciudad: '+client.ciudad);
+  if(client?.direccion)rItems.push('Dir: '+client.direccion);
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);
+  const maxRW=W-midX-M-12;
+  rItems.forEach(item=>{
+    if(ry<y0+bh-5){
+      const short=doc.splitTextToSize(item,maxRW)[0]||item;
+      doc.text(short,rx,ry);ry+=5.8;
+    }
+  });
+  // Asesor bottom right - with enough padding from border
+  doc.setFont('helvetica','italic');doc.setFontSize(7);doc.setTextColor(148,163,184);
+  doc.text('Asesor: '+(user?.nombre||'No especificado'),W-M-5,y0+bh-7,{align:'right'});
+  return y0+bh+10;
+}
+
   // ID
   if(client?.tipoDoc&&client?.numeroDoc){
     const lbl=client.tipoDoc==='Cédula de Ciudadanía'?'CC':client.tipoDoc==='NIT'?'NIT':client.tipoDoc;
