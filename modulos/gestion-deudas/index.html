@@ -35,13 +35,13 @@
 </style></head>
 <body>
 <div class="bar">
-  <a href="../../index.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Inicio</a>
+  <a href="../../dashboard.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Mis Módulos</a>
   <span class="sep">&#8250;</span><span class="cur">Gestión de Deudas</span>
   <span class="badge">FinSuite Pro</span>
 </div>
 <div id="root"></div>
 <script type="text/babel" data-type="module">
-import React,{useState,useMemo} from 'react';
+import React,{useState,useMemo,useEffect,useRef} from 'react';
 import {createRoot} from 'react-dom/client';
 import {BarChart,Bar,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,Cell} from 'recharts';
 
@@ -89,6 +89,44 @@ function simular(deudas,pool){
 
 // ── Generadores ───────────────────────────────────────────────────────────────
 
+
+function pdfClientBlock(doc,client,user){
+  const W=doc.internal.pageSize.getWidth();const M=14;
+  const y0=42;const h=30;
+  doc.setFillColor(248,250,252);doc.roundedRect(M,y0,W-M*2,h,3,3,'F');
+  doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.roundedRect(M,y0,W-M*2,h,3,3,'S');
+  // Label
+  doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(148,163,184);
+  doc.text('CLIENTE',M+5,y0+5.5);
+  // Name
+  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(15,23,42);
+  const nombre=client?.nombre||'Sin cliente';
+  doc.text(nombre,M+5,y0+12.5);
+  // Company / type
+  const sub=[];if(client?.empresa)sub.push(client.empresa);if(client?.tipo)sub.push(client.tipo);
+  if(sub.length){doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);doc.text(sub.join(' · '),M+5,y0+18.5);}
+  // ID
+  if(client?.tipoDoc&&client?.numeroDoc){
+    const lbl=client.tipoDoc==='Cédula de Ciudadanía'?'CC':client.tipoDoc==='NIT'?'NIT':client.tipoDoc;
+    doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(71,85,105);
+    doc.text(lbl+': '+client.numeroDoc,M+5,y0+25);
+  }
+  // Right column
+  const rx=W/2+2;let ry=y0+6;
+  const rItems=[];
+  if(client?.email)rItems.push('Email: '+client.email);
+  if(client?.celular||client?.telefono)rItems.push('Tel: '+(client.celular||client.telefono));
+  if(client?.ciudad)rItems.push('Ciudad: '+client.ciudad);
+  if(client?.direccion)rItems.push('Dir: '+client.direccion);
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);
+  rItems.forEach(item=>{
+    if(ry<y0+h-4){doc.text(item,rx,ry);ry+=5.2;}
+  });
+  // Asesor + date
+  doc.setFont('helvetica','italic');doc.setFontSize(7);doc.setTextColor(148,163,184);
+  doc.text('Asesor: '+(user?.nombre||'No especificado'),W-M,y0+h-5,{align:'right'});
+  return y0+h+8;
+}
 function pdfHdr(doc,titulo){
   const W=doc.internal.pageSize.getWidth();
   doc.setFillColor(15,23,42);doc.rect(0,0,W,36,'F');
@@ -121,7 +159,9 @@ function pdfSec(doc,title,y,rgb){
 function generarPDF(d){
   const {jsPDF}=window.jspdf;const doc=new jsPDF('p','mm','a4');const M=14;
   pdfHdr(doc,'Estrategia de Gestión de Deudas');
-  let y=48;
+  const _cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+  const _usr=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
+  let y=pdfClientBlock(doc,_cl,_usr);
 
   // Resumen de deudas
   y=pdfSec(doc,'RESUMEN DE DEUDAS',y,[217,119,6]);
@@ -186,15 +226,24 @@ function generarPDF(d){
   });
 
   pdfFtrs(doc);
-  doc.save('estrategia-gestion-deudas.pdf');
+  const _fpdf=(_cl?.nombre?_cl.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'')+'estrategia-gestion-deudas';
+doc.save(_fpdf+'.pdf');
 }
 
-function generarExcel(d){
+function generarExcel(d){const _cl_xls=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');const _usr_xls=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
   const XLSX=window.XLSX;const wb=XLSX.utils.book_new();const n=v=>Number(v)||0;
 
   const wsRes=XLSX.utils.aoa_to_sheet([
     ['ESTRATEGIA DE GESTIÓN DE DEUDAS — FinSuite Pro v1.2'],
     ['Fecha',new Date().toLocaleDateString('es-CO')],[''],
+    ['DATOS DEL CLIENTE',''],
+    ['Nombre',_cl_xls?.nombre||'No especificado'],
+    [(_cl_xls?.tipoDoc||'Documento'),_cl_xls?.numeroDoc||'—'],
+    ['Empresa',_cl_xls?.empresa||'—'],
+    ['Email',_cl_xls?.email||'—'],
+    ['Teléfono',_cl_xls?.celular||_cl_xls?.telefono||'—'],
+    ['Ciudad',_cl_xls?.ciudad||'—'],
+    ['Asesor',_usr_xls?.nombre||'—'],[''],
     ['RESUMEN GENERAL',''],
     ['Total deuda pendiente',n(d.deudas.reduce((a,b)=>a+b.saldo,0))],
     ['Cuotas mínimas mensuales',n(d.totalMins)],
@@ -226,7 +275,8 @@ function generarExcel(d){
   wsPlan['!cols']=[{wch:12},{wch:35},{wch:20},{wch:15},{wch:22},{wch:20}];
   XLSX.utils.book_append_sheet(wb,wsPlan,'Plan_de_Pago');
 
-  XLSX.writeFile(wb,'estrategia-gestion-deudas.xlsx');
+  const _fn_xls=(_cl_xls?.nombre?_cl_xls.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'')+'estrategia-gestion-deudas';
+XLSX.writeFile(wb,_fn_xls+'.xlsx');
 }
 
 // ── App ───────────────────────────────────────────────────────────────────────
@@ -234,14 +284,33 @@ let uid=5;const nid=()=>++uid;
 const COLORS=['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#8b5cf6','#ec4899'];
 
 function App(){
-  const [deudas,setDeudas]=useState([
-    {id:1,nombre:'Tarjeta Visa',saldo:5000000,tasa:28,minimo:150000},
-    {id:2,nombre:'Crédito de consumo',saldo:12000000,tasa:18,minimo:380000},
-    {id:3,nombre:'Tarjeta Mastercard',saldo:2500000,tasa:32,minimo:75000},
-  ]);
+  const DEF_D=[{id:1,nombre:'Tarjeta Visa',saldo:5000000,tasa:28,minimo:150000},{id:2,nombre:'Crédito de consumo',saldo:12000000,tasa:18,minimo:380000},{id:3,nombre:'Tarjeta Mastercard',saldo:2500000,tasa:32,minimo:75000}];
+  const [deudas,setDeudas]=useState(DEF_D);
   const [extra,setExtra]=useState(500000);
   const [estr,setEstr]=useState('avalanche');
   const [gen,setGen]=useState('');
+  const [client,setClient]=useState(null);
+  const [saved,setSaved]=useState(false);
+  const ready=useRef(false);
+
+  useEffect(()=>{
+    const cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+    setClient(cl);
+    if(cl){const raw=localStorage.getItem('finsuite_'+cl.id+'_deudas');if(raw){try{const d=JSON.parse(raw);setDeudas(d.deudas||DEF_D);setExtra(d.extra||500000);setEstr(d.estr||'avalanche');}catch(e){}}}
+    setTimeout(()=>{ready.current=true;},100);
+  },[]);
+
+  useEffect(()=>{
+    if(!ready.current) return;
+    const cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+    if(!cl) return;
+    const t=setTimeout(()=>{
+      localStorage.setItem('finsuite_'+cl.id+'_deudas',JSON.stringify({deudas,extra,estr}));
+      try{const cls=JSON.parse(localStorage.getItem('finsuite_clients')||'[]');const idx=cls.findIndex(x=>x.id===cl.id);if(idx>=0){cls[idx].updatedAt=new Date().toISOString();localStorage.setItem('finsuite_clients',JSON.stringify(cls));}}catch(e){}
+      setSaved(true);setTimeout(()=>setSaved(false),2000);
+    },600);
+    return ()=>clearTimeout(t);
+  },[deudas,extra,estr]);
 
   const upd=(id,k,v)=>setDeudas(a=>a.map(d=>d.id===id?{...d,[k]:v}:d));
   const del=id=>setDeudas(a=>a.filter(d=>d.id!==id));
@@ -268,9 +337,10 @@ function App(){
       </div>
       <div style={{flex:1,minWidth:0}}>
         <h1 className="fs" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0}}>Estrategia de Gestión de Deudas</h1>
-        <p style={{color:'#64748b',fontSize:'.84rem',margin:0}}>Compara Bola de Nieve vs. Avalancha y planifica el camino hacia la libertad financiera.</p>
+        <p style={{color:'#64748b',fontSize:'.84rem',margin:0}}>{client?<><strong style={{color:'#d97706'}}>{client.nombre}</strong> — Gestión de deudas</>:'Compara Bola de Nieve vs. Avalancha.'}</p>
       </div>
-      <div style={{display:'flex',gap:'.5rem',flexShrink:0}}>
+      <div style={{display:'flex',alignItems:'center',gap:'.5rem',flexShrink:0}}>
+          {saved&&<span style={{fontSize:'.75rem',color:'#059669',display:'flex',alignItems:'center',gap:'.3rem'}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Guardado</span>}
         <button className="rpt-btn" style={{background:'linear-gradient(135deg,#dc2626,#b91c1c)',color:'#fff'}} onClick={dPDF} disabled={!!gen}>
           {gen==='pdf'?'Generando...':<><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Informe PDF</>}
         </button>
@@ -387,5 +457,5 @@ function App(){
 }
 createRoot(document.getElementById('root')).render(<App/>);
 </script>
-<script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';</script>
+<script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';if(!sessionStorage.getItem('finsuite_current_client'))window.location.href='../../clientes.html';</script>
 </body></html>
