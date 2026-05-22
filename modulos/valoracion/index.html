@@ -68,21 +68,63 @@ function MoneyInput({label,value,onChange,note,style={}}){
 // ── Generadores ───────────────────────────────────────────────────────────────
 
 
+
 function pdfClientBlock(doc,client,user){
   const W=doc.internal.pageSize.getWidth();const M=14;
-  const y0=42;const h=30;
-  doc.setFillColor(248,250,252);doc.roundedRect(M,y0,W-M*2,h,3,3,'F');
-  doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.roundedRect(M,y0,W-M*2,h,3,3,'S');
-  // Label
+  const y0=43;const bh=36;
+  // Background
+  doc.setFillColor(248,250,252);doc.roundedRect(M,y0,W-M*2,bh,3,3,'F');
+  doc.setDrawColor(220,228,240);doc.setLineWidth(.4);doc.roundedRect(M,y0,W-M*2,bh,3,3,'S');
+  // Accent left bar
+  doc.setFillColor(37,99,235);doc.roundedRect(M,y0,3,bh,1.5,1.5,'F');
+  // CLIENTE label
   doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(148,163,184);
-  doc.text('CLIENTE',M+5,y0+5.5);
+  doc.text('CLIENTE',M+8,y0+7);
   // Name
-  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(15,23,42);
-  const nombre=client?.nombre||'Sin cliente';
-  doc.text(nombre,M+5,y0+12.5);
-  // Company / type
-  const sub=[];if(client?.empresa)sub.push(client.empresa);if(client?.tipo)sub.push(client.tipo);
-  if(sub.length){doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);doc.text(sub.join(' · '),M+5,y0+18.5);}
+  doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(15,23,42);
+  const nombre=(client?.nombre||'Sin cliente');
+  const maxW=(W-M*2)/2-16;
+  const nameTxt=doc.splitTextToSize(nombre,maxW)[0]||nombre;
+  doc.text(nameTxt,M+8,y0+15);
+  // Company + type
+  const sub2=[];
+  if(client?.empresa)sub2.push(client.empresa);
+  if(client?.tipo)sub2.push(client.tipo);
+  if(sub2.length){
+    doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(100,116,139);
+    doc.text(sub2.join(' · '),M+8,y0+22);
+  }
+  // ID
+  if(client?.tipoDoc&&client?.numeroDoc){
+    const lbl=client.tipoDoc==='Cédula de Ciudadanía'?'CC':client.tipoDoc==='NIT'?'NIT':client.tipoDoc;
+    doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(71,85,105);
+    doc.text(lbl+': '+client.numeroDoc,M+8,y0+29);
+  }
+  // Divider
+  const midX=W/2;
+  doc.setDrawColor(226,232,240);doc.setLineWidth(.3);
+  doc.line(midX,y0+6,midX,y0+bh-6);
+  // Right column
+  const rx=midX+8;let ry=y0+9;
+  const rItems=[];
+  if(client?.email)rItems.push('Email: '+client.email);
+  if(client?.celular||client?.telefono)rItems.push('Tel: '+(client.celular||client.telefono));
+  if(client?.ciudad)rItems.push('Ciudad: '+client.ciudad);
+  if(client?.direccion)rItems.push('Dir: '+client.direccion);
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);
+  const maxRW=W-midX-M-12;
+  rItems.forEach(item=>{
+    if(ry<y0+bh-5){
+      const short=doc.splitTextToSize(item,maxRW)[0]||item;
+      doc.text(short,rx,ry);ry+=5.8;
+    }
+  });
+  // Asesor bottom right - with enough padding from border
+  doc.setFont('helvetica','italic');doc.setFontSize(7);doc.setTextColor(148,163,184);
+  doc.text('Asesor: '+(user?.nombre||'No especificado'),W-M-5,y0+bh-7,{align:'right'});
+  return y0+bh+10;
+}
+
   // ID
   if(client?.tipoDoc&&client?.numeroDoc){
     const lbl=client.tipoDoc==='Cédula de Ciudadanía'?'CC':client.tipoDoc==='NIT'?'NIT':client.tipoDoc;
@@ -244,6 +286,18 @@ function generarExcel(d){const _cl_xls=JSON.parse(sessionStorage.getItem('finsui
 XLSX.writeFile(wb,_fn_xls+'.xlsx');
 }
 
+
+// ── SliderField - DEFINED OUTSIDE App ───────────────────────────
+function SliderVal({label,value,onChange,min,max,step,unit,sfx}){
+  const s=step||1;const u=unit||'';const sf=sfx||'';
+  return <div>
+    <div style={{display:'flex',justifyContent:'space-between',marginBottom:'.35rem'}}>
+      <label style={{fontSize:'.82rem',fontWeight:700,color:'#374151'}}>{label}</label>
+      <span className="fs" style={{fontSize:'.9rem',fontWeight:700,color:'#0891b2'}}>{value}{u}{sf}</span>
+    </div>
+    <input type="range" className="slider" min={min} max={max} step={s} value={value} onChange={e=>onChange(s===1?parseInt(e.target.value):parseFloat(e.target.value))}/>
+  </div>;
+}
 // ── App ────────────────────────────────────────────────────────────────────────
 const YRC=['#0891b2','#06b6d4','#0e7490','#155e75','#164e63','#0c4a6e','#1e3a5f','#1e40af','#1d4ed8','#2563eb'];
 
@@ -293,13 +347,7 @@ function App(){
   const dPDF=()=>{setGen('pdf');setTimeout(()=>{generarPDF({inv,tasa,nY,flows,npv,irr,payback,totalVP,totalFlujos,breakdown,viable});setGen('');},50);};
   const dXLS=()=>generarExcel({inv,tasa,nY,flows,npv,irr,payback,totalVP,totalFlujos,breakdown});
 
-  const Sl=({label,value,onChange,min,max,step=1,unit='',sfx=''})=><div>
-    <div style={{display:'flex',justifyContent:'space-between',marginBottom:'.35rem'}}>
-      <label style={{fontSize:'.82rem',fontWeight:600,color:'#374151'}}>{label}</label>
-      <span className="fs" style={{fontSize:'.9rem',fontWeight:700,color:'#0891b2'}}>{value}{unit}{sfx}</span>
-    </div>
-    <input type="range" className="slider" min={min} max={max} step={step} value={value} onChange={e=>onChange(step===1?parseInt(e.target.value):parseFloat(e.target.value))}/>
-  </div>;
+
 
   return <div style={{maxWidth:1250,margin:'0 auto',padding:'1.5rem'}}>
     <div style={{marginBottom:'1.5rem',display:'flex',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
@@ -329,10 +377,10 @@ function App(){
           <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
             <MoneyInput label="Inversión inicial (año 0)" value={inv} onChange={setInv} note="Capital total requerido para iniciar"/>
             <div>
-              <Sl label="Tasa de descuento (WACC / COK)" value={tasa} onChange={setTasa} min={1} max={50} step={0.5} unit="%" sfx=" EA"/>
+              <SliderVal label="Tasa de descuento (WACC / COK)" value={tasa} onChange={setTasa} min={1} max={50} step={0.5} unit="%" sfx=" EA"/>
               <div style={{display:'flex',justifyContent:'space-between',fontSize:'.7rem',color:'#94a3b8',marginTop:'.2rem'}}><span>Bajo riesgo</span><span>Alto riesgo</span></div>
             </div>
-            <Sl label="Horizonte de análisis" value={nY} onChange={setNY} min={1} max={10} unit=" años"/>
+            <SliderVal label="Horizonte de análisis" value={nY} onChange={setNY} min={1} max={10} unit=" años"/>
           </div>
         </div>
         <div className="card" style={{padding:'1.25rem 1.4rem'}}>
