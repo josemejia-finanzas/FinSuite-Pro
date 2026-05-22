@@ -39,13 +39,13 @@
 </head>
 <body>
 <div class="bar">
-  <a href="../../index.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Inicio</a>
+  <a href="../../dashboard.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Mis Módulos</a>
   <span class="sep">&#8250;</span><span class="cur">Análisis Financiero Personal</span>
   <span class="badge">FinSuite Pro</span>
 </div>
 <div id="root"></div>
 <script type="text/babel" data-type="module">
-import React,{useState,useMemo} from 'react';
+import React,{useState,useMemo,useEffect,useRef} from 'react';
 import {createRoot} from 'react-dom/client';
 import {PieChart,Pie,Cell,Tooltip,ResponsiveContainer,Legend,BarChart,Bar,XAxis,YAxis,CartesianGrid} from 'recharts';
 
@@ -93,6 +93,44 @@ function SectionCard({title,color,bg,icon,rows,onAdd,onDel,onNom,onVal,total_lab
 
 // ── Generadores de Informe ─────────────────────────────────────────────────────
 
+
+function pdfClientBlock(doc,client,user){
+  const W=doc.internal.pageSize.getWidth();const M=14;
+  const y0=42;const h=30;
+  doc.setFillColor(248,250,252);doc.roundedRect(M,y0,W-M*2,h,3,3,'F');
+  doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.roundedRect(M,y0,W-M*2,h,3,3,'S');
+  // Label
+  doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(148,163,184);
+  doc.text('CLIENTE',M+5,y0+5.5);
+  // Name
+  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(15,23,42);
+  const nombre=client?.nombre||'Sin cliente';
+  doc.text(nombre,M+5,y0+12.5);
+  // Company / type
+  const sub=[];if(client?.empresa)sub.push(client.empresa);if(client?.tipo)sub.push(client.tipo);
+  if(sub.length){doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);doc.text(sub.join(' · '),M+5,y0+18.5);}
+  // ID
+  if(client?.tipoDoc&&client?.numeroDoc){
+    const lbl=client.tipoDoc==='Cédula de Ciudadanía'?'CC':client.tipoDoc==='NIT'?'NIT':client.tipoDoc;
+    doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(71,85,105);
+    doc.text(lbl+': '+client.numeroDoc,M+5,y0+25);
+  }
+  // Right column
+  const rx=W/2+2;let ry=y0+6;
+  const rItems=[];
+  if(client?.email)rItems.push('Email: '+client.email);
+  if(client?.celular||client?.telefono)rItems.push('Tel: '+(client.celular||client.telefono));
+  if(client?.ciudad)rItems.push('Ciudad: '+client.ciudad);
+  if(client?.direccion)rItems.push('Dir: '+client.direccion);
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);
+  rItems.forEach(item=>{
+    if(ry<y0+h-4){doc.text(item,rx,ry);ry+=5.2;}
+  });
+  // Asesor + date
+  doc.setFont('helvetica','italic');doc.setFontSize(7);doc.setTextColor(148,163,184);
+  doc.text('Asesor: '+(user?.nombre||'No especificado'),W-M,y0+h-5,{align:'right'});
+  return y0+h+8;
+}
 function pdfHeader(doc,titulo){
   const W=doc.internal.pageSize.getWidth();
   doc.setFillColor(15,23,42);doc.rect(0,0,W,36,'F');
@@ -136,7 +174,9 @@ function generarPDF(d){
   });
 
   pdfHeader(doc,'Análisis Financiero Personal');
-  let y=48;
+  const _cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+  const _usr=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
+  let y=pdfClientBlock(doc,_cl,_usr);
 
   // Semáforo
   const sc=d.sem.level===3?[22,163,74]:d.sem.level===2?[161,98,7]:[185,28,28];
@@ -208,10 +248,11 @@ function generarPDF(d){
   }
 
   pdfFooters(doc);
-  doc.save('analisis-financiero-personal.pdf');
+  const _fpdf=(_cl?.nombre?_cl.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'')+'analisis-financiero-personal';
+doc.save(_fpdf+'.pdf');
 }
 
-function generarExcel(d){
+function generarExcel(d){const _cl_xls=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');const _usr_xls=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
   const XLSX=window.XLSX;const wb=XLSX.utils.book_new();
   const n=v=>Number(v)||0;
   const mk=(rows,hdr)=>{
@@ -221,6 +262,16 @@ function generarExcel(d){
   const wsRes=XLSX.utils.aoa_to_sheet([
     ['ANÁLISIS FINANCIERO PERSONAL — FinSuite Pro v1.2'],
     ['Fecha de generación',new Date().toLocaleDateString('es-CO')],
+    [''],
+    ['DATOS DEL CLIENTE',''],
+    ['Nombre',_cl_xls?.nombre||'No especificado'],
+    [(_cl_xls?.tipoDoc||'Documento'),_cl_xls?.numeroDoc||'—'],
+    ['Empresa',_cl_xls?.empresa||'—'],
+    ['Email',_cl_xls?.email||'—'],
+    ['Teléfono',_cl_xls?.celular||_cl_xls?.telefono||'—'],
+    ['Ciudad',_cl_xls?.ciudad||'—'],
+    [''],
+    ['Asesor que genera',_usr_xls?.nombre||'—'],
     [''],['INDICADORES CLAVE',''],
     ['Flujo de Caja Mensual',n(d.flujo)],['Patrimonio Neto',n(d.patrim)],
     ['Total Ingresos',n(d.tI)],['Total Gastos Fijos',n(d.tF)],['Total Gastos Variables',n(d.tV)],
@@ -238,18 +289,52 @@ function generarExcel(d){
   apData.push(['Total Activos',n(d.tA),'Total Pasivos',n(d.tP)],['Patrimonio Neto',n(d.patrim),'','']);
   const wsAP=XLSX.utils.aoa_to_sheet(apData);wsAP['!cols']=[{wch:35},{wch:20},{wch:35},{wch:20}];
   XLSX.utils.book_append_sheet(wb,wsAP,'Activos_Pasivos');
-  XLSX.writeFile(wb,'analisis-financiero-personal.xlsx');
+  const _fname_xls=(_cl_xls?.nombre?_cl_xls.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'') + 'analisis-financiero-personal';
+XLSX.writeFile(wb,_fname_xls+'.xlsx');
 }
 
 // ── App ───────────────────────────────────────────────────────────────────────
 let uid=10;const nid=()=>++uid;
 function App(){
-  const [ing,setIng]=useState([{id:1,nombre:'Salario neto',valor:4500000},{id:2,nombre:'Ingresos extra / freelance',valor:800000}]);
-  const [fij,setFij]=useState([{id:3,nombre:'Arriendo / cuota hipotecaria',valor:1200000},{id:4,nombre:'Servicios públicos',valor:250000},{id:5,nombre:'Internet y telefonía',valor:120000},{id:6,nombre:'Seguro de salud',valor:180000}]);
-  const [var_,setVar]=useState([{id:7,nombre:'Alimentación y mercado',valor:600000},{id:8,nombre:'Transporte',valor:200000},{id:9,nombre:'Entretenimiento',valor:150000},{id:10,nombre:'Ropa y cuidado personal',valor:100000}]);
-  const [act,setAct]=useState([{id:11,nombre:'Cuenta de ahorros / CDTs',valor:8000000},{id:12,nombre:'Vehículo',valor:25000000}]);
-  const [pas,setPas]=useState([{id:13,nombre:'Tarjeta de crédito',valor:3500000},{id:14,nombre:'Crédito de consumo',valor:8000000}]);
+  const DEF_ING=[{id:1,nombre:'Salario neto',valor:4500000},{id:2,nombre:'Ingresos extra / freelance',valor:800000}];
+  const DEF_FIJ=[{id:3,nombre:'Arriendo / cuota hipotecaria',valor:1200000},{id:4,nombre:'Servicios públicos',valor:250000},{id:5,nombre:'Internet y telefonía',valor:120000},{id:6,nombre:'Seguro de salud',valor:180000}];
+  const DEF_VAR=[{id:7,nombre:'Alimentación y mercado',valor:600000},{id:8,nombre:'Transporte',valor:200000},{id:9,nombre:'Entretenimiento',valor:150000},{id:10,nombre:'Ropa y cuidado personal',valor:100000}];
+  const DEF_ACT=[{id:11,nombre:'Cuenta de ahorros / CDTs',valor:8000000},{id:12,nombre:'Vehículo',valor:25000000}];
+  const DEF_PAS=[{id:13,nombre:'Tarjeta de crédito',valor:3500000},{id:14,nombre:'Crédito de consumo',valor:8000000}];
+  const [ing,setIng]=useState(DEF_ING);
+  const [fij,setFij]=useState(DEF_FIJ);
+  const [var_,setVar]=useState(DEF_VAR);
+  const [act,setAct]=useState(DEF_ACT);
+  const [pas,setPas]=useState(DEF_PAS);
   const [gen,setGen]=useState('');
+  const [client,setClient]=useState(null);
+  const [saved,setSaved]=useState(false);
+  const ready=useRef(false);
+
+  useEffect(()=>{
+    const c=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+    setClient(c);
+    if(c){
+      const raw=localStorage.getItem('finsuite_'+c.id+'_finanzas');
+      if(raw){
+        try{const d=JSON.parse(raw);setIng(d.ingresos||DEF_ING);setFij(d.fijos||DEF_FIJ);setVar(d.variables||DEF_VAR);setAct(d.activos||DEF_ACT);setPas(d.pasivos||DEF_PAS);}catch(e){}
+      }
+    }
+    setTimeout(()=>{ ready.current=true; },100);
+  },[]);
+
+  useEffect(()=>{
+    if(!ready.current) return;
+    const c=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+    if(!c) return;
+    const t=setTimeout(()=>{
+      localStorage.setItem('finsuite_'+c.id+'_finanzas',JSON.stringify({ingresos:ing,fijos:fij,variables:var_,activos:act,pasivos:pas}));
+      // Update client updatedAt
+      try{const cls=JSON.parse(localStorage.getItem('finsuite_clients')||'[]');const idx=cls.findIndex(x=>x.id===c.id);if(idx>=0){cls[idx].updatedAt=new Date().toISOString();localStorage.setItem('finsuite_clients',JSON.stringify(cls));}}catch(e){}
+      setSaved(true);setTimeout(()=>setSaved(false),2000);
+    },600);
+    return ()=>clearTimeout(t);
+  },[ing,fij,var_,act,pas]);
 
   const mkA=(s,n)=>()=>s(a=>[...a,{id:nid(),nombre:n,valor:0}]);
   const mkD=s=>id=>s(a=>a.filter(x=>x.id!==id));
@@ -290,9 +375,10 @@ function App(){
       </div>
       <div style={{flex:1,minWidth:0}}>
         <h1 className="fs" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0}}>Análisis Financiero Personal</h1>
-        <p style={{color:'#64748b',fontSize:'.84rem',margin:0}}>Diagnóstico completo de tu salud financiera mensual.</p>
+        <p style={{color:'#64748b',fontSize:'.84rem',margin:0}}>{client?<><strong style={{color:'#059669'}}>{client.nombre}</strong> — Diagnóstico financiero</>:'Diagnóstico completo de tu salud financiera mensual.'}</p>
       </div>
-      <div style={{display:'flex',gap:'.5rem',flexShrink:0}}>
+      <div style={{display:'flex',alignItems:'center',gap:'.5rem',flexShrink:0}}>
+          {saved&&<span style={{fontSize:'.75rem',color:'#059669',display:'flex',alignItems:'center',gap:'.3rem'}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Guardado</span>}
         <button className="rpt-btn" style={{background:'linear-gradient(135deg,#dc2626,#b91c1c)',color:'#fff'}} onClick={dPDF} disabled={!!gen}>
           {gen==='pdf'?'Generando...':<><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Informe PDF</>}
         </button>
@@ -351,6 +437,6 @@ function App(){
 }
 createRoot(document.getElementById('root')).render(<App/>);
 </script>
-<script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';</script>
+<script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';if(!sessionStorage.getItem('finsuite_current_client'))window.location.href='../../clientes.html';</script>
 </body>
 </html>
