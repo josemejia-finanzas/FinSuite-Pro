@@ -111,7 +111,7 @@ function generarPDF(d){
   doc.setFont('helvetica','bold');doc.setFontSize(13);doc.setTextColor(ok?21:161,ok?128:98,ok?61:7);
   doc.text('Fondo proyectado: '+fmtM(d.fv),M+6,y+9);
   doc.setFont('helvetica','normal');doc.setFontSize(9);
-  doc.text((ok?'✓ META ALCANZADA':'× Meta no alcanzada')+' · '+N(pct,1)+'% de '+COP(d.meta),M+6,y+17);
+  doc.text((ok?'META ALCANZADA':'Meta no alcanzada'+' · '+N(pct,1)+'% de '+COP(d.meta),M+6,y+17);
   y+=30;
 
   doc.autoTable({
@@ -157,7 +157,7 @@ function generarPDF(d){
   doc.setDrawColor(76,29,149);doc.setLineWidth(.3);doc.line(M,y+1.5,W-M,y+1.5);y+=9;
   doc.autoTable({
     startY:y,head:[['Hito','Monto objetivo','Edad estimada','Estado']],
-    body:d.milestones.map(m=>[m.pct+'% de la meta',COP(d.meta*m.pct/100),m.edad?'A los '+m.edad+' años':'No alcanzado',m.edad?'✅ Alcanzado':'⏳ Pendiente']),
+    body:d.milestones.map(m=>[m.pct+'% de la meta',COP(d.meta*m.pct/100),m.edad?'A los '+m.edad+' años':'No alcanzado',m.edad?'Alcanzado':'Pendiente']),
     theme:'grid',margin:{left:M,right:M},
     headStyles:{fillColor:[124,58,237],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
     bodyStyles:{fontSize:8.5},
