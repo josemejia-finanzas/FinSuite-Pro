@@ -382,14 +382,43 @@ function App(){
               <div><div style={{fontSize:'.68rem',color:'#6b7280',textTransform:'uppercase',letterSpacing:'.07em',fontWeight:700,marginBottom:'.2rem'}}>Total intereses</div><div className="fs" style={{fontSize:'.98rem',fontWeight:900,color:s.c}}>{COP(s.r.totalIntereses)}</div></div>
             </div>)}
           </div>
-          {/* vs solo minimos */}
-          <div style={{background:'linear-gradient(135deg,#064e3b,#065f46)',borderRadius:16,padding:'1.1rem 1.3rem',color:'#fff'}}>
-            <div className="fs" style={{fontSize:'.82rem',fontWeight:800,color:'#6ee7b7',marginBottom:'.6rem'}}>Ahorro vs pagar solo minimos</div>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.75rem'}}>
-              <div><div style={{fontSize:'.68rem',color:'rgba(255,255,255,.55)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.2rem'}}>Intereses que te ahorras</div><div className="fs" style={{fontSize:'1.1rem',fontWeight:900,color:'#34d399'}}>{COP(ahorroInt.intereses)}</div></div>
-              <div><div style={{fontSize:'.68rem',color:'rgba(255,255,255,.55)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.2rem'}}>Meses que te ahorras</div><div className="fs" style={{fontSize:'1.1rem',fontWeight:900,color:'#34d399'}}>{ahorroInt.meses} meses</div></div>
+          {/* Bloque ahorro vs minimos mejorado */}
+          {soloMins.meses>0&&<div style={{background:'linear-gradient(135deg,#064e3b,#065f46)',borderRadius:16,overflow:'hidden'}}>
+            <div style={{padding:'1rem 1.3rem .8rem',borderBottom:'1px solid rgba(255,255,255,.08)'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'.5rem',marginBottom:'.2rem'}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <div className="fs" style={{fontSize:'.82rem',fontWeight:800,color:'#6ee7b7'}}>Ahorro con estrategia vs pagar solo mínimos</div>
+              </div>
+              <p style={{fontSize:'.75rem',color:'rgba(255,255,255,.45)',margin:0}}>
+                Sin estrategia: {soloMins.meses} meses · {COP(soloMins.totalIntereses)} en intereses
+              </p>
             </div>
-          </div>
+            <div style={{padding:'1rem 1.3rem'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'.75rem',marginBottom:'.85rem'}}>
+                <div style={{background:'rgba(255,255,255,.06)',borderRadius:11,padding:'.75rem .85rem'}}>
+                  <div style={{fontSize:'.65rem',color:'rgba(255,255,255,.45)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>Intereses que NO pagas</div>
+                  <div className="fs" style={{fontSize:'1.05rem',fontWeight:900,color:'#34d399'}}>{COP(ahorroInt.intereses)}</div>
+                  <div style={{fontSize:'.68rem',color:'rgba(255,255,255,.35)',marginTop:'.2rem'}}>dinero que queda en tu bolsillo</div>
+                </div>
+                <div style={{background:'rgba(255,255,255,.06)',borderRadius:11,padding:'.75rem .85rem'}}>
+                  <div style={{fontSize:'.65rem',color:'rgba(255,255,255,.45)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>Tiempo que te ahorras</div>
+                  <div className="fs" style={{fontSize:'1.05rem',fontWeight:900,color:'#6ee7b7'}}>{ahorroInt.meses} mes{ahorroInt.meses!==1?'es':''}</div>
+                  <div style={{fontSize:'.68rem',color:'rgba(255,255,255,.35)',marginTop:'.2rem'}}>antes de quedar libre de deudas</div>
+                </div>
+                <div style={{background:'rgba(255,255,255,.06)',borderRadius:11,padding:'.75rem .85rem'}}>
+                  <div style={{fontSize:'.65rem',color:'rgba(255,255,255,.45)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.3rem'}}>Ahorro mensual equiv.</div>
+                  <div className="fs" style={{fontSize:'1.05rem',fontWeight:900,color:'#a7f3d0'}}>{ahorroInt.meses>0?COP(Math.round(ahorroInt.intereses/Math.max(1,(estr==='avalanche'?avalResult:snowResult).meses))):'—'}</div>
+                  <div style={{fontSize:'.68rem',color:'rgba(255,255,255,.35)',marginTop:'.2rem'}}>por mes de diferencia</div>
+                </div>
+              </div>
+              {ahorroInt.intereses>0&&<div style={{background:'rgba(52,211,153,.08)',border:'1px solid rgba(52,211,153,.2)',borderRadius:10,padding:'.65rem .9rem',display:'flex',alignItems:'center',gap:'.6rem'}}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <span style={{fontSize:'.78rem',color:'#6ee7b7',fontWeight:600}}>
+                  Con la estrategia {estr==='avalanche'?'Avalancha':'Bola de Nieve'} pagas <strong style={{color:'#34d399'}}>{COP((estr==='avalanche'?avalResult:snowResult).totalIntereses)}</strong> en intereses en lugar de <strong style={{color:'#fca5a5'}}>{COP(soloMins.totalIntereses)}</strong> — un ahorro real de <strong style={{color:'#34d399'}}>{COP(ahorroInt.intereses)}</strong>.
+                </span>
+              </div>}
+            </div>
+          </div>}
           <div className="card" style={{padding:'1.1rem 1.4rem'}}>
             <div className="fs" style={{fontSize:'.78rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.75rem'}}>Intereses por estrategia</div>
             <ResponsiveContainer width="100%" height={150}>
@@ -417,12 +446,21 @@ function App(){
 
         {/* Tab: Plan de Amortizacion */}
         {tab==='plan'&&planDetallado&&<>
-          <div style={{background:'linear-gradient(135deg,#4c1d95,#6d28d9)',borderRadius:16,padding:'1.1rem 1.4rem',color:'#fff',marginBottom:'.25rem'}}>
-            <div className="fs" style={{fontSize:'.82rem',fontWeight:800,color:'#c4b5fd',marginBottom:'.4rem'}}>Plan de Amortizacion — {estr==='avalanche'?'Avalancha':'Bola de Nieve'}</div>
-            <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'.75rem'}}>
-              <div><div style={{fontSize:'.65rem',color:'rgba(255,255,255,.55)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.15rem'}}>Total meses</div><div className="fs" style={{fontSize:'1.2rem',fontWeight:900}}>{(estr==='avalanche'?avalResult:snowResult).meses}</div></div>
-              <div><div style={{fontSize:'.65rem',color:'rgba(255,255,255,.55)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.15rem'}}>Total intereses</div><div className="fs" style={{fontSize:'1rem',fontWeight:900,color:'#fca5a5'}}>{COP((estr==='avalanche'?avalResult:snowResult).totalIntereses)}</div></div>
-              <div><div style={{fontSize:'.65rem',color:'rgba(255,255,255,.55)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.15rem'}}>Ahorro vs minimos</div><div className="fs" style={{fontSize:'1rem',fontWeight:900,color:'#86efac'}}>{COP(ahorroInt.intereses)}</div></div>
+          <div style={{background:'linear-gradient(135deg,#4c1d95,#6d28d9)',borderRadius:16,overflow:'hidden',marginBottom:'.25rem'}}>
+            <div style={{padding:'1rem 1.4rem .8rem',borderBottom:'1px solid rgba(255,255,255,.08)'}}>
+              <div className="fs" style={{fontSize:'.85rem',fontWeight:800,color:'#c4b5fd',marginBottom:'.15rem'}}>Plan de Amortización — {estr==='avalanche'?'Avalancha':'Bola de Nieve'}</div>
+              <div style={{fontSize:'.75rem',color:'rgba(255,255,255,.45)'}}>Deuda total: {COP(totalDeuda)} · Pool mensual: {COP(pool)}</div>
+            </div>
+            <div style={{padding:'1rem 1.4rem'}}>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'.75rem',marginBottom:'.75rem'}}>
+                <div><div style={{fontSize:'.65rem',color:'rgba(255,255,255,.45)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.25rem'}}>Meses hasta libertad</div><div className="fs" style={{fontSize:'1.3rem',fontWeight:900,color:'#fff'}}>{(estr==='avalanche'?avalResult:snowResult).meses}</div></div>
+                <div><div style={{fontSize:'.65rem',color:'rgba(255,255,255,.45)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.25rem'}}>Intereses totales</div><div className="fs" style={{fontSize:'1.1rem',fontWeight:900,color:'#fca5a5'}}>{COP((estr==='avalanche'?avalResult:snowResult).totalIntereses)}</div></div>
+                <div><div style={{fontSize:'.65rem',color:'rgba(255,255,255,.45)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.25rem'}}>Ahorro real vs mínimos</div><div className="fs" style={{fontSize:'1.1rem',fontWeight:900,color:'#86efac'}}>-{COP(ahorroInt.intereses)}</div></div>
+              </div>
+              <div style={{background:'rgba(255,255,255,.06)',borderRadius:10,padding:'.6rem .9rem',fontSize:'.75rem',color:'rgba(255,255,255,.55)',lineHeight:1.55}}>
+                Sin estrategia (solo mínimos): <span style={{color:'#fca5a5',fontWeight:700}}>{soloMins.meses} meses</span> y <span style={{color:'#fca5a5',fontWeight:700}}>{COP(soloMins.totalIntereses)}</span> en intereses.
+                Con esta estrategia ahorras <span style={{color:'#86efac',fontWeight:700}}>{COP(ahorroInt.intereses)}</span> en intereses y terminas <span style={{color:'#86efac',fontWeight:700}}>{ahorroInt.meses} meses antes</span>.
+              </div>
             </div>
           </div>
           {planDetallado.map((dd,i)=>{
