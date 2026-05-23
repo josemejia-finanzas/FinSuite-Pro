@@ -4,43 +4,42 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Análisis Financiero Personal — FinSuite Pro</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
 <script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","recharts":"https://esm.sh/recharts@2.12.0?deps=react@18.2.0"}}</script>
 <style>
-*{box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:#f1f5f9;margin:0;}
+*{box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:#f4f6fb;margin:0;}
 .fs{font-family:'Sora',sans-serif;}
-.bar{background:#0f172a;height:46px;display:flex;align-items:center;padding:0 1.5rem;gap:.5rem;position:sticky;top:0;z-index:100;}
-.bar a{color:#94a3b8;text-decoration:none;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:.4rem;padding:.3rem .65rem;border-radius:8px;transition:.15s;}
-.bar a:hover{background:rgba(255,255,255,.08);color:#f1f5f9;}
-.bar .sep{color:#334155;}.bar .cur{color:#34d399;font-size:.8rem;font-weight:700;}
-.badge{background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.25rem .7rem;border-radius:8px;color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.05em;margin-left:auto;}
-.card{background:#fff;border-radius:18px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.04);}
-.ni{border:1.5px solid #e2e8f0;border-radius:9px;padding:.55rem .75rem;font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none;transition:.15s;background:#fff;width:100%;}
+.topbar{background:#080d1a;height:54px;display:flex;align-items:center;padding:0 1.5rem;gap:.6rem;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.05);}
+.logo-mark{width:30px;height:30px;background:linear-gradient(135deg,#2563eb,#6366f1);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.logo-txt{font-size:.92rem;font-weight:800;color:#f1f5f9;font-family:'Sora',sans-serif;}
+.blink{display:flex;align-items:center;gap:.35rem;color:#475569;text-decoration:none;font-size:.78rem;font-weight:600;padding:.28rem .55rem;border-radius:7px;transition:.15s;}
+.blink:hover{color:#34d399;background:rgba(5,150,105,.1);}
+.sep{width:1px;height:18px;background:rgba(255,255,255,.07);}
+.badge{background:linear-gradient(135deg,#2563eb,#4f46e5);padding:.22rem .65rem;border-radius:7px;color:#fff;font-size:.65rem;font-weight:700;margin-left:auto;}
+.card{background:#fff;border-radius:18px;border:1px solid #e8edf5;box-shadow:0 2px 8px rgba(15,23,42,.05);}
+.ni{border:1.5px solid #e2e8f0;border-radius:10px;padding:.6rem .85rem;font-size:.87rem;font-family:'DM Sans',sans-serif;outline:none;transition:.18s;background:#fff;width:100%;}
 .ni:focus{border-color:#059669;box-shadow:0 0 0 3px rgba(5,150,105,.1);}
-.section-hdr{display:flex;align-items:center;gap:.6rem;padding:1.1rem 1.4rem;border-bottom:1px solid #f1f5f9;}
-.section-body{padding:1.1rem 1.4rem;}
-.col-hdr{font-size:.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;}
-.row-wrap{display:flex;gap:.5rem;align-items:center;margin-bottom:.45rem;}
 .del{background:#fff;border:1.5px solid #fecaca;border-radius:8px;padding:.38rem .5rem;cursor:pointer;color:#f87171;display:flex;align-items:center;flex-shrink:0;transition:.15s;}
 .del:hover{background:#fef2f2;border-color:#f87171;color:#dc2626;}
-.add-row{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;padding:.5rem;border:1.5px dashed #d1d5db;border-radius:9px;background:transparent;color:#94a3b8;font-size:.8rem;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
+.add-row{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;padding:.5rem;border:1.5px dashed #d1d5db;border-radius:10px;background:transparent;color:#94a3b8;font-size:.8rem;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
 .add-row:hover{border-color:#059669;color:#059669;background:#f0fdf4;}
-.total-row{display:flex;justify-content:space-between;align-items:center;padding:.75rem 0 0;border-top:1.5px solid #f1f5f9;margin-top:.6rem;}
-.kpi{border-radius:14px;padding:1.1rem 1.25rem;}
-.rpt-btn{display:flex;align-items:center;gap:.45rem;padding:.55rem 1.1rem;border-radius:10px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
+.rpt-btn{display:flex;align-items:center;gap:.45rem;padding:.55rem 1.1rem;border-radius:10px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.18s;}
 .rpt-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
 .rpt-btn:disabled{opacity:.6;cursor:not-allowed;}
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
 </style>
 </head>
 <body>
-<div class="bar">
-  <a href="../../dashboard.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Mis Módulos</a>
-  <span class="sep">&#8250;</span><span class="cur">Análisis Financiero Personal</span>
+<div class="topbar">
+  <div class="logo-mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+  <span class="logo-txt">FinSuite Pro</span><div class="sep"></div>
+  <a class="blink" href="../../dashboard.html"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Mis Módulos</a>
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  <span style="color:#34d399;font-size:.78rem;font-weight:700;">Análisis Financiero</span>
   <span class="badge">FinSuite Pro</span>
 </div>
 <div id="root"></div>
@@ -49,198 +48,84 @@ import React,{useState,useMemo,useEffect,useRef} from 'react';
 import {createRoot} from 'react-dom/client';
 import {PieChart,Pie,Cell,Tooltip,ResponsiveContainer,Legend,BarChart,Bar,XAxis,YAxis,CartesianGrid} from 'recharts';
 
+// ── Formatters ────────────────────────────────────────────────────────────────
 const COP=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);
 const PCT=(v,d=1)=>new Intl.NumberFormat('es-CO',{minimumFractionDigits:0,maximumFractionDigits:d}).format(v||0);
 
-function MoneyInput({value,onChange,style={}}){
-  const [f,setF]=useState(false);const [r,setR]=useState('');
-  return <input className="ni" style={{textAlign:'right',...style}}
-    value={f?r:(value===0?'':new Intl.NumberFormat('es-CO').format(value))}
-    onChange={e=>{const d=e.target.value.replace(/[^\d]/g,'');setR(d);onChange(d===''?0:parseInt(d,10));}}
-    onFocus={()=>{setF(true);setR(value===0?'':String(value));}} onBlur={()=>setF(false)}
-    placeholder="0" inputMode="numeric"/>;
-}
-function TextInput({value,onChange}){
-  return <input className="ni" style={{flex:1,minWidth:0}} value={value} onChange={e=>onChange(e.target.value)} placeholder="Concepto..."/>;
-}
-
-function SectionCard({title,color,bg,icon,rows,onAdd,onDel,onNom,onVal,total_label}){
-  const total=rows.reduce((a,b)=>a+b.valor,0);
-  return <div className="card" style={{marginBottom:'1rem'}}>
-    <div className="section-hdr">
-      <div style={{width:34,height:34,borderRadius:10,background:bg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{icon}</div>
-      <div className="fs" style={{fontSize:'.85rem',fontWeight:700,color:'#0f172a'}}>{title}</div>
-    </div>
-    <div className="section-body">
-      <div style={{display:'flex',gap:'.5rem',marginBottom:'.4rem'}}>
-        <span className="col-hdr" style={{flex:1}}>Concepto</span>
-        <span className="col-hdr" style={{width:130,textAlign:'right'}}>Monto mensual</span>
-        <span style={{width:34}}></span>
-      </div>
-      {rows.map(r=><div key={r.id} className="row-wrap">
-        <TextInput value={r.nombre} onChange={v=>onNom(r.id,v)}/>
-        <MoneyInput value={r.valor} onChange={v=>onVal(r.id,v)} style={{width:130}}/>
-        <button className="del" onClick={()=>onDel(r.id)}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
-      </div>)}
-      <button className="add-row" onClick={onAdd}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Agregar fila</button>
-      <div className="total-row">
-        <span style={{fontSize:'.82rem',fontWeight:600,color:'#64748b'}}>{total_label}</span>
-        <span className="fs" style={{fontSize:'1.05rem',fontWeight:800,color}}>{COP(total)}</span>
-      </div>
-    </div>
-  </div>;
-}
-
-// ── Generadores de Informe ─────────────────────────────────────────────────────
-
-
-
+// ── PDF/Excel helpers ─────────────────────────────────────────────────────────
 function pdfClientBlock(doc,client,user){
-  const W=doc.internal.pageSize.getWidth();const M=14;
-  const y0=43;const bh=36;
-  // Background
+  const W=doc.internal.pageSize.getWidth();const M=14;const y0=43;const bh=36;
   doc.setFillColor(248,250,252);doc.roundedRect(M,y0,W-M*2,bh,3,3,'F');
   doc.setDrawColor(220,228,240);doc.setLineWidth(.4);doc.roundedRect(M,y0,W-M*2,bh,3,3,'S');
-  // Accent left bar
-  doc.setFillColor(37,99,235);doc.roundedRect(M,y0,3,bh,1.5,1.5,'F');
-  // CLIENTE label
+  doc.setFillColor(5,150,105);doc.roundedRect(M,y0,3,bh,1.5,1.5,'F');
   doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(148,163,184);
   doc.text('CLIENTE',M+8,y0+7);
-  // Name
   doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(15,23,42);
-  const nombre=(client?.nombre||'Sin cliente');
-  const maxW=(W-M*2)/2-16;
-  const nameTxt=doc.splitTextToSize(nombre,maxW)[0]||nombre;
-  doc.text(nameTxt,M+8,y0+15);
-  // Company + type
+  doc.text(client&&client.nombre?client.nombre:'Sin cliente',M+8,y0+15);
   const sub2=[];
-  if(client?.empresa)sub2.push(client.empresa);
-  if(client?.tipo)sub2.push(client.tipo);
-  if(sub2.length){
-    doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(100,116,139);
-    doc.text(sub2.join(' · '),M+8,y0+22);
-  }
-  // ID
-  if(client?.tipoDoc&&client?.numeroDoc){
-    const lbl=client.tipoDoc==='Cédula de Ciudadanía'?'CC':client.tipoDoc==='NIT'?'NIT':client.tipoDoc;
+  if(client&&client.empresa)sub2.push(client.empresa);
+  if(client&&client.tipo)sub2.push(client.tipo);
+  if(sub2.length){doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(100,116,139);doc.text(sub2.join(' · '),M+8,y0+22);}
+  if(client&&client.tipoDoc&&client.numeroDoc){
+    var lbl=client.tipoDoc==='Cédula de Ciudadanía'?'CC':'NIT';
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(71,85,105);
     doc.text(lbl+': '+client.numeroDoc,M+8,y0+29);
   }
-  // Divider
-  const midX=W/2;
-  doc.setDrawColor(226,232,240);doc.setLineWidth(.3);
-  doc.line(midX,y0+6,midX,y0+bh-6);
-  // Right column
-  const rx=midX+8;let ry=y0+9;
-  const rItems=[];
-  if(client?.email)rItems.push('Email: '+client.email);
-  if(client?.celular||client?.telefono)rItems.push('Tel: '+(client.celular||client.telefono));
-  if(client?.ciudad)rItems.push('Ciudad: '+client.ciudad);
-  if(client?.direccion)rItems.push('Dir: '+client.direccion);
+  const midX=W/2;doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.line(midX,y0+6,midX,y0+bh-6);
+  var rx=midX+8;var ry=y0+9;var ri=[];
+  if(client&&client.email)ri.push('Email: '+client.email);
+  if(client&&(client.celular||client.telefono))ri.push('Tel: '+(client.celular||client.telefono));
+  if(client&&client.ciudad)ri.push('Ciudad: '+client.ciudad);
   doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);
-  const maxRW=W-midX-M-12;
-  rItems.forEach(item=>{
-    if(ry<y0+bh-5){
-      const short=doc.splitTextToSize(item,maxRW)[0]||item;
-      doc.text(short,rx,ry);ry+=5.8;
-    }
-  });
-  // Asesor bottom right - with enough padding from border
+  ri.forEach(function(item){if(ry<y0+bh-5){doc.text(item,rx,ry);ry+=5.8;}});
   doc.setFont('helvetica','italic');doc.setFontSize(7);doc.setTextColor(148,163,184);
-  doc.text('Asesor: '+(user?.nombre||'No especificado'),W-M-5,y0+bh-7,{align:'right'});
+  doc.text('Asesor: '+(user&&user.nombre?user.nombre:'No especificado'),W-M-5,y0+bh-7,{align:'right'});
   return y0+bh+10;
 }
 
-  // ID
-  if(client?.tipoDoc&&client?.numeroDoc){
-    const lbl=client.tipoDoc==='Cédula de Ciudadanía'?'CC':client.tipoDoc==='NIT'?'NIT':client.tipoDoc;
-    doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(71,85,105);
-    doc.text(lbl+': '+client.numeroDoc,M+5,y0+25);
+function generarPDF(d){
+  var jsPDFLib=window.jspdf;
+  var doc=new jsPDFLib.jsPDF('p','mm','a4');
+  var W=doc.internal.pageSize.getWidth();var H=doc.internal.pageSize.getHeight();var M=14;
+  var cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+  var usr=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
+  function addFtrs(){
+    var pg=doc.getNumberOfPages();
+    for(var i=1;i<=pg;i++){
+      doc.setPage(i);doc.setFillColor(248,250,252);doc.rect(0,H-10,W,10,'F');
+      doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(148,163,184);
+      doc.text('FinSuite Pro v1.2 — Analisis Financiero Personal',M,H-3.5);
+      doc.text('Pag. '+i+' de '+pg,W-M,H-3.5,{align:'right'});
+    }
   }
-  // Right column
-  const rx=W/2+2;let ry=y0+6;
-  const rItems=[];
-  if(client?.email)rItems.push('Email: '+client.email);
-  if(client?.celular||client?.telefono)rItems.push('Tel: '+(client.celular||client.telefono));
-  if(client?.ciudad)rItems.push('Ciudad: '+client.ciudad);
-  if(client?.direccion)rItems.push('Dir: '+client.direccion);
-  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);
-  rItems.forEach(item=>{
-    if(ry<y0+h-4){doc.text(item,rx,ry);ry+=5.2;}
-  });
-  // Asesor + date
-  doc.setFont('helvetica','italic');doc.setFontSize(7);doc.setTextColor(148,163,184);
-  doc.text('Asesor: '+(user?.nombre||'No especificado'),W-M,y0+h-5,{align:'right'});
-  return y0+h+8;
-}
-function pdfHeader(doc,titulo){
-  const W=doc.internal.pageSize.getWidth();
   doc.setFillColor(15,23,42);doc.rect(0,0,W,36,'F');
   doc.setFillColor(5,150,105);doc.rect(0,36,W,3,'F');
   doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(241,245,249);
-  doc.text('FinSuite Pro',14,16);
+  doc.text('FinSuite Pro',M,16);
   doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(148,163,184);
-  doc.text(titulo,14,27);
-  doc.text('Generado: '+new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}),W-14,27,{align:'right'});
-}
-function pdfFooters(doc){
-  const pg=doc.getNumberOfPages();const W=doc.internal.pageSize.getWidth();const H=doc.internal.pageSize.getHeight();
-  for(let i=1;i<=pg;i++){
-    doc.setPage(i);
-    doc.setFillColor(248,250,252);doc.rect(0,H-10,W,10,'F');
-    doc.setDrawColor(226,232,240);doc.setLineWidth(.3);doc.line(0,H-10,W,H-10);
-    doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(148,163,184);
-    doc.text('FinSuite Pro v1.2 — Suite de Asesoría Financiera',14,H-3.5);
-    doc.text('Página '+i+' de '+pg,W-14,H-3.5,{align:'right'});
-  }
-}
-function pdfSection(doc,title,y,rgb){
-  if(y>doc.internal.pageSize.getHeight()-50){doc.addPage();y=20;}
-  doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(...rgb);
-  doc.text(title,14,y);
-  doc.setDrawColor(...rgb);doc.setLineWidth(.3);doc.line(14,y+1.5,doc.internal.pageSize.getWidth()-14,y+1.5);
-  return y+9;
-}
-
-function generarPDF(d){
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF('p','mm','a4');
-  const W=doc.internal.pageSize.getWidth();const M=14;
-  const tb=(sy,head,body,hc,altFill)=>doc.autoTable({
-    startY:sy,head,body,theme:'grid',margin:{left:M,right:M},
-    headStyles:{fillColor:hc,textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
-    bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
-    alternateRowStyles:{fillColor:altFill||[248,250,252]},
-    columnStyles:{1:{halign:'right'}},
-    didDrawPage:()=>pdfFooters(doc),
-  });
-
-  pdfHeader(doc,'Análisis Financiero Personal');
-  const _cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
-  const _usr=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
-  let y=pdfClientBlock(doc,_cl,_usr);
-
-  // Semáforo
-  const sc=d.sem.level===3?[22,163,74]:d.sem.level===2?[161,98,7]:[185,28,28];
-  const sb=d.sem.level===3?[220,252,231]:d.sem.level===2?[254,249,195]:[254,226,226];
-  doc.setFillColor(...sb);doc.roundedRect(M,y,W-M*2,20,3,3,'F');
-  doc.setDrawColor(...sc);doc.setLineWidth(.4);doc.roundedRect(M,y,W-M*2,20,3,3,'S');
-  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(...sc);
+  doc.text('Analisis Financiero Personal',M,27);
+  doc.text('Generado: '+new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}),W-M,27,{align:'right'});
+  var y=pdfClientBlock(doc,cl,usr);
+  // Semaforo
+  var sc=d.sem.level===3?[22,163,74]:d.sem.level===2?[161,98,7]:[185,28,28];
+  var sb=d.sem.level===3?[220,252,231]:d.sem.level===2?[254,249,195]:[254,226,226];
+  doc.setFillColor(sb[0],sb[1],sb[2]);doc.roundedRect(M,y,W-M*2,20,3,3,'F');
+  doc.setDrawColor(sc[0],sc[1],sc[2]);doc.setLineWidth(.4);doc.roundedRect(M,y,W-M*2,20,3,3,'S');
+  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(sc[0],sc[1],sc[2]);
   doc.text('Salud Financiera: '+d.sem.label.toUpperCase(),M+5,y+8);
   doc.setFont('helvetica','normal');doc.setFontSize(8.5);
-  doc.text(doc.splitTextToSize(d.sem.msg,W-M*2-10),M+5,y+15);
-  y+=28;
-
-  // KPIs 2x2
-  const kpis=[
+  var ml=doc.splitTextToSize(d.sem.msg,W-M*2-10);
+  doc.text(ml,M+5,y+15);y+=28;
+  // KPIs
+  var kpis=[
     {l:'Flujo de Caja Mensual',v:COP(d.flujo),ok:d.flujo>=0},
     {l:'Patrimonio Neto',v:COP(d.patrim),ok:d.patrim>=0},
     {l:'Ratio de Endeudamiento',v:PCT(d.rd)+'%',ok:d.rd<50},
     {l:'Capacidad de Ahorro',v:PCT(d.ca)+'%',ok:d.ca>=10},
   ];
-  const kW=(W-M*2-5)/2;
-  kpis.forEach((k,i)=>{
-    const kx=M+(i%2)*(kW+5);const ky=y+Math.floor(i/2)*23;
+  var kW=(W-M*2-5)/2;
+  kpis.forEach(function(k,i){
+    var kx=M+(i%2)*(kW+5);var ky=y+Math.floor(i/2)*23;
     doc.setFillColor(k.ok?240:255,k.ok?253:241,k.ok?244:242);
     doc.roundedRect(kx,ky,kW,19,2,2,'F');
     doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(100,116,139);
@@ -250,234 +135,352 @@ function generarPDF(d){
     doc.text(k.v,kx+5,ky+15);
   });
   y+=54;
-
-  y=pdfSection(doc,'INGRESOS MENSUALES',y,[5,150,105]);
-  tb(y,[['Concepto','Monto COP']],[...d.ing.map(r=>[r.nombre,COP(r.valor)]),['TOTAL INGRESOS',COP(d.tI)]]  ,[5,150,105],[240,253,244]);
-  y=doc.lastAutoTable.finalY+10;
-
-  y=pdfSection(doc,'GASTOS FIJOS',y,[220,38,38]);
-  tb(y,[['Concepto','Monto COP']],[...d.fij.map(r=>[r.nombre,COP(r.valor)]),['TOTAL FIJOS',COP(d.tF)]]  ,[220,38,38],[255,241,242]);
-  y=doc.lastAutoTable.finalY+10;
-
-  y=pdfSection(doc,'GASTOS VARIABLES',y,[234,88,12]);
-  tb(y,[['Concepto','Monto COP']],[...d.var_.map(r=>[r.nombre,COP(r.valor)]),['TOTAL VARIABLES',COP(d.tV)]]  ,[234,88,12],[255,247,237]);
-  y=doc.lastAutoTable.finalY+10;
-
-  y=pdfSection(doc,'BALANCE PATRIMONIAL',y,[8,145,178]);
-  const maxLen=Math.max(d.act.length,d.pas.length);
-  const balBody=Array.from({length:maxLen},(_,i)=>[d.act[i]?.nombre||'',d.act[i]?COP(d.act[i].valor):'',d.pas[i]?.nombre||'',d.pas[i]?COP(d.pas[i].valor):'']);
+  doc.autoTable({startY:y,head:[['Concepto','Monto COP']],body:[].concat(d.ing.map(function(r){return[r.nombre,COP(r.valor)];})).concat([['TOTAL INGRESOS',COP(d.tI)]]),theme:'grid',margin:{left:M,right:M},headStyles:{fillColor:[5,150,105],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},bodyStyles:{fontSize:8.5},alternateRowStyles:{fillColor:[240,253,244]},columnStyles:{1:{halign:'right'}},didDrawPage:addFtrs});y=doc.lastAutoTable.finalY+8;
+  doc.autoTable({startY:y,head:[['Concepto','Monto COP']],body:[].concat(d.fij.map(function(r){return[r.nombre,COP(r.valor)];})).concat([['TOTAL FIJOS',COP(d.tF)]]),theme:'grid',margin:{left:M,right:M},headStyles:{fillColor:[220,38,38],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},bodyStyles:{fontSize:8.5},alternateRowStyles:{fillColor:[255,241,242]},columnStyles:{1:{halign:'right'}},didDrawPage:addFtrs});y=doc.lastAutoTable.finalY+8;
+  doc.autoTable({startY:y,head:[['Concepto','Monto COP']],body:[].concat(d.var_.map(function(r){return[r.nombre,COP(r.valor)];})).concat([['TOTAL VARIABLES',COP(d.tV)]]),theme:'grid',margin:{left:M,right:M},headStyles:{fillColor:[234,88,12],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},bodyStyles:{fontSize:8.5},alternateRowStyles:{fillColor:[255,247,237]},columnStyles:{1:{halign:'right'}},didDrawPage:addFtrs});y=doc.lastAutoTable.finalY+8;
+  var maxLen=Math.max(d.act.length,d.pas.length);
+  var balBody=[];
+  for(var i=0;i<maxLen;i++)balBody.push([d.act[i]?d.act[i].nombre:'',d.act[i]?COP(d.act[i].valor):'',d.pas[i]?d.pas[i].nombre:'',d.pas[i]?COP(d.pas[i].valor):'']);
   balBody.push(['TOTAL ACTIVOS',COP(d.tA),'TOTAL PASIVOS',COP(d.tP)]);
   balBody.push(['PATRIMONIO NETO',COP(d.patrim),'','']);
-  doc.autoTable({
-    startY:y,head:[['Activo','Valor COP','Pasivo','Valor COP']],body:balBody,
-    theme:'grid',margin:{left:M,right:M},
-    headStyles:{fillColor:[8,145,178],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},
-    bodyStyles:{fontSize:8.5,textColor:[30,41,59]},
-    alternateRowStyles:{fillColor:[236,254,255]},
-    columnStyles:{1:{halign:'right'},3:{halign:'right'}},
-    didDrawPage:()=>pdfFooters(doc),
-  });
-  y=doc.lastAutoTable.finalY+10;
-
+  doc.autoTable({startY:y,head:[['Activo','Valor COP','Pasivo','Valor COP']],body:balBody,theme:'grid',margin:{left:M,right:M},headStyles:{fillColor:[8,145,178],textColor:[255,255,255],fontSize:9,fontStyle:'bold'},bodyStyles:{fontSize:8.5},alternateRowStyles:{fillColor:[236,254,255]},columnStyles:{1:{halign:'right'},3:{halign:'right'}},didDrawPage:addFtrs});y=doc.lastAutoTable.finalY+8;
   if(d.rec.length){
-    y=pdfSection(doc,'RECOMENDACIONES',y,[37,99,235]);
+    doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(37,99,235);
+    if(y>H-50){doc.addPage();y=20;}
+    doc.text('RECOMENDACIONES',M,y);doc.setDrawColor(37,99,235);doc.setLineWidth(.3);doc.line(M,y+1.5,W-M,y+1.5);y+=9;
     doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(30,41,59);
-    d.rec.forEach((r,i)=>{
-      if(y>doc.internal.pageSize.getHeight()-25){doc.addPage();y=20;}
-      const lines=doc.splitTextToSize((i+1)+'. '+r,W-M*2-6);
+    d.rec.forEach(function(r,i){
+      if(y>H-25){doc.addPage();y=20;}
+      var lines=doc.splitTextToSize((i+1)+'. '+r,W-M*2-6);
       doc.text(lines,M+4,y);y+=lines.length*5.5+3;
     });
   }
-
-  pdfFooters(doc);
-  const _fpdf=(_cl?.nombre?_cl.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'')+'analisis-financiero-personal';
-doc.save(_fpdf+'.pdf');
+  addFtrs();
+  var fn=(cl&&cl.nombre?cl.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'')+'analisis-financiero-personal';
+  doc.save(fn+'.pdf');
 }
 
-function generarExcel(d){const _cl_xls=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');const _usr_xls=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
-  const XLSX=window.XLSX;const wb=XLSX.utils.book_new();
-  const n=v=>Number(v)||0;
-  const mk=(rows,hdr)=>{
-    const ws=XLSX.utils.aoa_to_sheet([[hdr,'Monto (COP)'],...rows.map(r=>[r.nombre,n(r.valor)]),['TOTAL',rows.reduce((a,b)=>a+b.valor,0)]]);
-    ws['!cols']=[{wch:40},{wch:20}];return ws;
-  };
-  const wsRes=XLSX.utils.aoa_to_sheet([
-    ['ANÁLISIS FINANCIERO PERSONAL — FinSuite Pro v1.2'],
-    ['Fecha de generación',new Date().toLocaleDateString('es-CO')],
-    [''],
-    ['DATOS DEL CLIENTE',''],
-    ['Nombre',_cl_xls?.nombre||'No especificado'],
-    [(_cl_xls?.tipoDoc||'Documento'),_cl_xls?.numeroDoc||'—'],
-    ['Empresa',_cl_xls?.empresa||'—'],
-    ['Email',_cl_xls?.email||'—'],
-    ['Teléfono',_cl_xls?.celular||_cl_xls?.telefono||'—'],
-    ['Ciudad',_cl_xls?.ciudad||'—'],
-    [''],
-    ['Asesor que genera',_usr_xls?.nombre||'—'],
+function generarExcel(d){
+  var XLSX=window.XLSX;var wb=XLSX.utils.book_new();
+  var cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+  var usr=JSON.parse(sessionStorage.getItem('finsuite_auth')||'null');
+  var n=function(v){return Number(v)||0;};
+  var wsRes=XLSX.utils.aoa_to_sheet([
+    ['ANALISIS FINANCIERO PERSONAL — FinSuite Pro v1.2'],
+    ['Fecha',new Date().toLocaleDateString('es-CO')],
+    [''],['DATOS DEL CLIENTE',''],
+    ['Nombre',cl&&cl.nombre?cl.nombre:'No especificado'],
+    [cl&&cl.tipoDoc?cl.tipoDoc:'Documento',cl&&cl.numeroDoc?cl.numeroDoc:'—'],
+    ['Empresa',cl&&cl.empresa?cl.empresa:'—'],
+    ['Email',cl&&cl.email?cl.email:'—'],
+    ['Asesor',usr&&usr.nombre?usr.nombre:'—'],
     [''],['INDICADORES CLAVE',''],
     ['Flujo de Caja Mensual',n(d.flujo)],['Patrimonio Neto',n(d.patrim)],
-    ['Total Ingresos',n(d.tI)],['Total Gastos Fijos',n(d.tF)],['Total Gastos Variables',n(d.tV)],
-    ['Total Activos',n(d.tA)],['Total Pasivos',n(d.tP)],
-    ['Ratio Endeudamiento (%)',Math.round(d.rd*10)/10],['Capacidad de Ahorro (%)',Math.round(d.ca*10)/10],
-    [''],['DIAGNÓSTICO',d.sem.label],['Observación',d.sem.msg],
+    ['Total Ingresos',n(d.tI)],['Total Gastos Fijos',n(d.tF)],
+    ['Total Gastos Variables',n(d.tV)],['Total Activos',n(d.tA)],['Total Pasivos',n(d.tP)],
+    ['Ratio Endeudamiento (%)',Math.round(d.rd*10)/10],['Capacidad Ahorro (%)',Math.round(d.ca*10)/10],
+    [''],['DIAGNOSTICO',d.sem.label],
   ]);
-  wsRes['!cols']=[{wch:35},{wch:20}];
-  XLSX.utils.book_append_sheet(wb,wsRes,'Resumen');
-  XLSX.utils.book_append_sheet(wb,mk(d.ing,'Concepto'),'Ingresos');
-  XLSX.utils.book_append_sheet(wb,mk(d.fij,'Concepto'),'Gastos_Fijos');
-  XLSX.utils.book_append_sheet(wb,mk(d.var_,'Concepto'),'Gastos_Variables');
-  const apData=[['Activo','Valor COP','Pasivo','Valor COP']];
-  for(let i=0;i<Math.max(d.act.length,d.pas.length);i++) apData.push([d.act[i]?.nombre||'',n(d.act[i]?.valor),d.pas[i]?.nombre||'',n(d.pas[i]?.valor)]);
+  wsRes['!cols']=[{wch:35},{wch:20}];XLSX.utils.book_append_sheet(wb,wsRes,'Resumen');
+  function mkSheet(rows,hdr){
+    var data=[[hdr,'Monto (COP)']].concat(rows.map(function(r){return[r.nombre,n(r.valor)];})).concat([['TOTAL',rows.reduce(function(a,b){return a+b.valor;},0)]]);
+    var ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:40},{wch:20}];return ws;
+  }
+  XLSX.utils.book_append_sheet(wb,mkSheet(d.ing,'Concepto'),'Ingresos');
+  XLSX.utils.book_append_sheet(wb,mkSheet(d.fij,'Concepto'),'Gastos_Fijos');
+  XLSX.utils.book_append_sheet(wb,mkSheet(d.var_,'Concepto'),'Gastos_Variables');
+  var apData=[['Activo','Valor COP','Pasivo','Valor COP']];
+  var ln=Math.max(d.act.length,d.pas.length);
+  for(var i=0;i<ln;i++)apData.push([d.act[i]?d.act[i].nombre:'',n(d.act[i]&&d.act[i].valor),d.pas[i]?d.pas[i].nombre:'',n(d.pas[i]&&d.pas[i].valor)]);
   apData.push(['Total Activos',n(d.tA),'Total Pasivos',n(d.tP)],['Patrimonio Neto',n(d.patrim),'','']);
-  const wsAP=XLSX.utils.aoa_to_sheet(apData);wsAP['!cols']=[{wch:35},{wch:20},{wch:35},{wch:20}];
+  var wsAP=XLSX.utils.aoa_to_sheet(apData);wsAP['!cols']=[{wch:35},{wch:20},{wch:35},{wch:20}];
   XLSX.utils.book_append_sheet(wb,wsAP,'Activos_Pasivos');
-  const _fname_xls=(_cl_xls?.nombre?_cl_xls.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'') + 'analisis-financiero-personal';
-XLSX.writeFile(wb,_fname_xls+'.xlsx');
+  var fn=(cl&&cl.nombre?cl.nombre.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()+'-':'')+'analisis-financiero-personal';
+  XLSX.writeFile(wb,fn+'.xlsx');
+}
+
+// ── UI Components — ALL OUTSIDE App ──────────────────────────────────────────
+function MoneyInput(props){
+  var value=props.value;var onChange=props.onChange;var style=props.style||{};
+  var focused=useState(false);var setFocused=focused[1];focused=focused[0];
+  var rawState=useState('');var setRaw=rawState[1];var raw=rawState[0];
+  return React.createElement('input',{
+    className:'ni',
+    style:Object.assign({textAlign:'right'},style),
+    value:focused?raw:(value===0?'':new Intl.NumberFormat('es-CO').format(value)),
+    onChange:function(e){var d=e.target.value.replace(/[^\d]/g,'');setRaw(d);onChange(d===''?0:parseInt(d,10));},
+    onFocus:function(){setFocused(true);setRaw(value===0?'':String(value));},
+    onBlur:function(){setFocused(false);},
+    placeholder:'0',
+    inputMode:'numeric'
+  });
+}
+
+function TextInput(props){
+  return React.createElement('input',{
+    className:'ni',
+    style:{flex:1,minWidth:0},
+    value:props.value,
+    onChange:function(e){props.onChange(e.target.value);},
+    placeholder:'Concepto...'
+  });
+}
+
+function SectionCard(props){
+  var title=props.title,color=props.color,bg=props.bg,icon=props.icon;
+  var rows=props.rows,onAdd=props.onAdd,onDel=props.onDel,onNom=props.onNom,onVal=props.onVal;
+  var totalLabel=props.totalLabel||'Total';
+  var total=rows.reduce(function(a,b){return a+b.valor;},0);
+  return (
+    <div className="card" style={{marginBottom:'1rem'}}>
+      <div style={{display:'flex',alignItems:'center',gap:'.6rem',padding:'1.1rem 1.4rem',borderBottom:'1px solid #f1f5f9'}}>
+        <div style={{width:34,height:34,borderRadius:10,background:bg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{icon}</div>
+        <div className="fs" style={{fontSize:'.85rem',fontWeight:800,color:'#0f172a'}}>{title}</div>
+      </div>
+      <div style={{padding:'1.1rem 1.4rem'}}>
+        <div style={{display:'flex',gap:'.5rem',marginBottom:'.4rem'}}>
+          <span style={{flex:1,fontSize:'.68rem',fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'.08em'}}>Concepto</span>
+          <span style={{width:130,fontSize:'.68rem',fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'.08em',textAlign:'right'}}>Monto mensual</span>
+          <span style={{width:34}}></span>
+        </div>
+        {rows.map(function(r){return (
+          <div key={r.id} style={{display:'flex',gap:'.5rem',alignItems:'center',marginBottom:'.45rem'}}>
+            <TextInput value={r.nombre} onChange={function(v){onNom(r.id,v);}}/>
+            <MoneyInput value={r.valor} onChange={function(v){onVal(r.id,v);}} style={{width:130}}/>
+            <button className="del" onClick={function(){onDel(r.id);}}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+            </button>
+          </div>
+        );})}
+        <button className="add-row" onClick={onAdd}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Agregar fila
+        </button>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'.75rem 0 0',borderTop:'1.5px solid #f1f5f9',marginTop:'.6rem'}}>
+          <span style={{fontSize:'.82rem',fontWeight:600,color:'#64748b'}}>{totalLabel}</span>
+          <span className="fs" style={{fontSize:'1.05rem',fontWeight:800,color:color}}>{COP(total)}</span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ── App ───────────────────────────────────────────────────────────────────────
-let uid=10;const nid=()=>++uid;
-function App(){
-  const DEF_ING=[{id:1,nombre:'Salario neto',valor:4500000},{id:2,nombre:'Ingresos extra / freelance',valor:800000}];
-  const DEF_FIJ=[{id:3,nombre:'Arriendo / cuota hipotecaria',valor:1200000},{id:4,nombre:'Servicios públicos',valor:250000},{id:5,nombre:'Internet y telefonía',valor:120000},{id:6,nombre:'Seguro de salud',valor:180000}];
-  const DEF_VAR=[{id:7,nombre:'Alimentación y mercado',valor:600000},{id:8,nombre:'Transporte',valor:200000},{id:9,nombre:'Entretenimiento',valor:150000},{id:10,nombre:'Ropa y cuidado personal',valor:100000}];
-  const DEF_ACT=[{id:11,nombre:'Cuenta de ahorros / CDTs',valor:8000000},{id:12,nombre:'Vehículo',valor:25000000}];
-  const DEF_PAS=[{id:13,nombre:'Tarjeta de crédito',valor:3500000},{id:14,nombre:'Crédito de consumo',valor:8000000}];
-  const [ing,setIng]=useState(DEF_ING);
-  const [fij,setFij]=useState(DEF_FIJ);
-  const [var_,setVar]=useState(DEF_VAR);
-  const [act,setAct]=useState(DEF_ACT);
-  const [pas,setPas]=useState(DEF_PAS);
-  const [gen,setGen]=useState('');
-  const [client,setClient]=useState(null);
-  const [saved,setSaved]=useState(false);
-  const ready=useRef(false);
+var DEF_ING=[{id:1,nombre:'Salario neto',valor:4500000},{id:2,nombre:'Ingresos extra / freelance',valor:800000}];
+var DEF_FIJ=[{id:3,nombre:'Arriendo / cuota hipotecaria',valor:1200000},{id:4,nombre:'Servicios publicos',valor:250000},{id:5,nombre:'Internet y telefonia',valor:120000},{id:6,nombre:'Seguro de salud',valor:180000}];
+var DEF_VAR=[{id:7,nombre:'Alimentacion y mercado',valor:600000},{id:8,nombre:'Transporte',valor:200000},{id:9,nombre:'Entretenimiento',valor:150000},{id:10,nombre:'Ropa y cuidado personal',valor:100000}];
+var DEF_ACT=[{id:11,nombre:'Cuenta de ahorros / CDTs',valor:8000000},{id:12,nombre:'Vehiculo',valor:25000000}];
+var DEF_PAS=[{id:13,nombre:'Tarjeta de credito',valor:3500000},{id:14,nombre:'Credito de consumo',valor:8000000}];
+var NEXT_ID=20;
+function nid(){NEXT_ID++;return NEXT_ID;}
 
-  useEffect(()=>{
-    const c=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
-    setClient(c);
-    if(c){
-      const raw=localStorage.getItem('finsuite_'+c.id+'_finanzas');
-      if(raw){
-        try{const d=JSON.parse(raw);setIng(d.ingresos||DEF_ING);setFij(d.fijos||DEF_FIJ);setVar(d.variables||DEF_VAR);setAct(d.activos||DEF_ACT);setPas(d.pasivos||DEF_PAS);}catch(e){}
-      }
+function App(){
+  var ingState=useState(DEF_ING);var ing=ingState[0];var setIng=ingState[1];
+  var fijState=useState(DEF_FIJ);var fij=fijState[0];var setFij=fijState[1];
+  var varState=useState(DEF_VAR);var var_=varState[0];var setVar=varState[1];
+  var actState=useState(DEF_ACT);var act=actState[0];var setAct=actState[1];
+  var pasState=useState(DEF_PAS);var pas=pasState[0];var setPas=pasState[1];
+  var genState=useState('');var gen=genState[0];var setGen=genState[1];
+  var clientState=useState(null);var client=clientState[0];var setClient=clientState[1];
+  var savedState=useState(false);var saved=savedState[0];var setSaved=savedState[1];
+  var ready=useRef(false);
+
+  useEffect(function(){
+    var auth=sessionStorage.getItem('finsuite_auth');
+    if(!auth){window.location.href='../../index.html';return;}
+    if(!sessionStorage.getItem('finsuite_current_client')){window.location.href='../../clientes.html';return;}
+    var cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+    setClient(cl);
+    if(cl){
+      try{
+        var raw=localStorage.getItem('finsuite_'+cl.id+'_finanzas');
+        if(raw){
+          var d=JSON.parse(raw);
+          if(d.ingresos&&d.ingresos.length)setIng(d.ingresos);
+          if(d.fijos&&d.fijos.length)setFij(d.fijos);
+          if(d.variables&&d.variables.length)setVar(d.variables);
+          if(d.activos&&d.activos.length)setAct(d.activos);
+          if(d.pasivos&&d.pasivos.length)setPas(d.pasivos);
+        }
+      }catch(e){console.warn('Load error',e);}
     }
-    setTimeout(()=>{ ready.current=true; },100);
+    setTimeout(function(){ready.current=true;},200);
   },[]);
 
-  useEffect(()=>{
-    if(!ready.current) return;
-    const c=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
-    if(!c) return;
-    const t=setTimeout(()=>{
-      localStorage.setItem('finsuite_'+c.id+'_finanzas',JSON.stringify({ingresos:ing,fijos:fij,variables:var_,activos:act,pasivos:pas}));
-      // Update client updatedAt
-      try{const cls=JSON.parse(localStorage.getItem('finsuite_clients')||'[]');const idx=cls.findIndex(x=>x.id===c.id);if(idx>=0){cls[idx].updatedAt=new Date().toISOString();localStorage.setItem('finsuite_clients',JSON.stringify(cls));}}catch(e){}
-      setSaved(true);setTimeout(()=>setSaved(false),2000);
-    },600);
-    return ()=>clearTimeout(t);
+  useEffect(function(){
+    if(!ready.current)return;
+    var cl=JSON.parse(sessionStorage.getItem('finsuite_current_client')||'null');
+    if(!cl)return;
+    var t=setTimeout(function(){
+      localStorage.setItem('finsuite_'+cl.id+'_finanzas',JSON.stringify({ingresos:ing,fijos:fij,variables:var_,activos:act,pasivos:pas}));
+      try{var cls=JSON.parse(localStorage.getItem('finsuite_clients')||'[]');var idx=cls.findIndex(function(x){return x.id===cl.id;});if(idx>=0){cls[idx].updatedAt=new Date().toISOString();localStorage.setItem('finsuite_clients',JSON.stringify(cls));}}catch(e){}
+      setSaved(true);setTimeout(function(){setSaved(false);},2000);
+    },700);
+    return function(){clearTimeout(t);};
   },[ing,fij,var_,act,pas]);
 
-  const mkA=(s,n)=>()=>s(a=>[...a,{id:nid(),nombre:n,valor:0}]);
-  const mkD=s=>id=>s(a=>a.filter(x=>x.id!==id));
-  const mkN=s=>(id,v)=>s(a=>a.map(x=>x.id===id?{...x,nombre:v}:x));
-  const mkV=s=>(id,v)=>s(a=>a.map(x=>x.id===id?{...x,valor:v}:x));
+  function sum(a){return a.reduce(function(s,x){return s+x.valor;},0);}
+  var tI=sum(ing),tF=sum(fij),tV=sum(var_),tG=tF+tV,tA=sum(act),tP=sum(pas);
+  var flujo=tI-tG,patrim=tA-tP;
+  var rd=tI>0?(tG/tI)*100:0,ca=tI>0?(flujo/tI)*100:0;
 
-  const sum=a=>a.reduce((s,x)=>s+x.valor,0);
-  const tI=sum(ing),tF=sum(fij),tV=sum(var_),tG=tF+tV,tA=sum(act),tP=sum(pas);
-  const flujo=tI-tG,patrim=tA-tP,rd=tI>0?(tG/tI)*100:0,ca=tI>0?(flujo/tI)*100:0;
-
-  const sem=useMemo(()=>{
-    if(rd<50&&ca>=20) return{level:3,label:'Excelente',color:'#15803d',bg:'#dcfce7',border:'#86efac',msg:'Tu flujo de caja es sólido. Considera diversificar inversiones para maximizar tu patrimonio.'};
-    if(rd<70) return{level:2,label:'Moderada',color:'#92400e',bg:'#fef9c3',border:'#fde047',msg:'Tus gastos superan el 50% del ingreso. Revisa gastos variables y compromisos fijos.'};
-    return{level:1,label:'En riesgo',color:'#991b1b',bg:'#fee2e2',border:'#fca5a5',msg:'Tus gastos igualan o superan tus ingresos. Toma acción para evitar endeudamiento.'};
+  var sem=useMemo(function(){
+    if(rd<50&&ca>=20)return{level:3,label:'Excelente',color:'#15803d',bg:'#dcfce7',border:'#86efac',msg:'Tu flujo de caja es solido y tienes alta capacidad de ahorro. Considera diversificar inversiones para hacer crecer tu patrimonio.'};
+    if(rd<70)return{level:2,label:'Moderada',color:'#92400e',bg:'#fef9c3',border:'#fde047',msg:'Tus gastos superan el 50% del ingreso. Revisa gastos variables y busca reducir compromisos fijos para mejorar tu margen.'};
+    return{level:1,label:'En riesgo',color:'#991b1b',bg:'#fee2e2',border:'#fca5a5',msg:'Tus gastos igualan o superan tus ingresos. Es prioritario reducir gastos o aumentar fuentes de ingreso urgentemente.'};
   },[rd,ca]);
 
-  const rec=[];
-  if(ca<10) rec.push('Revisa gastos variables: son los más fáciles de recortar sin afectar calidad de vida.');
-  if(rd>60) rec.push('Ratio de endeudamiento alto. Evalúa consolidar deudas a una tasa menor.');
-  if(ca>=20) rec.push('Gran capacidad de ahorro. Considera CDTs, fondos de inversión o ETFs.');
-  if(patrim>0) rec.push('Patrimonio neto positivo: activos superan pasivos. ¡Mantén esa tendencia!');
-  if(patrim<0) rec.push('Patrimonio neto negativo. Prioriza reducir deudas de alto costo.');
-  if(tG>0) rec.push('Fondo de emergencia recomendado (3 meses): '+COP(tG*3)+'.');
+  var rec=[];
+  if(ca<10)rec.push('Revisa gastos variables: son los mas faciles de recortar sin afectar calidad de vida.');
+  if(rd>60)rec.push('Ratio de endeudamiento alto. Evalua consolidar deudas a una tasa menor.');
+  if(ca>=20)rec.push('Gran capacidad de ahorro. Considera CDTs, fondos de inversion o ETFs.');
+  if(patrim>0)rec.push('Patrimonio neto positivo: activos superan pasivos.');
+  if(patrim<0)rec.push('Patrimonio neto negativo. Prioriza reducir deudas de alto costo.');
+  if(tG>0)rec.push('Fondo de emergencia recomendado (3 meses): '+COP(tG*3)+'.');
 
-  const pieData=[{name:'G.Fijos',value:tF,color:'#ef4444'},{name:'G.Variables',value:tV,color:'#f97316'},{name:'Ahorro',value:Math.max(0,flujo),color:'#22c55e'}].filter(x=>x.value>0);
-  const barData=[{name:'Ingresos',val:tI,fill:'#22c55e'},{name:'G.Fijos',val:tF,fill:'#ef4444'},{name:'G.Var.',val:tV,fill:'#f97316'},{name:'Flujo',val:Math.abs(flujo),fill:flujo>=0?'#2563eb':'#dc2626'}];
+  var pieData=[
+    {name:'G.Fijos',value:tF,color:'#ef4444'},
+    {name:'G.Variables',value:tV,color:'#f97316'},
+    {name:'Ahorro',value:Math.max(0,flujo),color:'#22c55e'},
+  ].filter(function(x){return x.value>0;});
 
-  const dPDF=()=>{setGen('pdf');setTimeout(()=>{generarPDF({ing,fij,var_,act,pas,tI,tF,tV,tA,tP,flujo,patrim,rd,ca,sem,rec});setGen('');},50);};
-  const dXLS=()=>generarExcel({ing,fij,var_,act,pas,tI,tF,tV,tA,tP,flujo,patrim,rd,ca,sem,rec});
+  var barData=[
+    {name:'Ingresos',val:tI,fill:'#22c55e'},
+    {name:'G.Fijos',val:tF,fill:'#ef4444'},
+    {name:'G.Var.',val:tV,fill:'#f97316'},
+    {name:'Flujo',val:Math.abs(flujo),fill:flujo>=0?'#2563eb':'#dc2626'},
+  ];
 
-  const icon=(path)=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" dangerouslySetInnerHTML={{__html:path}}/>;
+  function mkAdd(setter,nombre){return function(){setter(function(a){return a.concat([{id:nid(),nombre:nombre,valor:0}]);});};}
+  function mkDel(setter){return function(id){setter(function(a){return a.filter(function(x){return x.id!==id;});});};}
+  function mkNom(setter){return function(id,v){setter(function(a){return a.map(function(x){return x.id===id?Object.assign({},x,{nombre:v}):x;});});};}
+  function mkVal(setter){return function(id,v){setter(function(a){return a.map(function(x){return x.id===id?Object.assign({},x,{valor:v}):x;});});};}
 
-  return <div style={{maxWidth:1200,margin:'0 auto',padding:'1.5rem'}}>
-    {/* PAGE HEADER */}
-    <div style={{marginBottom:'1.5rem',display:'flex',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
-      <div style={{background:'#ecfdf5',padding:'.75rem',borderRadius:14,border:'1px solid #a7f3d0'}}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </div>
-      <div style={{flex:1,minWidth:0}}>
-        <h1 className="fs" style={{fontSize:'1.3rem',fontWeight:800,color:'#0f172a',margin:0}}>Análisis Financiero Personal</h1>
-        <p style={{color:'#64748b',fontSize:'.84rem',margin:0}}>{client?<><strong style={{color:'#059669'}}>{client.nombre}</strong> — Diagnóstico financiero</>:'Diagnóstico completo de tu salud financiera mensual.'}</p>
-      </div>
-      <div style={{display:'flex',alignItems:'center',gap:'.5rem',flexShrink:0}}>
-          {saved&&<span style={{fontSize:'.75rem',color:'#059669',display:'flex',alignItems:'center',gap:'.3rem'}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Guardado</span>}
-        <button className="rpt-btn" style={{background:'linear-gradient(135deg,#dc2626,#b91c1c)',color:'#fff'}} onClick={dPDF} disabled={!!gen}>
-          {gen==='pdf'?'Generando...':<><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Informe PDF</>}
-        </button>
-        <button className="rpt-btn" style={{background:'linear-gradient(135deg,#059669,#047857)',color:'#fff'}} onClick={dXLS}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-          Exportar Excel
-        </button>
-      </div>
-    </div>
+  var dPDF=function(){setGen('pdf');setTimeout(function(){generarPDF({ing,fij,var_,act,pas,tI,tF,tV,tA,tP,flujo,patrim,rd,ca,sem,rec});setGen('');},80);};
+  var dXLS=function(){generarExcel({ing,fij,var_,act,pas,tI,tF,tV,tA,tP,flujo,patrim,rd,ca,sem,rec});};
 
-    <div style={{display:'grid',gridTemplateColumns:'1fr 400px',gap:'1.5rem'}}>
-      <div>
-        <SectionCard title="Ingresos Mensuales" color="#059669" bg="#ecfdf5" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>} rows={ing} onAdd={mkA(setIng,'Nuevo ingreso')} onDel={mkD(setIng)} onNom={mkN(setIng)} onVal={mkV(setIng)} total_label="Total ingresos"/>
-        <SectionCard title="Gastos Fijos (compromisos recurrentes)" color="#dc2626" bg="#fef2f2" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>} rows={fij} onAdd={mkA(setFij,'Nuevo gasto fijo')} onDel={mkD(setFij)} onNom={mkN(setFij)} onVal={mkV(setFij)} total_label="Total fijos"/>
-        <SectionCard title="Gastos Variables (discrecionales)" color="#ea580c" bg="#fff7ed" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>} rows={var_} onAdd={mkA(setVar,'Nuevo gasto variable')} onDel={mkD(setVar)} onNom={mkN(setVar)} onVal={mkV(setVar)} total_label="Total variables"/>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem'}}>
-          <SectionCard title="Activos" color="#0891b2" bg="#ecfeff" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>} rows={act} onAdd={mkA(setAct,'Nuevo activo')} onDel={mkD(setAct)} onNom={mkN(setAct)} onVal={mkV(setAct)} total_label="Total activos"/>
-          <SectionCard title="Pasivos" color="#7c3aed" bg="#f5f3ff" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>} rows={pas} onAdd={mkA(setPas,'Nuevo pasivo')} onDel={mkD(setPas)} onNom={mkN(setPas)} onVal={mkV(setPas)} total_label="Total pasivos"/>
+  return (
+    <div style={{maxWidth:1200,margin:'0 auto',padding:'1.75rem 1.5rem'}}>
+      <div style={{display:'flex',alignItems:'center',gap:'1rem',marginBottom:'1.5rem',flexWrap:'wrap'}}>
+        <div style={{background:'#ecfdf5',padding:'.8rem',borderRadius:15,border:'1px solid #a7f3d0'}}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <h1 className="fs" style={{fontSize:'1.3rem',fontWeight:900,color:'#0f172a',margin:0,letterSpacing:'-.03em'}}>Análisis Financiero Personal</h1>
+          <p style={{color:'#64748b',fontSize:'.84rem',margin:'.15rem 0 0'}}>
+            {client ? <span><strong style={{color:'#059669'}}>{client.nombre}</strong> — Diagnóstico de salud financiera</span> : 'Diagnóstico completo de tu salud financiera mensual.'}
+          </p>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:'.5rem',flexShrink:0}}>
+          {saved && <span style={{fontSize:'.75rem',color:'#059669',fontWeight:600,display:'flex',alignItems:'center',gap:'.3rem'}}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Guardado
+          </span>}
+          <button className="rpt-btn" style={{background:'linear-gradient(135deg,#dc2626,#b91c1c)',color:'#fff'}} onClick={dPDF} disabled={!!gen}>
+            {gen==='pdf' ? 'Generando...' : (
+              <span style={{display:'flex',alignItems:'center',gap:'.45rem'}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Informe PDF
+              </span>
+            )}
+          </button>
+          <button className="rpt-btn" style={{background:'linear-gradient(135deg,#059669,#047857)',color:'#fff'}} onClick={dXLS}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            Exportar Excel
+          </button>
         </div>
       </div>
 
-      <div style={{position:'sticky',top:'62px',display:'flex',flexDirection:'column',gap:'1rem'}}>
-        <div style={{borderRadius:14,padding:'1.1rem 1.4rem',background:sem.bg,border:'1.5px solid '+sem.border}}>
-          <div style={{display:'flex',alignItems:'center',gap:'.6rem',marginBottom:'.4rem'}}>
-            <div style={{width:10,height:10,borderRadius:'50%',background:sem.color,boxShadow:'0 0 6px '+sem.color}}></div>
-            <span className="fs" style={{fontSize:'.9rem',fontWeight:800,color:sem.color}}>Salud Financiera {sem.label}</span>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 400px',gap:'1.5rem'}}>
+        <div>
+          <SectionCard title="Ingresos Mensuales" color="#059669" bg="#ecfdf5" totalLabel="Total ingresos"
+            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>}
+            rows={ing} onAdd={mkAdd(setIng,'Nuevo ingreso')} onDel={mkDel(setIng)} onNom={mkNom(setIng)} onVal={mkVal(setIng)}/>
+          <SectionCard title="Gastos Fijos (compromisos recurrentes)" color="#dc2626" bg="#fef2f2" totalLabel="Total fijos"
+            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>}
+            rows={fij} onAdd={mkAdd(setFij,'Nuevo gasto fijo')} onDel={mkDel(setFij)} onNom={mkNom(setFij)} onVal={mkVal(setFij)}/>
+          <SectionCard title="Gastos Variables (discrecionales)" color="#ea580c" bg="#fff7ed" totalLabel="Total variables"
+            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>}
+            rows={var_} onAdd={mkAdd(setVar,'Nuevo gasto variable')} onDel={mkDel(setVar)} onNom={mkNom(setVar)} onVal={mkVal(setVar)}/>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem'}}>
+            <SectionCard title="Activos" color="#0891b2" bg="#ecfeff" totalLabel="Total activos"
+              icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0891b2" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>}
+              rows={act} onAdd={mkAdd(setAct,'Nuevo activo')} onDel={mkDel(setAct)} onNom={mkNom(setAct)} onVal={mkVal(setAct)}/>
+            <SectionCard title="Pasivos" color="#7c3aed" bg="#f5f3ff" totalLabel="Total pasivos"
+              icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>}
+              rows={pas} onAdd={mkAdd(setPas,'Nuevo pasivo')} onDel={mkDel(setPas)} onNom={mkNom(setPas)} onVal={mkVal(setPas)}/>
           </div>
-          <p style={{fontSize:'.82rem',color:sem.color,margin:0,lineHeight:1.55,opacity:.85}}>{sem.msg}</p>
         </div>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.75rem'}}>
-          {[{l:'Flujo de Caja',v:COP(flujo),ok:flujo>=0,bg:flujo>=0?'#f0fdf4':'#fff1f2',bdr:flujo>=0?'#86efac':'#fca5a5',c:flujo>=0?'#15803d':'#991b1b',s:'Ingresos − Gastos'},
-            {l:'Patrimonio Neto',v:COP(patrim),ok:patrim>=0,bg:patrim>=0?'#eff6ff':'#fff1f2',bdr:patrim>=0?'#93c5fd':'#fca5a5',c:patrim>=0?'#1d4ed8':'#991b1b',s:'Activos − Pasivos'},
-            {l:'Endeudamiento',v:PCT(rd)+'%',ok:rd<50,bg:'#fffbeb',bdr:'#fde68a',c:rd<50?'#15803d':rd<70?'#92400e':'#991b1b',s:'Gastos / Ingresos'},
-            {l:'Cap. Ahorro',v:PCT(ca)+'%',ok:ca>=10,bg:'#f5f3ff',bdr:'#c4b5fd',c:'#6d28d9',s:'Excedente / Ingresos'},
-          ].map(k=><div key={k.l} style={{borderRadius:14,padding:'1.1rem 1.25rem',background:k.bg,border:'1.5px solid '+k.bdr}}>
-            <div style={{fontSize:'.7rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'.08em',color:'#64748b',marginBottom:'.3rem'}}>{k.l}</div>
-            <div className="fs" style={{fontSize:'1.25rem',fontWeight:800,color:k.c}}>{k.v}</div>
-            <div style={{fontSize:'.72rem',color:'#94a3b8',marginTop:'.2rem'}}>{k.s}</div>
-          </div>)}
+
+        <div style={{position:'sticky',top:'62px',display:'flex',flexDirection:'column',gap:'1rem'}}>
+          <div style={{borderRadius:14,padding:'1.1rem 1.4rem',background:sem.bg,border:'1.5px solid '+sem.border}}>
+            <div style={{display:'flex',alignItems:'center',gap:'.6rem',marginBottom:'.4rem'}}>
+              <div style={{width:10,height:10,borderRadius:'50%',background:sem.color,boxShadow:'0 0 6px '+sem.color}}></div>
+              <span className="fs" style={{fontSize:'.9rem',fontWeight:800,color:sem.color}}>Salud Financiera {sem.label}</span>
+            </div>
+            <p style={{fontSize:'.82rem',color:sem.color,margin:0,lineHeight:1.55,opacity:.85}}>{sem.msg}</p>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.75rem'}}>
+            {[
+              {l:'Flujo de Caja',v:COP(flujo),ok:flujo>=0,bg:flujo>=0?'#f0fdf4':'#fff1f2',bdr:flujo>=0?'#86efac':'#fca5a5',c:flujo>=0?'#15803d':'#991b1b',s:'Ingresos − Gastos'},
+              {l:'Patrimonio Neto',v:COP(patrim),ok:patrim>=0,bg:patrim>=0?'#eff6ff':'#fff1f2',bdr:patrim>=0?'#93c5fd':'#fca5a5',c:patrim>=0?'#1d4ed8':'#991b1b',s:'Activos − Pasivos'},
+              {l:'Endeudamiento',v:PCT(rd)+'%',ok:rd<50,bg:'#fffbeb',bdr:'#fde68a',c:rd<50?'#15803d':rd<70?'#92400e':'#991b1b',s:'Gastos / Ingresos'},
+              {l:'Cap. Ahorro',v:PCT(ca)+'%',ok:ca>=10,bg:'#f5f3ff',bdr:'#c4b5fd',c:'#6d28d9',s:'Excedente / Ingresos'},
+            ].map(function(k){return (
+              <div key={k.l} style={{borderRadius:14,padding:'1.1rem 1.25rem',background:k.bg,border:'1.5px solid '+k.bdr}}>
+                <div style={{fontSize:'.7rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'.08em',color:'#64748b',marginBottom:'.3rem'}}>{k.l}</div>
+                <div className="fs" style={{fontSize:'1.25rem',fontWeight:800,color:k.c}}>{k.v}</div>
+                <div style={{fontSize:'.72rem',color:'#94a3b8',marginTop:'.2rem'}}>{k.s}</div>
+              </div>
+            );})}
+          </div>
+          {tI>0 && (
+            <div className="card" style={{padding:'1.1rem 1.3rem'}}>
+              <div className="fs" style={{fontSize:'.75rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.75rem'}}>Resumen mensual</div>
+              <ResponsiveContainer width="100%" height={145}>
+                <BarChart data={barData} margin={{top:0,right:5,left:0,bottom:0}}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
+                  <XAxis dataKey="name" tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false}/>
+                  <YAxis tickFormatter={function(v){return (v/1e6).toFixed(1)+'M';}} tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false} width={36}/>
+                  <Tooltip formatter={COP} cursor={{fill:'rgba(0,0,0,.04)'}}/>
+                  <Bar dataKey="val" name="Monto" radius={[5,5,0,0]}>
+                    {barData.map(function(e,i){return <Cell key={i} fill={e.fill}/>;})};
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+          {pieData.length>0 && tI>0 && (
+            <div className="card" style={{padding:'1.1rem 1.3rem'}}>
+              <div className="fs" style={{fontSize:'.75rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.5rem'}}>Distribución del ingreso</div>
+              <ResponsiveContainer width="100%" height={160}>
+                <PieChart>
+                  <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={62} innerRadius={36} paddingAngle={3}>
+                    {pieData.map(function(e,i){return <Cell key={i} fill={e.color}/>;})};
+                  </Pie>
+                  <Tooltip formatter={COP}/>
+                  <Legend formatter={function(v){return React.createElement('span',{style:{fontSize:'.73rem',color:'#374151'}},v);}}/>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+          {rec.length>0 && (
+            <div className="card" style={{padding:'1.1rem 1.3rem',background:'#f8fafc'}}>
+              <div className="fs" style={{fontSize:'.75rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.75rem'}}>Recomendaciones</div>
+              {rec.map(function(r,i){return (
+                <div key={i} style={{display:'flex',gap:'.6rem',marginBottom:'.5rem'}}>
+                  <div style={{width:6,height:6,borderRadius:'50%',background:'#059669',marginTop:5,flexShrink:0}}></div>
+                  <p style={{margin:0,fontSize:'.82rem',color:'#374151',lineHeight:1.55}}>{r}</p>
+                </div>
+              );})}
+            </div>
+          )}
         </div>
-        {tI>0&&<div className="card" style={{padding:'1.1rem 1.3rem'}}>
-          <div className="fs" style={{fontSize:'.75rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.75rem'}}>Resumen mensual</div>
-          <ResponsiveContainer width="100%" height={145}><BarChart data={barData} margin={{top:0,right:5,left:0,bottom:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/><XAxis dataKey="name" tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false}/><YAxis tickFormatter={v=>`${(v/1e6).toFixed(1)}M`} tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false} width={36}/><Tooltip formatter={v=>COP(v)} cursor={{fill:'rgba(0,0,0,.04)'}}/><Bar dataKey="val" name="Monto" radius={[5,5,0,0]}>{barData.map((e,i)=><Cell key={i} fill={e.fill}/>)}</Bar></BarChart></ResponsiveContainer>
-        </div>}
-        {pieData.length>0&&<div className="card" style={{padding:'1.1rem 1.3rem'}}>
-          <div className="fs" style={{fontSize:'.75rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.5rem'}}>Distribución del ingreso</div>
-          <ResponsiveContainer width="100%" height={160}><PieChart><Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={62} innerRadius={36} paddingAngle={3}>{pieData.map((e,i)=><Cell key={i} fill={e.color}/>)}</Pie><Tooltip formatter={v=>COP(v)}/><Legend formatter={v=><span style={{fontSize:'.73rem',color:'#374151'}}>{v}</span>}/></PieChart></ResponsiveContainer>
-        </div>}
-        {rec.length>0&&<div className="card" style={{padding:'1.1rem 1.3rem',background:'#f8fafc'}}>
-          <div className="fs" style={{fontSize:'.75rem',fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:'.75rem'}}>Recomendaciones</div>
-          {rec.map((r,i)=><div key={i} style={{display:'flex',gap:'.6rem',marginBottom:'.5rem'}}><div style={{width:6,height:6,borderRadius:'50%',background:'#059669',marginTop:5,flexShrink:0}}></div><p style={{margin:0,fontSize:'.82rem',color:'#374151',lineHeight:1.55}}>{r}</p></div>)}
-        </div>}
       </div>
     </div>
-  </div>;
+  );
 }
-createRoot(document.getElementById('root')).render(<App/>);
+
+createRoot(document.getElementById('root')).render(React.createElement(App,null));
 </script>
 <script>if(!sessionStorage.getItem('finsuite_auth'))window.location.href='../../index.html';if(!sessionStorage.getItem('finsuite_current_client'))window.location.href='../../clientes.html';</script>
 </body>
