@@ -17,7 +17,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--page);min-height:100vh;co
 .fs{font-family:'Sora',sans-serif;}
 
 /* ── Topbar ── */
-.topbar{background:var(--nav);height:56px;display:flex;align-items:center;padding:0 1.75rem;gap:.85rem;position:sticky;top:0;z-index:300;border-bottom:1px solid rgba(255,255,255,.05);}
+.topbar{background:linear-gradient(135deg,#080d1a 0%,#0d1525 100%);height:60px;display:flex;align-items:center;padding:0 2rem;gap:.85rem;position:sticky;top:0;z-index:300;box-shadow:0 1px 0 rgba(255,255,255,.06),0 2px 20px rgba(0,0,0,.35);}
 .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;}
 .logo-mark{width:32px;height:32px;background:linear-gradient(135deg,#2563eb,#6366f1);border-radius:9px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(99,102,241,.35);flex-shrink:0;}
 .logo-txt{font-size:.95rem;font-weight:800;color:#f1f5f9;letter-spacing:-.01em;font-family:'Sora',sans-serif;}
@@ -34,9 +34,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--page);min-height:100vh;co
 .btn-out:hover{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25);color:#fca5a5;}
 
 /* ── Page header ── */
-.page-hdr{background:linear-gradient(135deg,#080d1a 0%,#0f1d38 55%,#080d1a 100%);padding:2.25rem 1.75rem 3.5rem;position:relative;overflow:hidden;}
-.page-hdr::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(99,102,241,.15) 0%,transparent 60%);pointer-events:none;}
-.page-hdr::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:60px;background:linear-gradient(to bottom,transparent,var(--page));pointer-events:none;}
+.page-hdr{background:linear-gradient(140deg,#060c1a 0%,#0f1d38 50%,#060c1a 100%);padding:2rem 2rem 0;position:relative;overflow:hidden;}
+.page-hdr::before{content:'';position:absolute;top:-80px;right:-80px;width:360px;height:360px;background:radial-gradient(circle,rgba(99,102,241,.12) 0%,transparent 60%);pointer-events:none;}
+.page-hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:52px;background:linear-gradient(to bottom,transparent,#f4f6fb);pointer-events:none;}
 .hdr-inner{max-width:1300px;margin:0 auto;position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
 .hdr-left .eyebrow{font-size:.7rem;font-weight:700;color:#4f83cc;text-transform:uppercase;letter-spacing:.14em;margin-bottom:.5rem;}
 .hdr-left h1{font-size:1.75rem;font-weight:900;color:#f1f5f9;letter-spacing:-.04em;line-height:1.1;font-family:'Sora',sans-serif;}
@@ -45,7 +45,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--page);min-height:100vh;co
 .btn-new-client:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,99,235,.5);}
 
 /* ── Stats ── */
-.stats-row{max-width:1300px;margin:-28px auto 0;padding:0 1.75rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;position:relative;z-index:2;}
+.stats-row{max-width:1300px;margin:-20px auto 0;padding:0 2rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;position:relative;z-index:2;}
 .stat-card{background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(15,23,42,.06);padding:1.2rem 1.35rem;display:flex;align-items:center;gap:1rem;}
 .stat-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .stat-n{font-size:1.75rem;font-weight:900;letter-spacing:-.04em;line-height:1;font-family:'Sora',sans-serif;}
@@ -132,7 +132,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--page);min-height:100vh;co
 <body>
 <div id="root"></div>
 <script type="text/babel" data-type="module">
-import React,{useState,useEffect,useRef} from 'react';
+import React,{useState,useEffect,useRef,useMemo} from 'react';
 import {createRoot} from 'react-dom/client';
 
 const uuid=()=>'c'+Date.now().toString(36)+Math.random().toString(36).slice(2);
@@ -157,19 +157,31 @@ const EMPTY={nombre:'',tipoDoc:'Cédula de Ciudadanía',numeroDoc:'',empresa:'',
 // ── TopBar ────────────────────────────────────────────────────────────────────
 function TopBar({user,onOut}){
   return <div className="topbar">
-    <a href="#" className="logo" onClick={e=>e.preventDefault()}>
+    <div style={{display:'flex',alignItems:'center',gap:'.6rem',marginRight:'.25rem'}}>
       <div className="logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-      <span className="logo-txt">FinSuite Pro</span>
-      <span className="logo-v">v1.2</span>
-    </a>
+      <div>
+        <div style={{fontFamily:'Sora,sans-serif',fontSize:'.95rem',fontWeight:800,color:'#f1f5f9',letterSpacing:'-.01em',lineHeight:1.1}}>FinSuite Pro</div>
+        <div style={{fontSize:'.6rem',color:'#475569',letterSpacing:'.02em'}}>Suite Financiera</div>
+      </div>
+      <div className="logo-v">v1.2</div>
+    </div>
     <div className="nav-sep"/>
-    <span className="nav-item active"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clientes</span>
+    <div style={{display:'flex',alignItems:'center',gap:.4,background:'rgba(99,102,241,.12)',border:'1px solid rgba(99,102,241,.2)',borderRadius:9,padding:'.3rem .7rem',gap:'.4rem'}}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      <span style={{fontSize:'.78rem',fontWeight:700,color:'#93c5fd'}}>Clientes</span>
+    </div>
     <div className="spacer"/>
     {user&&<div className="user-chip">
       <div className="uav" style={{background:cFor(user.usuario)}}>{inis(user.nombre)}</div>
-      <div><div className="uname">{user.nombre}</div><div className="urole">{user.rol}</div></div>
+      <div>
+        <div className="uname">{user.nombre}</div>
+        <div className="urole">{user.rol}</div>
+      </div>
     </div>}
-    <button className="btn-out" onClick={onOut}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Cerrar sesión</button>
+    <button className="btn-out" onClick={onOut}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Salir
+    </button>
   </div>;
 }
 
@@ -290,7 +302,7 @@ function DeleteModal({c,onOk,onClose}){
 function App(){
   const [user,setUser]=useState(null);
   const [clients,setClients]=useState([]);
-  const [q,setQ]=useState('');const [fT,setFT]=useState('');
+  const [q,setQ]=useState('');const [fT,setFT]=useState('');const [sortBy,setSortBy]=useState('recent');
   const [modal,setModal]=useState(null);const [sel,setSel]=useState(null);
   const [toast,setToast]=useState('');
 
@@ -305,7 +317,13 @@ function App(){
     setClients(nl);saveC(nl);setModal(null);setSel(null);
   };
   const del=()=>{MOD_K.forEach(k=>localStorage.removeItem('finsuite_'+sel.id+'_'+k));const nl=clients.filter(c=>c.id!==sel.id);setClients(nl);saveC(nl);flash('Cliente eliminado');setModal(null);setSel(null);};
-  const filtered=clients.filter(c=>{const q2=q.toLowerCase();return(!q2||(c.nombre||'').toLowerCase().includes(q2)||(c.empresa||'').toLowerCase().includes(q2)||(c.email||'').toLowerCase().includes(q2)||(c.numeroDoc||'').includes(q2)||(c.ciudad||'').toLowerCase().includes(q2))&&(!fT||c.tipo===fT);});
+  const filtered=useMemo(()=>{
+    const base=clients.filter(c=>{const q2=q.toLowerCase();return(!q2||(c.nombre||'').toLowerCase().includes(q2)||(c.empresa||'').toLowerCase().includes(q2)||(c.email||'').toLowerCase().includes(q2)||(c.numeroDoc||'').includes(q2)||(c.ciudad||'').toLowerCase().includes(q2))&&(!fT||c.tipo===fT);});
+    if(sortBy==='name') return base.slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||''));
+    if(sortBy==='modules') return base.slice().sort((a,b)=>cntMods(b.id)-cntMods(a.id));
+    if(sortBy==='updated') return base.slice().sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0));
+    return base; // recent = default order (newest first)
+  },[clients,q,fT,sortBy]);
   const withD=clients.filter(c=>cntMods(c.id)>0).length;
   const thisMo=clients.filter(c=>{const d=new Date(c.createdAt||0);return d.getMonth()===new Date().getMonth()&&d.getFullYear()===new Date().getFullYear();}).length;
   const totMods=clients.reduce((a,c)=>a+cntMods(c.id),0);
@@ -313,16 +331,21 @@ function App(){
   return <>
     <TopBar user={user} onOut={logout}/>
     <div className="page-hdr">
-      <div className="hdr-inner">
-        <div className="hdr-left">
-          <div className="eyebrow">Panel de Clientes</div>
-          <h1>Gestión de Clientes</h1>
-          <p>Administra los perfiles de tus clientes y accede a sus análisis financieros personalizados.</p>
+      <div style={{maxWidth:1300,margin:'0 auto',paddingBottom:'2rem',position:'relative',zIndex:1}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'1rem',flexWrap:'wrap'}}>
+          <div>
+            <div style={{fontSize:'.68rem',fontWeight:700,color:'#4f83cc',textTransform:'uppercase',letterSpacing:'.14em',marginBottom:'.5rem',display:'flex',alignItems:'center',gap:'.4rem'}}>
+              <div style={{width:5,height:5,borderRadius:'50%',background:'#4f83cc'}}></div>
+              Panel de Asesoría Financiera
+            </div>
+            <h1 style={{fontFamily:'Sora,sans-serif',fontSize:'1.8rem',fontWeight:900,color:'#f1f5f9',letterSpacing:'-.04em',margin:0,lineHeight:1.1}}>Gestión de Clientes</h1>
+            <p style={{color:'#475569',fontSize:'.88rem',margin:'.4rem 0 0',lineHeight:1.6,maxWidth:460}}>Administra perfiles, centraliza análisis financieros y genera informes personalizados para cada cliente.</p>
+          </div>
+          <button className="btn-new-client" onClick={()=>{setSel(null);setModal('new');}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nuevo cliente
+          </button>
         </div>
-        <button className="btn-new-client" onClick={()=>{setSel(null);setModal('new');}}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Nuevo cliente
-        </button>
       </div>
     </div>
 
@@ -346,6 +369,12 @@ function App(){
         <select className="filt-select" value={fT} onChange={e=>setFT(e.target.value)}>
           <option value="">Todos los tipos</option>
           {TIPOS.map(t=><option key={t}>{t}</option>)}
+        </select>
+        <select className="filt-select" value={sortBy} onChange={e=>setSortBy(e.target.value)}>
+          <option value="recent">Más recientes</option>
+          <option value="name">Nombre A–Z</option>
+          <option value="modules">Con más módulos</option>
+          <option value="updated">Última actividad</option>
         </select>
         {(q||fT)&&<button className="btn-clear" onClick={()=>{setQ('');setFT('');}}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
